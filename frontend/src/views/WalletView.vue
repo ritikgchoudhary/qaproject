@@ -107,6 +107,7 @@ onMounted(async () => {
   </div>
 </template>
 
+<style scoped>
 @reference "../assets/main.css";
 
 .page-container {
