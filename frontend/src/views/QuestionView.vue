@@ -422,7 +422,7 @@ onMounted(fetchQuestion)
     text-align: center;
     padding: 3rem 2rem;
 }
-.result-icon { margin-bottom: 1.5rem; }
+.result-icon { margin: 0 auto 1.5rem auto; display: block; }
 .final-score { font-size: 1.2rem; margin: 1rem 0; color: #e2e8f0; }
 .sub-text { color: #94a3b8; margin-bottom: 2rem; }
 .mt-4 { margin-top: 1.5rem; }
