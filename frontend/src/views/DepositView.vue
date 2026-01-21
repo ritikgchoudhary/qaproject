@@ -70,6 +70,8 @@ async function makeDeposit() {
 </template>
 
 <style scoped>
+@reference "../assets/main.css";
+
 .page-wrapper {
     padding: 1rem;
     padding-bottom: 90px;
@@ -77,11 +79,17 @@ async function makeDeposit() {
     margin: 0 auto;
     font-family: 'Inter', sans-serif;
     text-align: center;
+    @apply w-full min-h-screen bg-[#050505] text-white;
 }
 .page-title {
     font-size: 1.5rem;
     font-weight: 800;
     margin-bottom: 1.5rem;
+    background: linear-gradient(to right, #fbbf24, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase; 
+    letter-spacing: 1px;
 }
 
 .deposit-card {
@@ -89,6 +97,10 @@ async function makeDeposit() {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 .icon-container {
     margin-bottom: 1rem;
@@ -102,10 +114,10 @@ async function makeDeposit() {
     margin-bottom: 0.5rem;
 }
 .amount {
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: 900;
     color: #fff;
-    text-shadow: 0 0 20px rgba(255,255,255,0.1);
+    text-shadow: 0 0 30px rgba(255,255,255,0.2);
     margin-bottom: 0.5rem;
 }
 .info-text {
@@ -127,14 +139,14 @@ async function makeDeposit() {
     border: none;
     border-radius: 12px;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
     transition: transform 0.2s;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
 }
-.btn-action:hover:not(:disabled) { transform: translateY(-2px); }
-.btn-action:disabled { background: #475569; box-shadow: none; cursor: not-allowed; }
+.btn-action:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
+.btn-action:disabled { background: #1f2937; box-shadow: none; cursor: not-allowed; color: #64748b; }
 
-.message { margin-top: 1.5rem; padding: 1rem; font-weight: 600; }
-.success { color: #4ade80; border-color: rgba(74, 222, 128, 0.3); }
-.error { color: #f87171; border-color: rgba(248, 113, 113, 0.3); }
+.message { margin-top: 1.5rem; padding: 1rem; font-weight: 600; background: #111; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; }
+.success { color: #4ade80; border-color: rgba(74, 222, 128, 0.3); background: rgba(74, 222, 128, 0.1); }
+.error { color: #f87171; border-color: rgba(248, 113, 113, 0.3); background: rgba(248, 113, 113, 0.1); }
 </style>
