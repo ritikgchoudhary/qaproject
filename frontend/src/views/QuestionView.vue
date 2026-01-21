@@ -256,11 +256,14 @@ onMounted(fetchQuestion)
 </template>
 
 <style scoped>
+@reference "../assets/main.css";
+
 .page-container {
     padding: 1rem;
     padding-bottom: 80px; 
     width: 100%;
     font-family: 'Inter', sans-serif;
+    @apply w-full min-h-screen bg-[#050505] text-white;
 }
 
 .header-section {
@@ -269,10 +272,18 @@ onMounted(fetchQuestion)
     align-items: center;
     margin-bottom: 2rem;
 }
-.page-title { font-size: 1.5rem; text-transform: uppercase; letter-spacing: 1px; }
+.page-title { 
+    font-size: 1.5rem; 
+    text-transform: uppercase; 
+    letter-spacing: 1px;
+    font-weight: 800;
+    background: linear-gradient(to right, #fbbf24, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
 .score-badge {
-    background: rgba(0,0,0,0.3);
+    background: rgba(0,0,0,0.6);
     padding: 0.5rem 1rem;
     border-radius: 20px;
     display: flex;
@@ -296,6 +307,14 @@ onMounted(fetchQuestion)
     border-radius: 50%;
     margin: 0 auto 1rem;
     animation: spin 1s linear infinite;
+}
+
+/* Glass Cards Common */
+.glass-card {
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
 }
 
 /* Deposit Lock Card */
@@ -326,6 +345,12 @@ onMounted(fetchQuestion)
 }
 @keyframes shimmer { 100% { left: 150%; } }
 
+.error-card {
+    padding: 2rem;
+    text-align: center;
+    color: #f87171;
+}
+
 /* Question */
 .question-card {
     padding: 2rem;
@@ -348,7 +373,7 @@ onMounted(fetchQuestion)
     margin-bottom: 2rem;
     line-height: 1.5;
     color: white;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .options-grid {
@@ -357,7 +382,7 @@ onMounted(fetchQuestion)
 }
 
 .option-btn {
-    background: rgba(255,255,255,0.05);
+    background: #161616;
     border: 1px solid rgba(255,255,255,0.1);
     padding: 1rem;
     border-radius: 12px;
@@ -369,24 +394,25 @@ onMounted(fetchQuestion)
     text-align: left;
 }
 .option-btn:not(.disabled):hover {
-    background: rgba(251, 191, 36, 0.1);
+    background: #1a1a1a;
     border-color: #fbbf24;
 }
 
 .option-btn.selected {
-    background: rgba(251, 191, 36, 0.2);
+    background: rgba(251, 191, 36, 0.1);
     border-color: #fbbf24;
-     color: #fbbf24;
+    color: #fbbf24;
+    font-weight: 700;
 }
 
 .option-btn.disabled {
     cursor: not-allowed;
-    opacity: 0.8;
+    opacity: 0.7;
 }
 
 .feedback-msg {
     margin-top: 1rem;
-    font-weight: 600;
+    font-weight: 700;
 }
 .text-green-400 { color: #4ade80; }
 .text-red-400 { color: #f87171; }
@@ -404,6 +430,11 @@ onMounted(fetchQuestion)
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
 /* History Styles */
+.history-list {
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; 
+}
 .history-item {
     display: flex;
     justify-content: space-between;
@@ -425,7 +456,7 @@ onMounted(fetchQuestion)
 .line-clamp-1 {
     display: -webkit-box;
     -webkit-line-clamp: 1;
-    line-clamp: 1; /* Standard property */
+    line-clamp: 1; 
     -webkit-box-orient: vertical;  
     overflow: hidden;
 }
