@@ -235,3 +235,4 @@ onMounted(async () => {
 
 .empty-view { text-align: center; padding: 2rem; color: #64748b; border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; margin-top: 1rem; }
 .empty-icon { width: 48px; opacity: 0.4; margin-bottom: 1rem; }
+</style>
