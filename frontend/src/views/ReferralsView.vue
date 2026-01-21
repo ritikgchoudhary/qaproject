@@ -87,18 +87,26 @@ function copyCode() {
 </template>
 
 <style scoped>
+@reference "../assets/main.css";
+
 .page-container {
     padding: 1rem;
     padding-bottom: 90px;
     max-width: 480px;
     margin: 0 auto;
     font-family: 'Inter', sans-serif;
+    @apply w-full min-h-screen bg-[#050505] text-white;
 }
 .page-title {
     font-size: 1.5rem;
     font-weight: 800;
     margin-bottom: 1.5rem;
     text-align: center;
+    background: linear-gradient(to right, #fbbf24, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase; 
+    letter-spacing: 1px;
 }
 
 .code-section {
@@ -107,10 +115,12 @@ function copyCode() {
     margin-bottom: 1.5rem;
     cursor: pointer;
     transition: transform 0.2s;
-    border: 1px solid rgba(251, 191, 36, 0.3);
-    background: rgba(251, 191, 36, 0.05);
+    background: #111;
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
-.code-section:active { transform: scale(0.98); background: rgba(251, 191, 36, 0.1); }
+.code-section:active { transform: scale(0.98); background: #161616; }
 .section-label { color: #94a3b8; font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; margin-bottom: 1rem; }
 .code-box {
     display: flex;
@@ -120,7 +130,7 @@ function copyCode() {
     margin-bottom: 0.5rem;
 }
 .code-text { font-size: 2.2rem; font-weight: 800; color: #fbbf24; letter-spacing: 2px; text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
-.copy-icon { width: 28px; height: 28px; opacity: 0.8; }
+.copy-icon { width: 28px; height: 28px; opacity: 0.8; color: #fbbf24; }
 .tap-hint { color: #64748b; font-size: 0.8rem; }
 
 .stats-row {
@@ -128,13 +138,16 @@ function copyCode() {
     justify-content: space-around;
     padding: 1.5rem;
     margin-bottom: 2rem;
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
 }
 .stat-box { display: flex; flex-direction: column; align-items: center; }
 .stat-value { font-size: 1.4rem; font-weight: 800; color: white; margin-bottom: 0.2rem; }
 .stat-value.text-green { color: #4ade80; }
 .stat-label { color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; font-weight: 600; }
 
-.list-title { color: #e2e8f0; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; border-left: 4px solid #fbbf24; padding-left: 10px; }
+.list-title { color: #e2e8f0; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; border-left: 4px solid #fbbf24; padding-left: 10px; text-transform: uppercase; letter-spacing: 1px; }
 
 .referral-list { display: flex; flex-direction: column; gap: 0.8rem; }
 .ref-item {
@@ -143,14 +156,17 @@ function copyCode() {
     padding: 1rem;
     gap: 1rem;
     transition: transform 0.2s;
+    background: #111;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
 }
-.ref-item:hover { transform: translateX(5px); border-color: rgba(255,255,255,0.2); }
+.ref-item:hover { transform: translateX(5px); background: #161616; border-color: rgba(255,255,255,0.2); }
 .ref-avatar { width: 40px; height: 40px; }
 .ref-details { flex: 1; display: flex; flex-direction: column; }
-.ref-name { color: white; font-size: 0.95rem; }
+.ref-name { color: white; font-size: 0.95rem; font-weight: 700; }
 .ref-date { color: #64748b; font-size: 0.8rem; }
 .badge-active { background: rgba(74, 222, 128, 0.1); color: #4ade80; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; border: 1px solid rgba(74, 222, 128, 0.2); }
 
-.empty-state { text-align: center; padding: 3rem; color: #94a3b8; }
+.empty-state { text-align: center; padding: 3rem; color: #94a3b8; border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; margin-top: 2rem; }
 .empty-icon { width: 64px; margin-bottom: 1rem; opacity: 0.5; }
 </style>
