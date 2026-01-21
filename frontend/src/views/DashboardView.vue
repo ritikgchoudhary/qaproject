@@ -214,18 +214,25 @@ const squadGoalText = computed(() => {
       <!-- Referral Team Section -->
       <div class="referral-section mt-6">
          <!-- Code Card -->
-         <div class="glass-card code-section mb-6 group cursor-pointer" @click="copyCode">
-             <div class="absolute inset-0 bg-yellow-500/5 group-hover:bg-yellow-500/10 transition-colors"></div>
-             <p class="text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-2 relative z-10">Your Invite Code</p>
-             <div class="flex items-center justify-center gap-4 relative z-10">
-                 <span class="text-3xl font-black text-yellow-500 tracking-widest drop-shadow-lg">{{ myRefCode || '...' }}</span>
-                 <button class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
-                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+         <div class="glass-card code-section mb-6 relative overflow-hidden group cursor-pointer bg-[#111] border border-yellow-500/20 rounded-2xl p-6" @click="copyCode">
+             <div class="absolute top-0 right-0 w-24 h-24 bg-yellow-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+             
+             <div class="text-center relative z-10">
+                 <p class="text-[10px] font-bold text-gray-400 tracking-[0.2em] uppercase mb-4">Your Referral ID</p>
+                 
+                 <div class="inline-flex items-center gap-4 bg-[#050505] border border-dashed border-white/20 px-6 py-3 rounded-xl hover:border-yellow-500/50 transition-colors group-hover:bg-[#161616]">
+                     <span class="text-2xl font-black text-yellow-500 tracking-widest">{{ myRefCode || '...' }}</span>
+                     <div class="w-px h-6 bg-white/10"></div>
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                      </svg>
-                 </button>
+                 </div>
+                 
+                 <p class="text-[10px] text-gray-500 mt-4 flex items-center justify-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                    <span class="w-1 h-1 rounded-full bg-yellow-500"></span>
+                    Tap card to copy code
+                 </p>
              </div>
-             <p class="text-[9px] text-gray-500 text-center mt-2 relative z-10">Tap to copy & share</p>
          </div>
 
          <!-- Member List -->
