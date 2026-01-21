@@ -307,14 +307,14 @@ const squadGoalText = computed(() => {
 
 /* Page Layout */
 .dashboard-wrapper {
-    @apply w-full min-h-screen relative overflow-hidden;
+    @apply w-full min-h-screen relative overflow-hidden bg-[#050505];
     max-width: 480px;
     margin: 0 auto;
 }
 
 /* Header */
 .top-header {
-    @apply flex justify-between items-center px-5 pt-8 pb-4 sticky top-0 z-30 bg-[#0f172a]/80 backdrop-blur-xl border-b border-white/5;
+    @apply flex justify-between items-center px-5 pt-8 pb-4 sticky top-0 z-30 bg-black/80 backdrop-blur-xl border-b border-white/5;
 }
 
 .user-info { @apply flex items-center gap-3; }
@@ -323,7 +323,7 @@ const squadGoalText = computed(() => {
     @apply w-12 h-12 rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 to-yellow-600 shadow-lg shadow-yellow-500/20;
 }
 .avatar-circle img {
-    @apply w-full h-full rounded-full object-cover border-2 border-[#0f172a] bg-black;
+    @apply w-full h-full rounded-full object-cover border-2 border-[#111] bg-black;
 }
 
 .user-text { @apply flex flex-col justify-center; }
