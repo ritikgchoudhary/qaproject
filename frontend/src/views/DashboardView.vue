@@ -161,8 +161,8 @@ const squadGoalText = computed(() => {
 
       <!-- Action Buttons -->
       <div class="grid grid-cols-2 gap-4">
-        <router-link to="/deposit" class="group relative overflow-hidden bg-[#1e293b]/50 border border-white/5 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all active:scale-95">
-           <div class="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <router-link to="/deposit" class="group relative overflow-hidden bg-[#111] border border-white/10 rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all active:scale-95 hover:bg-[#161616]">
+           <div class="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
            <div class="w-10 h-10 bg-green-500/10 rounded-full flex items-center justify-center border border-green-500/20 group-hover:bg-green-500/20 transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -171,8 +171,8 @@ const squadGoalText = computed(() => {
            <span class="font-bold text-sm text-gray-200">Deposit</span>
         </router-link>
 
-        <router-link to="/withdraw" class="group relative overflow-hidden bg-[#1e293b]/50 border border-white/5 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all active:scale-95">
-           <div class="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <router-link to="/withdraw" class="group relative overflow-hidden bg-[#111] border border-white/10 rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all active:scale-95 hover:bg-[#161616]">
+           <div class="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
            <div class="w-10 h-10 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/20 group-hover:bg-red-500/20 transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
@@ -241,7 +241,7 @@ const squadGoalText = computed(() => {
                 </router-link>
             </div>
             
-            <div v-if="referrals.length === 0" class="text-center py-8 border border-white/5 rounded-2xl bg-[#1e293b]/30">
+            <div v-if="referrals.length === 0" class="text-center py-8 border border-white/5 rounded-2xl bg-[#111]">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-gray-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                 </svg>
@@ -250,7 +250,7 @@ const squadGoalText = computed(() => {
             </div>
 
             <div v-else class="space-y-3">
-                <div v-for="ref in referrals" :key="ref.created_at + ref.name" class="flex items-center gap-3 p-3 bg-[#1e293b]/40 border border-white/5 rounded-xl hover:bg-[#1e293b]/60 transition-colors">
+                <div v-for="ref in referrals" :key="ref.created_at + ref.name" class="flex items-center gap-3 p-3 bg-[#111] border border-white/10 rounded-xl hover:bg-[#161616] transition-colors">
                     <div class="w-10 h-10 rounded-full p-[1px] bg-gradient-to-b from-yellow-500 to-orange-600">
                          <img src="https://img.icons8.com/3d-fluency/94/user-male-circle.png" class="w-full h-full rounded-full bg-black/50" />
                     </div>
