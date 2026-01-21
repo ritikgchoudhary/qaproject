@@ -184,23 +184,29 @@ const squadGoalText = computed(() => {
 
       <!-- Play Zone -->
       <div class="relative overflow-hidden rounded-[2rem] p-[1px] group cursor-pointer" @click="$router.push('/question')">
+        <!-- Animated Border -->
         <div class="absolute inset-0 bg-gradient-to-r from-yellow-500 via-orange-500 to-purple-600 animate-gradient-x opacity-70"></div>
-        <div class="relative bg-[#0f172a] rounded-[2rem] p-6 flex items-center justify-between h-full overflow-hidden">
+        
+        <div class="relative bg-[#111] rounded-[2rem] p-6 flex items-center justify-between h-full overflow-hidden border border-white/5">
             <!-- Background Decoration -->
-            <div class="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+            <div class="absolute top-0 right-0 w-40 h-40 bg-purple-500/10 rounded-full blur-[50px] -translate-y-1/2 translate-x-1/2"></div>
+            <div class="absolute bottom-0 left-0 w-32 h-32 bg-yellow-500/5 rounded-full blur-[40px] translate-y-1/2 -translate-x-1/2"></div>
             
             <div class="relative z-10 flex-1">
-              <div class="flex items-center gap-2 mb-1">
-                 <span class="bg-yellow-500/20 text-yellow-400 text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider border border-yellow-500/20">Daily Quest</span>
+              <div class="flex items-center gap-2 mb-2">
+                 <span class="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-400 text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider border border-yellow-500/20">Daily Quest</span>
+                 <span class="animate-pulse w-2 h-2 rounded-full bg-green-500"></span>
               </div>
-              <h3 class="font-black text-white text-xl tracking-wide italic">QUIZ BATTLE</h3>
-              <p class="text-[10px] text-gray-400 mt-0.5 font-medium max-w-[120px]">Win rewards daily!</p>
+              <h3 class="font-black text-white text-2xl tracking-tighter italic bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">QUIZ BATTLE</h3>
+              <p class="text-[10px] text-gray-400 mt-1 font-medium max-w-[140px] leading-relaxed">
+                 Challenge yourself & <span class="text-yellow-500 font-bold">Earn Rewards!</span>
+              </p>
             </div>
 
-            <div class="relative z-10">
-               <button class="relative w-14 h-14 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/40 group-active:scale-95 transition-all duration-300">
-                  <div class="absolute inset-0 bg-white/30 rounded-full animate-ping opacity-20"></div>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-black fill-current translate-x-0.5" viewBox="0 0 24 24">
+            <div class="relative z-10 pl-4">
+               <button class="relative w-16 h-16 rounded-full bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 flex items-center justify-center shadow-lg shadow-orange-500/30 group-active:scale-95 transition-all duration-300 border-4 border-[#111]">
+                  <div class="absolute inset-0 bg-white/20 rounded-full animate-ping opacity-20"></div>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-black fill-current translate-x-0.5 drop-shadow-sm" viewBox="0 0 24 24">
                      <path d="M8 5v14l11-7z" />
                   </svg>
                </button>
