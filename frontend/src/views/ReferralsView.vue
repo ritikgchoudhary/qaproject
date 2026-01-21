@@ -6,6 +6,7 @@ const referrals = ref([])
 const myCode = ref('')
 const count = ref(0)
 const loading = ref(true)
+const showQr = ref(false)
 
 onMounted(async () => {
     try {
@@ -20,9 +21,31 @@ onMounted(async () => {
     }
 })
 
+function getReferralLink() {
+    if (!myCode.value) return ''
+    return `${window.location.protocol}//${window.location.host}/register?ref=${myCode.value}`
+}
+
 function copyCode() {
     navigator.clipboard.writeText(myCode.value)
     alert('Code Copied!')
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(getReferralLink())
+    alert('Link Copied!')
+}
+
+function shareLink() {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Join My Team',
+            text: 'Use my referral code to join and earn rewards!',
+            url: getReferralLink()
+        })
+    } else {
+        copyLink()
+    }
 }
 </script>
 
@@ -40,6 +63,28 @@ function copyCode() {
               </svg>
           </div>
           <p class="tap-hint">Tap to Copy Code</p>
+      </div>
+
+      <!-- Share Actions -->
+      <div class="share-grid">
+          <button @click="shareLink" class="share-btn">
+              <img src="https://img.icons8.com/3d-fluency/94/share.png" width="32" />
+              <span>Share Link</span>
+          </button>
+          <button @click="showQr = !showQr" class="share-btn">
+              <img src="https://img.icons8.com/3d-fluency/94/qr-code.png" width="32" />
+              <span>QR Code</span>
+          </button>
+      </div>
+
+      <!-- QR Expandable -->
+      <div v-if="showQr" class="glass-card qr-section">
+          <h3 class="qr-title">Scan to Join</h3>
+          <div class="qr-wrapper">
+              <img :src="`https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=fbbf24&bgcolor=111111&margin=10&data=${encodeURIComponent(getReferralLink())}`" alt="QR Code" class="qr-img" />
+          </div>
+          <p class="qr-link">{{ getReferralLink() }}</p>
+          <button @click="copyLink" class="btn-copy-link">Copy Full Link</button>
       </div>
 
       <!-- Stats -->
@@ -132,6 +177,63 @@ function copyCode() {
 .code-text { font-size: 2.2rem; font-weight: 800; color: #fbbf24; letter-spacing: 2px; text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
 .copy-icon { width: 28px; height: 28px; opacity: 0.8; color: #fbbf24; }
 .tap-hint { color: #64748b; font-size: 0.8rem; }
+
+/* Share Grid */
+.share-grid {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.share-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 1rem;
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.share-btn:hover { background: #161616; border-color: rgba(255,255,255,0.2); }
+.share-btn:active { transform: scale(0.98); }
+
+/* QR Section */
+.qr-section {
+    padding: 1.5rem;
+    text-align: center;
+    background: #111;
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.3s ease;
+}
+.qr-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: #fbbf24; }
+.qr-wrapper {
+    background: #000;
+    padding: 10px;
+    border-radius: 12px;
+    display: inline-block;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.qr-img { width: 140px; height: 140px; border-radius: 4px; }
+.qr-link { font-size: 0.75rem; color: #64748b; margin-bottom: 1rem; word-break: break-all; }
+.btn-copy-link {
+    background: #fbbf24;
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
 .stats-row {
     display: flex;
