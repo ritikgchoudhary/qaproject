@@ -160,18 +160,26 @@ function handleLogout() {
 </template>
 
 <style scoped>
+@reference "../assets/main.css";
+
 .withdraw-page {
     padding: 1rem;
     padding-bottom: 90px;
     max-width: 480px;
     margin: 0 auto;
     font-family: 'Inter', sans-serif;
+    @apply w-full min-h-screen bg-[#050505] text-white;
 }
 .page-title {
     font-size: 1.5rem;
     font-weight: 800;
     margin-bottom: 1.5rem;
     text-align: center;
+    background: linear-gradient(to right, #fbbf24, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase; 
+    letter-spacing: 1px;
 }
 
 /* Header */
@@ -201,7 +209,7 @@ function handleLogout() {
 .logout-btn {
     width: 36px;
     height: 36px;
-    background: rgba(239, 68, 68, 0.1);
+    background: #111;
     border: 1px solid rgba(239, 68, 68, 0.2);
     border-radius: 10px;
     display: flex;
@@ -215,7 +223,10 @@ function handleLogout() {
 
 .balance-card {
     padding: 1.5rem;
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; 
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 .balance-row {
     display: flex;
@@ -250,6 +261,10 @@ function handleLogout() {
 /* Requirements */
 .requirements-card {
     padding: 1.2rem;
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    margin-top: 1.5rem;
 }
 .req-title {
     font-size: 1.1rem;
@@ -293,6 +308,9 @@ function handleLogout() {
 .form-box {
     padding: 1.5rem;
     margin-top: 2rem;
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
 }
 .input-label {
     display: block;
@@ -318,7 +336,7 @@ function handleLogout() {
     width: 100%;
     padding: 1rem;
     padding-left: 2.5rem;
-    background: #0f172a;
+    background: #161616;
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px;
     color: white;
@@ -358,7 +376,7 @@ function handleLogout() {
     cursor: not-allowed;
 }
 
-.message { padding: 1rem; text-align: center; font-weight: 600; }
+.message { padding: 1rem; text-align: center; font-weight: 600; background: #111; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-top: 1rem; }
 .success { border-color: rgba(74, 222, 128, 0.3); color: #4ade80; background: rgba(74, 222, 128, 0.1); }
 .error { border-color: rgba(248, 113, 113, 0.3); color: #f87171; background: rgba(248, 113, 113, 0.1); }
 /* Bank Form */
@@ -371,7 +389,7 @@ function handleLogout() {
 .std-input {
     width: 100%;
     padding: 1rem;
-    background: #0f172a;
+    background: #161616;
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px;
     color: white;
