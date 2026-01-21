@@ -1,0 +1,32 @@
+1. Session check passed. User: 53
+2. Data parsed. QID: 27, Ans: बुध
+3. Balance checked. Bal: 0.00, Stake: 100
+EXIT: Insufficient balance
+1. Session check passed. User: 53
+2. Data parsed. QID: 27, Ans: बुध
+3. Balance checked. Bal: 0.00, Stake: 100
+EXIT: Insufficient balance
+1. Session check passed. User: 53
+2. Data parsed. QID: 27, Ans: बुध
+3. Balance checked. Bal: 0.00, Stake: 100
+EXIT: Insufficient balance
+1. Session check passed. User: 53
+2. Data parsed. QID: 27, Ans: बुध
+3. Balance checked. Bal: 0.00, Stake: 100
+EXIT: Insufficient balance
+1. Session check passed. User: 53
+2. Data parsed. QID: 27, Ans: बुध
+3. Balance checked. Bal: 0.00, Stake: 100
+EXIT: Insufficient balance
+1. Session check passed. User: 53
+2. Data parsed. QID: 27, Ans: बुध
+3. Balance checked. Bal: 0.00, Stake: 100
+EXIT: Insufficient balance
+1. Session check passed. User: 53
+2. Data parsed. QID: 27, Ans: बुध
+3. Balance checked. Bal: 0.00, Stake: 100
+EXIT: Insufficient balance
+1. Session check passed. User: 53
+2. Data parsed. QID: 27, Ans: बुध
+3. Balance checked. Bal: 100.00, Stake: 100
+4. WIN
