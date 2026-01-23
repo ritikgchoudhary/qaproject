@@ -42,6 +42,7 @@ try {
         $directs = getActiveDirects($pdo, $uid);
         
         // Requirement: At least 3 active directs at THIS node
+        // NOTE: We keep this for Level progression, but let's check for "at least 1" globally first
         if (count($directs) < 3) {
             return false;
         }
@@ -60,13 +61,16 @@ try {
         return true;
     }
 
-    // Level 1 Requirement: Depth 1 (3 Directs)
-    // Level 2 Requirement: Depth 2 (3 Directs -> Each has 3 Directs)
-    // ...
     // Verify structure for CURRENT level
+    // Level 1: Needs 3 Active Directs
+    // Level 2: Needs 3 Active Directs AND each of them must have 3 Active Directs (Total 9 at L2)
     if (!checkTeamStructure($pdo, $user_id, $user_level, 1)) {
         $pdo->rollBack();
-        echo json_encode(["error" => "Withdrawal Locked! Level $user_level requirements not met. You need a complete team structure of 3 members x $user_level levels deep."]);
+        $req_msg = "Withdrawal Locked! Level $user_level requirements not met.";
+        if ($user_level == 1) $req_msg .= " You need 3 active (deposited) direct referrals.";
+        else if ($user_level == 2) $req_msg .= " You need 3 active directs AND each must have 3 active referrals (3x3 Matrix).";
+        
+        echo json_encode(["error" => $req_msg]);
         exit();
     }
     // ------------------------------------

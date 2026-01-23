@@ -17,7 +17,8 @@ const loadingStore = useLoadingStore()
 
 // Axios Interceptors
 axios.interceptors.request.use(config => {
-    loadingStore.startLoading()
+    // Default to global full-screen transparent loader
+    loadingStore.startLoading(true)
     return config
 }, error => {
     loadingStore.stopLoading()

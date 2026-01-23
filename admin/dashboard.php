@@ -12,7 +12,21 @@ $total_deposits = $pdo->query("SELECT SUM(amount) FROM deposits WHERE status IN 
 $total_withdrawals = $pdo->query("SELECT SUM(amount) FROM withdraws WHERE status = 'approved'")->fetchColumn() ?: 0;
 $pending_withdrawals = $pdo->query("SELECT COUNT(*) FROM withdraws WHERE status = 'pending'")->fetchColumn();
 $total_commissions = $pdo->query("SELECT SUM(amount) FROM agent_commissions")->fetchColumn() ?: 0;
-$system_liability = $pdo->query("SELECT SUM(withdrawable_balance + locked_balance) FROM wallets")->fetchColumn() ?: 0;
+
+$wallets = $pdo->query("SELECT SUM(withdrawable_balance) as withdrawable, SUM(locked_balance) as locked FROM wallets")->fetch();
+$total_withdrawable = $wallets['withdrawable'] ?: 0;
+$total_locked = $wallets['locked'] ?: 0;
+$system_liability = $total_withdrawable + $total_locked;
+
+// Additional Dynamic Stats
+$total_questions = $pdo->query("SELECT COUNT(*) FROM questions")->fetchColumn();
+$total_answers = $pdo->query("SELECT COUNT(*) FROM answers")->fetchColumn();
+$correct_answers = $pdo->query("SELECT COUNT(*) FROM answers WHERE is_correct = 1")->fetchColumn();
+$failed_answers = $total_answers - $correct_answers;
+$success_rate = $total_answers > 0 ? round(($correct_answers / $total_answers) * 100, 1) : 0;
+
+// Referral Stats
+$total_referrals = $pdo->query("SELECT COUNT(*) FROM users WHERE referred_by IS NOT NULL")->fetchColumn();
 
 // Recent Pending Withdrawals
 $stmt = $pdo->prepare("
@@ -58,20 +72,9 @@ $latest_users = $pdo->query("SELECT * FROM users ORDER BY created_at DESC LIMIT 
             </div>
         </header>
         
-        <!-- Stats Grid -->
-        <!-- Stats Grid -->
-        <h2 class="text-xl font-bold mb-6 text-gray-400">System Overview</h2>
+        <!-- Stats Grid: Financial -->
+        <h2 class="text-xl font-bold mb-6 text-gray-400">Financial Overview</h2>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-            <!-- Card 1: Users -->
-            <div class="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-all">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl -mr-4 -mt-4 group-hover:bg-blue-500/20 transition-all"></div>
-                <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Total Users</p>
-                <div class="flex items-end gap-2">
-                    <p class="text-3xl font-black text-white"><?= number_format($total_users) ?></p>
-                    <span class="text-[10px] text-green-500 font-bold mb-1.5">Active</span>
-                </div>
-            </div>
-            
             <!-- Card 2: Deposits -->
             <div class="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-all">
                  <div class="absolute top-0 right-0 w-24 h-24 bg-green-500/10 rounded-full blur-2xl -mr-4 -mt-4 group-hover:bg-green-500/20 transition-all"></div>
@@ -93,11 +96,49 @@ $latest_users = $pdo->query("SELECT * FROM users ORDER BY created_at DESC LIMIT 
                 </div>
             </div>
             
-             <!-- Card 4: Liability -->
+             <!-- Card: Withdrawable -->
+            <div class="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-all">
+                 <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl -mr-4 -mt-4 group-hover:bg-blue-500/20 transition-all"></div>
+                <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Withdrawable Funds</p>
+                <p class="text-3xl font-black text-blue-400">₹<?= number_format($total_withdrawable, 2) ?></p>
+            </div>
+
+             <!-- Card 4: Locked -->
             <div class="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-all">
                  <div class="absolute top-0 right-0 w-24 h-24 bg-yellow-500/10 rounded-full blur-2xl -mr-4 -mt-4 group-hover:bg-yellow-500/20 transition-all"></div>
-                <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">User Holdings (Liability)</p>
-                <p class="text-3xl font-black text-yellow-400">₹<?= number_format($system_liability, 2) ?></p>
+                <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Locked Stakes</p>
+                <p class="text-3xl font-black text-yellow-400">₹<?= number_format($total_locked, 2) ?></p>
+            </div>
+        </div>
+
+        <!-- Stats Grid: Platform -->
+        <h2 class="text-xl font-bold mb-6 text-gray-400">Platform Activity</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <!-- Card: Users -->
+            <div class="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-all">
+                <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Total Users</p>
+                <p class="text-3xl font-black text-white"><?= number_format($total_users) ?></p>
+            </div>
+            
+            <!-- Card: Questions -->
+            <div class="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-all">
+                <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Questions</p>
+                <p class="text-3xl font-black text-white"><?= number_format($total_questions) ?></p>
+            </div>
+
+            <!-- Card: Success Rate -->
+            <div class="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-all">
+                <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Quiz Success Rate</p>
+                <div class="flex items-end gap-2">
+                    <p class="text-3xl font-black text-purple-400"><?= $success_rate ?>%</p>
+                    <span class="text-[10px] text-gray-500 mb-1.5"><?= $total_answers ?> played</span>
+                </div>
+            </div>
+
+            <!-- Card: Referrals -->
+            <div class="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-all">
+                <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Total Referrals</p>
+                <p class="text-3xl font-black text-orange-400"><?= number_format($total_referrals) ?></p>
             </div>
         </div>
 

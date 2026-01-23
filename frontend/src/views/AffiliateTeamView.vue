@@ -62,6 +62,11 @@
                              </div>
                         </div>
                         <div class="text-right">
+                             <div class="mb-1">
+                                <span v-if="l1.latest_deposit_status === 'success'" class="text-[8px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/20 font-bold uppercase">Active</span>
+                                <span v-else-if="l1.latest_deposit_status === 'pending'" class="text-[8px] px-1.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/20 font-bold uppercase animate-pulse">Pending</span>
+                                <span v-else class="text-[8px] px-1.5 py-0.5 rounded-full bg-gray-500/20 text-gray-500 border border-gray-500/20 font-bold uppercase">No Deposit</span>
+                             </div>
                              <p class="text-[10px] text-white font-bold">₹{{ formatNumber(l1.total_deposit) }}</p>
                              <p class="text-[9px] text-green-400">+₹{{ formatNumber(l1.earned_from) }}</p>
                         </div>
@@ -88,6 +93,10 @@
                                      </div>
                                 </div>
                                 <div class="text-right">
+                                     <div class="mb-1">
+                                        <span v-if="l2.latest_deposit_status === 'success'" class="text-[7px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/20 font-bold uppercase">Active</span>
+                                        <span v-else-if="l2.latest_deposit_status === 'pending'" class="text-[7px] px-1.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/20 font-bold uppercase animate-pulse">Pending</span>
+                                     </div>
                                      <p class="text-[10px] text-white font-bold">₹{{ formatNumber(l2.total_deposit) }}</p>
                                      <p class="text-[9px] text-green-400">+₹{{ formatNumber(l2.earned_from) }}</p>
                                 </div>

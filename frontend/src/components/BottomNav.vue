@@ -32,7 +32,7 @@ const currentPath = computed(() => route.path)
         <div class="fab-container">
             <router-link to="/question" class="play-fab" :class="{active: currentPath === '/question'}">
                  <div class="play-icon-inner">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-black fill-current translate-x-0.5" viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-black fill-current translate-x-0.5" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                     </svg>
                  </div>
@@ -76,7 +76,7 @@ const currentPath = computed(() => route.path)
 .glass-dock {
     width: 100%;
     max-width: 480px;
-    height: 80px;
+    height: 60px; /* Reduced height */
     background: rgba(15, 23, 42, 0.95);
     backdrop-filter: blur(20px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -84,9 +84,9 @@ const currentPath = computed(() => route.path)
     justify-content: space-evenly;
     align-items: center;
     box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
-    padding-bottom: 10px; /* Lift interaction area slightly */
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .nav-item {
@@ -120,22 +120,22 @@ const currentPath = computed(() => route.path)
 /* FAB Styles */
 .fab-container {
     position: relative;
-    top: -25px; /* Float above */
+    top: -18px; /* Adjusted for smaller height */
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .play-fab {
-    width: 64px;
-    height: 64px;
+    width: 52px; /* Reduced FAB size */
+    height: 52px;
     background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
-    border: 4px solid #0f172a; /* Match bg to create cutout effect */
+    box-shadow: 0 5px 15px rgba(251, 191, 36, 0.4);
+    border: 3px solid #0f172a;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 

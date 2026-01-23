@@ -75,10 +75,24 @@ if (!empty($all_members)) {
     $ids = array_column($all_members, 'id');
     $placeholders = implode(',', array_fill(0, count($ids), '?')); // Reset placeholders
     
-    // 1. Bulk Deposits
+    // 1. Bulk Deposits (Success)
     $stmt_dep = $pdo->prepare("SELECT user_id, SUM(amount) as total FROM deposits WHERE user_id IN ($placeholders) AND status = 'success' GROUP BY user_id");
     $stmt_dep->execute($ids);
-    $deposits_map = $stmt_dep->fetchAll(PDO::FETCH_KEY_PAIR); // [user_id => total]
+    $deposits_map = $stmt_dep->fetchAll(PDO::FETCH_KEY_PAIR);
+
+    // 1b. Fetch LATEST deposit status (to show pending status)
+    $stmt_status = $pdo->prepare("
+        SELECT d1.user_id, d1.status 
+        FROM deposits d1
+        INNER JOIN (
+            SELECT user_id, MAX(created_at) as latest 
+            FROM deposits 
+            WHERE user_id IN ($placeholders)
+            GROUP BY user_id
+        ) d2 ON d1.user_id = d2.user_id AND d1.created_at = d2.latest
+    ");
+    $stmt_status->execute($ids);
+    $status_map = $stmt_status->fetchAll(PDO::FETCH_KEY_PAIR); // [user_id => status]
     
     // 2. Bulk Earnings
     $stmt_earn = $pdo->prepare("SELECT from_user_id, SUM(amount) as total FROM agent_commissions WHERE agent_id = ? AND from_user_id IN ($placeholders) GROUP BY from_user_id");
@@ -90,6 +104,7 @@ if (!empty($all_members)) {
     foreach ($all_members as &$member) {
         $member['total_deposit'] = isset($deposits_map[$member['id']]) ? $deposits_map[$member['id']] : 0;
         $member['earned_from'] = isset($earnings_map[$member['id']]) ? $earnings_map[$member['id']] : 0;
+        $member['latest_deposit_status'] = isset($status_map[$member['id']]) ? $status_map[$member['id']] : 'none';
     }
 }
 

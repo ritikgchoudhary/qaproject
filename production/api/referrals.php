@@ -24,6 +24,11 @@ $stmtCount = $pdo->prepare("SELECT COUNT(*) FROM users WHERE referred_by = ?");
 $stmtCount->execute([$my_code]);
 $total_count = $stmtCount->fetchColumn();
 
+// Get Active Count (Deposited)
+$stmtActive = $pdo->prepare("SELECT COUNT(*) FROM users WHERE referred_by = ? AND has_deposited = 1");
+$stmtActive->execute([$my_code]);
+$active_count = $stmtActive->fetchColumn();
+
 // Get Paginated Referrals
 $stmt = $pdo->prepare("
     SELECT 
@@ -47,6 +52,7 @@ $referrals = $stmt->fetchAll(PDO::FETCH_ASSOC);
 echo json_encode([
     "referrals" => $referrals, 
     "count" => $total_count, // Total count for badge
+    "active_count" => $active_count, // For withdrawal lock check
     "code" => $my_code,
     "has_more" => ($offset + count($referrals)) < $total_count,
     "page" => $page

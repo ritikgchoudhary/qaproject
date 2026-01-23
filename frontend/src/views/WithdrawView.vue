@@ -16,23 +16,26 @@ const userStore = useUserStore()
 
 // Requirements info
 const referralCount = ref(0)
-const totalDeposits = ref(0) // We might need an endpoint for this, or just infer
-const requirementsMet = ref(false)
+const totalDeposits = ref(0) 
+const reqData = ref({ l1_active: 0, l1_required: 3, l2_active: 0, l2_required: 9, current_level: 1, structure_met: false })
+const loadingReq = ref(true)
 
 onMounted(async () => {
     await userStore.fetchUser()
     try {
-        // Reuse referrals endpoint
-        const refRes = await axios.get('/api/referrals.php')
-        referralCount.value = refRes.data.count
-        
+        const reqRes = await axios.get('/api/getWithdrawRequirements.php')
+        reqData.value = reqRes.data
+        loadingReq.value = false
+
         // Populate Bank Details if exist
         if (userStore.user) {
              if (userStore.user.bank_holder_name) bankDetails.value.holder_name = userStore.user.bank_holder_name
              if (userStore.user.bank_account_number) bankDetails.value.account_number = userStore.user.bank_account_number
              if (userStore.user.bank_ifsc_code) bankDetails.value.ifsc = userStore.user.bank_ifsc_code
         }
-    } catch (e) {}
+    } catch (e) {
+        loadingReq.value = false
+    }
 })
 
 async function requestWithdraw() {
@@ -115,17 +118,36 @@ function handleLogout() {
              </div>
           </div>
           
-          <div class="space-y-4">
+          <div class="space-y-4" v-if="!loadingReq">
+            <!-- Level 1 -->
             <div class="req-item group">
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs font-bold text-gray-300">Direct Referrals Required</span>
-                    <span class="text-[10px] font-bold" :class="referralCount >= 3 ? 'text-green-400' : 'text-yellow-500'">{{ referralCount }}/3</span>
+                    <span class="text-xs font-bold text-gray-300">Level 1: Direct Referrals (Deposited)</span>
+                    <span class="text-[10px] font-bold" :class="reqData.l1_active >= 3 ? 'text-green-400' : 'text-yellow-500'">{{ reqData.l1_active }}/3</span>
                 </div>
                 <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                    <div class="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full transition-all duration-500" :style="{width: Math.min((referralCount/3)*100, 100) + '%'}"></div>
+                    <div class="h-full bg-gradient-to-r from-yellow-500 to-green-500 rounded-full transition-all duration-500" :style="{width: Math.min((reqData.l1_active/3)*100, 100) + '%'}"></div>
                 </div>
-                <p class="text-[10px] text-gray-500 mt-2">You need 3 active referrals to enable withdrawals.</p>
             </div>
+
+            <!-- Level 2 (Only if Level is >= 2) -->
+            <div class="req-item group" v-if="reqData.current_level >= 2">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-bold text-gray-300">Level 2: Squad Growth (Deposited)</span>
+                    <span class="text-[10px] font-bold" :class="reqData.l2_active >= 9 ? 'text-green-400' : 'text-yellow-500'">{{ reqData.l2_active }}/9</span>
+                </div>
+                <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-500" :style="{width: Math.min((reqData.l2_active/9)*100, 100) + '%'}"></div>
+                </div>
+                <p class="text-[9px] text-gray-500 mt-2 italic">At Level 2, your 3 directs must each have 3 active members.</p>
+            </div>
+
+            <p v-if="!reqData.structure_met" class="text-[10px] text-red-400 mt-2 bg-red-500/10 p-2 rounded-lg border border-red-500/20 text-center">
+                Structure requirement not met for Level {{ reqData.current_level }}.
+            </p>
+          </div>
+          <div v-else class="py-4 text-center">
+              <div class="w-4 h-4 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
           </div>
       </div>
 
@@ -145,12 +167,12 @@ function handleLogout() {
               <input v-model="amount" type="number" placeholder="Enter amount" class="amount-input" />
           </div>
           
-          <div class="restriction-msg" v-if="referralCount < 3">
-              ⚠️ You must have 3 active referrals to withdraw. (Current: {{ referralCount }})
+          <div class="restriction-msg" v-if="activeReferrals < 1">
+              ⚠️ You must have at least 1 deposited referral to withdraw.
           </div>
 
-          <button @click="requestWithdraw" :disabled="loading || referralCount < 3" class="btn-action">
-              {{ loading ? 'Processing...' : (referralCount < 3 ? 'LOCKED (Need 3 Invites)' : 'WITHDRAW NOW') }}
+          <button @click="requestWithdraw" :disabled="loading || !reqData.structure_met" class="btn-action">
+              {{ loading ? 'Processing...' : (!reqData.structure_met ? 'LOCKED (Matrix Incomplete)' : 'WITHDRAW NOW') }}
           </button>
       </div>
 

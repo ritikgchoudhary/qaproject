@@ -56,29 +56,64 @@ onMounted(() => {
 
     <BottomNav v-if="isLoggedIn && !isAgentPage" />
     
-    <!-- Global Loader Overlay -->
-    <div v-if="loadingStore.isLoading" class="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-md flex flex-col items-center justify-center transition-opacity duration-300">
-        <div class="relative w-24 h-24">
-            <!-- Pulsing Rings -->
-            <div class="absolute inset-0 rounded-full border-4 border-yellow-500/20 animate-ping"></div>
-            <div class="absolute inset-2 rounded-full border-4 border-yellow-500/40 animate-pulse"></div>
-            
-            <!-- Rotating Spinner -->
-            <div class="absolute inset-0 rounded-full border-4 border-t-yellow-500 border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
-            
-            <!-- Center Icon -->
-             <div class="absolute inset-0 flex items-center justify-center">
-                <span class="text-3xl animate-pulse">⚡</span>
-             </div>
-        </div>
-        <p class="mt-8 text-yellow-500 font-bold tracking-[0.3em] uppercase text-xs animate-pulse">Processing...</p>
+    <!-- Global Loading System -->
+    <div class="loading-system">
+        <!-- Full Screen Loader (Only if isGlobal is true) -->
+        <Transition name="fade">
+            <div v-if="loadingStore.isLoading && loadingStore.isGlobal" class="loader-overlay">
+                <div class="relative flex flex-col items-center">
+                    <!-- Clock Loader -->
+                    <div class="clock-loader"></div>
+                    
+                    <div class="mt-6 flex flex-col items-center gap-1">
+                        <p class="text-yellow-500 font-extrabold tracking-[0.4em] uppercase text-[10px] animate-pulse">Processing</p>
+                    </div>
+                </div>
+            </div>
+        </Transition>
     </div>
   </div>
 </template>
 
 <style>
-/* Global Styles */
-/* Handled in main.css */
+/* Global Transitions */
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
+/* Clock Animation */
+.clock-loader {
+  width: 44px;
+  height: 44px;
+  border: 2.5px solid #fbbf24;
+  border-radius: 50%;
+  position: relative;
+  background: transparent;
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+}
+.clock-loader::after, .clock-loader::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: #fbbf24;
+  border-radius: 10px;
+  transform-origin: center top;
+}
+.clock-loader::after {
+  width: 2px;
+  height: 16px;
+  animation: clock-spin 2s linear infinite;
+}
+.clock-loader::before {
+  width: 2px;
+  height: 12px;
+  animation: clock-spin 10s linear infinite;
+}
+
+@keyframes clock-spin {
+  0% { transform: translate(-50%, 0%) rotate(0deg); }
+  100% { transform: translate(-50%, 0%) rotate(360deg); }
+}
 </style>
 
 <style scoped>
@@ -91,11 +126,28 @@ onMounted(() => {
     position: relative;
     overflow-x: hidden;
 }
+
+/* Loading Bar removed */
+
+/* Loader Overlay */
+
+/* Loader Overlay */
+.loader-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    background: rgba(0, 0, 0, 0.15); /* High transparency */
+    backdrop-filter: blur(12px); /* Premium Blur */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
 .main-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.8rem 1.2rem;
+  padding: 0.5rem 1rem; /* Compact padding */
   
   /* Dark Theme */
   background: rgba(15, 23, 42, 0.95);
@@ -108,7 +160,7 @@ onMounted(() => {
   max-width: 480px;
   z-index: 50; /* Higher z-index */
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .logo-area { display: flex; align-items: center; gap: 10px; }
@@ -133,7 +185,7 @@ onMounted(() => {
 }
 
 .brand-logo-img {
-    height: 48px; /* Adjusted for better visibility */
+    height: 36px; /* Reduced for compact feel */
     width: auto;
     object-fit: contain;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
@@ -158,7 +210,7 @@ main {
     padding: 0;
 }
 main.with-nav {
-    padding-top: 80px; /* Space for fixed header */
-    padding-bottom: 80px; /* Space for bottom nav */
+    padding-top: 60px; /* Reduced space for fixed header */
+    padding-bottom: 70px; /* Reduced space for bottom nav */
 }
 </style>

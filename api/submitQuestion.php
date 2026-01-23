@@ -75,16 +75,17 @@ if ($correct_answer && $user_clean === $db_clean) {
         $stmt = $pdo->prepare("INSERT INTO answers (user_id, question_id, is_correct) VALUES (?, ?, 1)");
         $stmt->execute([$user_id, $question_id]);
 
-        // UNLOCK FUNDS: Locked -> Withdrawable
+        // UNLOCK FUNDS + PROFIT: Deduct stake from locked, add 2X to withdrawable
+        $total_win = $stake_amount * 2;
         $stmt = $pdo->prepare("UPDATE wallets SET locked_balance = locked_balance - ?, withdrawable_balance = withdrawable_balance + ? WHERE user_id = ?");
-        $stmt->execute([$stake_amount, $stake_amount, $user_id]);
+        $stmt->execute([$stake_amount, $total_win, $user_id]);
 
-        // Log Transaction (UNLOCK)
-        $stmt = $pdo->prepare("INSERT INTO transactions (user_id, type, amount, description) VALUES (?, 'unlock', ?, 'Deposit Unlocked: Question #$question_id')");
-        $stmt->execute([$user_id, $stake_amount]);
+        // Log Transaction (WIN)
+        $stmt = $pdo->prepare("INSERT INTO transactions (user_id, type, amount, description) VALUES (?, 'win', ?, 'Quiz Win: Question #$question_id (₹$stake_amount + Profit)')");
+        $stmt->execute([$user_id, $total_win]);
 
         $pdo->commit();
-        echo json_encode(["message" => "Correct! ₹$stake_amount unlocked to your wallet.", "success" => true]);
+        echo json_encode(["message" => "Correct! ₹$total_win added to your wallet (Stake + Profit).", "success" => true]);
     } catch (Exception $e) {
         $pdo->rollBack();
         echo json_encode(["error" => "Error processing win."]);
