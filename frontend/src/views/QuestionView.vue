@@ -80,6 +80,11 @@ const res = await api.get('/getQuestion.php')
             }
             currentQuestion.value = res.data
             quizFinished.value = false
+        } else if (res.data.deposit_required) {
+            // NEW: Level Up Deposit Limit increased
+            statusMessage.value = res.data.message
+            quizFinished.value = true
+            currentQuestion.value = null
         } else if (res.data.message) {
             statusMessage.value = res.data.message
             quizFinished.value = true
@@ -428,11 +433,18 @@ onMounted(() => {
     <!-- No More Questions / Finished -->
     <div v-else-if="quizFinished" class="results-card glass-card">
         <img src="https://img.icons8.com/3d-fluency/94/trophy.png" class="result-icon" />
-        <h2>All Done!</h2>
+        <h2 v-if="statusMessage?.includes('Deposit')">Deposit Required</h2>
+        <h2 v-else>All Done!</h2>
         <p class="final-score">{{ statusMessage || "You've completed all available questions." }}</p>
         
-        <div v-if="statusMessage && statusMessage.includes('Withdraw')">
-             <button @click="router.push('/withdraw')" class="btn-gold mt-4">Go to Withdraw</button>
+        <div v-if="statusMessage?.includes('Withdraw')">
+             <button @click="router.push('/withdraw')" class="btn-gold mt-4">GO TO WITHDRAW</button>
+        </div>
+        <div v-else-if="statusMessage?.includes('Deposit')">
+             <button @click="router.push('/deposit')" class="btn-gold mt-4">GO TO DEPOSIT</button>
+        </div>
+        <div v-else-if="statusMessage?.includes('matrix')">
+             <button @click="router.push('/agent/team')" class="btn-gold mt-4">COMPLETE SQUAD MATRIX</button>
         </div>
         <div v-else>
              <p class="sub-text">Check back later for more.</p>
