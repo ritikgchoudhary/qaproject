@@ -60,6 +60,33 @@ try {
 
     // Check unlock
     checkAndUnlockParams($pdo, $user_id);
+
+    // NEW: Trigger level-up check for upline (parent)
+    // Since this deposit makes the current user "active", the parent's level might increase.
+    $stmt = $pdo->prepare("SELECT referred_by FROM users WHERE id = ?");
+    $stmt->execute([$user_id]);
+    $parent_code = $stmt->fetchColumn();
+    if ($parent_code) {
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE referral_code = ?");
+        $stmt->execute([$parent_code]);
+        $parent_id = $stmt->fetchColumn();
+        if ($parent_id) {
+            autoLevelUp($pdo, $parent_id);
+            
+            // Also check L2 Parent
+            $stmt = $pdo->prepare("SELECT referred_by FROM users WHERE id = ?");
+            $stmt->execute([$parent_id]);
+            $l2_parent_code = $stmt->fetchColumn();
+            if ($l2_parent_code) {
+                $stmt = $pdo->prepare("SELECT id FROM users WHERE referral_code = ?");
+                $stmt->execute([$l2_parent_code]);
+                $l2_parent_id = $stmt->fetchColumn();
+                if ($l2_parent_id) {
+                    autoLevelUp($pdo, $l2_parent_id);
+                }
+            }
+        }
+    }
     
     echo json_encode(["message" => "Deposit successful (Dummy)", "success" => true]);
 } catch (Exception $e) {
