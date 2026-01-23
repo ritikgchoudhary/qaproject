@@ -38,19 +38,34 @@ if (!$question) {
     exit();
 }
 
-// Check if ALREADY Answered CORRECTLY
+// Check if ALREADY Answered CORRECTLY THE CURRENT QUESTION
 $stmt = $pdo->prepare("SELECT id FROM answers WHERE user_id = ? AND question_id = ? AND is_correct = 1");
 $stmt->execute([$user_id, $question['id']]);
 $answered = $stmt->fetchColumn();
 
 if ($answered) {
     // User answered the question for this level.
-    // They must withdraw to increase level and get next question.
+    // They must complete matrix to move to next (or if they reached max, they are done)
     echo json_encode([
-        "message" => "Level $level Completed! Withdraw your winnings to unlock the next question.", 
+        "message" => "Level $level Completed! Complete your 3x3 squad matrix to unlock the next level.", 
         "level_completed" => true
     ]);
 } else {
+    // Check if they have enough DEPOSIT for THIS level's stake
+    $stake_amount = 100 * pow(2, $level - 1);
+    $stmt = $pdo->prepare("SELECT locked_balance FROM wallets WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $balance = $stmt->fetchColumn() ?: 0;
+
+    if ($balance < $stake_amount) {
+        echo json_encode([
+            "message" => "Deposit Check: Level $level requires ₹$stake_amount deposit to play.",
+            "deposit_required" => true,
+            "required_amount" => $stake_amount
+        ]);
+        exit();
+    }
+
     // Return Question
     echo json_encode([
         "id" => $question['id'],
@@ -62,7 +77,8 @@ if ($answered) {
             $question['option_c'], 
             $question['option_d']
         ],
-        "level" => $level
+        "level" => $level,
+        "stake" => $stake_amount
     ]);
 }
 ?>

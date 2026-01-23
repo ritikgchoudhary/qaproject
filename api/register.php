@@ -48,6 +48,16 @@ if ($ref_code_input) {
     if ($referrer_data) {
         $referred_by_code = $referrer_data['referral_code'];
         $referrer_id = $referrer_data['id'];
+
+        // NEW: Check if this referrer already has 3 ACTIVE (deposited) referrals
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE referred_by = ? AND has_deposited = 1");
+        $stmt->execute([$referred_by_code]);
+        $active_count = $stmt->fetchColumn();
+
+        if ($active_count >= 3) {
+            echo json_encode(["error" => "Referral Link Expired! This user already reached the limit of 3 active referrals."]);
+            exit();
+        }
     }
 }
 

@@ -10,12 +10,31 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Fetch Level to determine amount
-$stmt = $pdo->prepare("SELECT level FROM users WHERE id = ?");
+// Fetch Level and Wallet to determine if deposit is needed
+$stmt = $pdo->prepare("
+    SELECT u.level, w.locked_balance 
+    FROM users u 
+    JOIN wallets w ON u.id = w.user_id 
+    WHERE u.id = ?
+");
 $stmt->execute([$user_id]);
-$level = $stmt->fetchColumn() ?: 1;
+$row = $stmt->fetch(PDO::FETCH_ASSOC);
+$level = $row['level'] ?: 1;
+$current_locked = $row['locked_balance'] ?: 0;
 
-$amount = 100 * pow(2, $level - 1); // Level 1: 100, Level 2: 200, Level 3: 400...
+$required_amount = 100 * pow(2, $level - 1); 
+
+// BLOCK DEPOSIT if they already have enough for this level
+if ($current_locked >= $required_amount) {
+    echo json_encode([
+        "error" => "Already Deposited! You have ₹$current_locked in your wallet for Level $level. You can play directly.", 
+        "already_deposited" => true
+    ]);
+    exit();
+}
+
+// User can only deposit if they lost money or haven't deposited yet
+$amount = $required_amount; 
 
 // Use dummy logic: Auto success
 $status = 'success';
