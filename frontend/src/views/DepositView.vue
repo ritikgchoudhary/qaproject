@@ -11,18 +11,24 @@ const message = ref('')
 const error = ref('')
 const router = useRouter()
 const amount = ref(100)
+const isAlreadyDeposited = ref(false)
 
-// Fetch latest amount
-if (userStore.user?.next_deposit_required) {
-    amount.value = userStore.user.next_deposit_required
-} else {
-    // Fallback fetch
-    userStore.fetchUser().then(() => {
-        if (userStore.user?.next_deposit_required) {
-            amount.value = userStore.user.next_deposit_required
+async function initialize() {
+    loading.value = true
+    await userStore.fetchUser()
+    if (userStore.user) {
+        amount.value = userStore.user.next_deposit_required || 100
+        
+        // Check if current locked balance is already >= required amount
+        const lockedVal = parseFloat(userStore.wallet?.locked_balance || 0)
+        if (lockedVal >= amount.value) {
+            isAlreadyDeposited.value = true
         }
-    })
+    }
+    loading.value = false
 }
+
+initialize()
 
 async function makeDeposit() {
     loading.value = true
@@ -60,10 +66,17 @@ async function makeDeposit() {
           <p class="info-text">Activates your account for withdrawals</p>
       </div>
       
-      <button @click="makeDeposit" :disabled="loading" class="btn-action">
-          {{ loading ? 'Processing...' : 'PAY ₹' + amount + ' NOW' }}
+      <button @click="makeDeposit" :disabled="loading || isAlreadyDeposited" class="btn-action">
+          <span v-if="loading">Processing...</span>
+          <span v-else-if="isAlreadyDeposited">FUNDS ALREADY ADDED</span>
+          <span v-else>PAY ₹{{ amount }} NOW</span>
       </button>
       
+       <div v-if="isAlreadyDeposited" class="glass-card mt-4 p-4 border-yellow-500/20 bg-yellow-500/10">
+           <p class="text-yellow-400 text-sm font-bold">⚠️ You already have the required funds in your wallet. You can proceed to play the quiz.</p>
+           <button @click="router.push('/dashboard')" class="mt-2 text-xs underline text-white">Go to Dashboard</button>
+       </div>
+
        <div v-if="message" class="glass-card message success">{{ message }}</div>
        <div v-if="error" class="glass-card message error">{{ error }}</div>
   </div>
