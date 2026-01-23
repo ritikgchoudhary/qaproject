@@ -26,7 +26,9 @@ const totalBalance = computed(() => {
     if (!wallet.value) return '0.00'
     const total = parseFloat(wallet.value.locked_balance || 0) + parseFloat(wallet.value.withdrawable_balance || 0)
     return total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    return total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 })
+const hasDeposited = computed(() => userStore.user?.has_deposited)
 const refLink = computed(() => `${window.location.origin}/register?ref=${myRefCode.value}`)
 
 const fetchReferrals = async (isLoadMore = false) => {
@@ -62,10 +64,7 @@ const loadMore = () => {
     fetchReferrals(true)
 }
 
-onMounted(async () => {
-    await userStore.fetchUser()
-    fetchReferrals()
-})
+
 
 function copyCode() {
     navigator.clipboard.writeText(myRefCode.value)
@@ -107,10 +106,162 @@ const squadGoalText = computed(() => {
     if (currentSquadLevel.value === 2) return "Help your squad fill their 3 slots"
     return "All squad goals completed!"
 })
+
+// Tutorial Video Logic (Dashboard)
+const showDashboardTutorial = ref(false)
+const videoEnded = ref(false)
+const videoRef = ref(null)
+const remainingTime = ref(0)
+const totalDuration = ref(0)
+const isPlaying = ref(true)
+
+// Dynamic Settings
+const tutorialSettings = ref({
+    video_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    title: 'Welcome to Pinnacle',
+    desc: 'Watch this quick video to understand how everything works.',
+    btn_text: 'Watch Full Video'
+})
+
+const siteSettings = ref({
+    name: 'Pinnacle',
+    logo: ''
+})
+
+async function fetchSettings() {
+    try {
+        const res = await axios.get('/api/getSettings.php')
+        if (res.data) {
+            siteSettings.value = {
+                name: res.data.site_name || 'Pinnacle',
+                logo: res.data.site_logo || ''
+            }
+            
+            tutorialSettings.value = {
+                video_url: res.data.tutorial_video_url || tutorialSettings.value.video_url,
+                title: res.data.tutorial_title || `Welcome to ${siteSettings.value.name}`,
+                desc: res.data.tutorial_desc || tutorialSettings.value.desc,
+                btn_text: res.data.tutorial_btn_text || tutorialSettings.value.btn_text,
+                allow_skip: res.data.allow_skip === 1 || res.data.allow_skip === '1'
+            }
+        }
+    } catch (e) {
+        console.error("Failed to load settings", e)
+    }
+}
+
+function checkDashboardTutorial() {
+    // Only show if user HAS deposited
+    if (!hasDeposited.value) return
+
+    const key = `tutorial_watched_${userStore.user.id}`
+    const hasWatched = localStorage.getItem(key)
+    
+    if (!hasWatched) {
+        showDashboardTutorial.value = true
+    }
+}
+
+function onVideoEnded() {
+    videoEnded.value = true
+    remainingTime.value = 0
+}
+
+function onTimeUpdate() {
+    if (videoRef.value) {
+        remainingTime.value = Math.ceil(videoRef.value.duration - videoRef.value.currentTime)
+    }
+}
+
+function onLoadedMetadata() {
+    if (videoRef.value) {
+        totalDuration.value = Math.ceil(videoRef.value.duration)
+        remainingTime.value = totalDuration.value
+    }
+}
+
+function togglePlay() {
+    if (videoRef.value) {
+        if (videoRef.value.paused) {
+            videoRef.value.play()
+            isPlaying.value = true
+        } else {
+            videoRef.value.pause()
+            isPlaying.value = false
+        }
+    }
+}
+
+function finishDashboardTutorial() {
+    // Mark as watched
+    const key = `tutorial_watched_${userStore.user.id}`
+    localStorage.setItem(key, 'true')
+    showDashboardTutorial.value = false
+}
+
+// Watch for user load or deposit status change
+onMounted(async () => {
+    // Parallel fetch settings & user
+    await Promise.all([userStore.fetchUser(), fetchSettings()])
+    
+    fetchReferrals()
+    
+    // Check after user data is ready
+    if(userStore.user) {
+        checkDashboardTutorial()
+    }
+})
 </script>
 
 <template>
   <div class="dashboard-wrapper">
+    <!-- Tutorial Modal (Unskippable) -->
+    <div v-if="showDashboardTutorial" class="tutorial-overlay">
+        <div class="tutorial-card">
+            <h2 class="tutorial-title">{{ tutorialSettings.title }}</h2>
+            <p class="tutorial-desc">{{ tutorialSettings.desc }}</p>
+            
+            <div class="video-wrapper" @click="togglePlay">
+                <video 
+                    ref="videoRef"
+                    :src="tutorialSettings.video_url" 
+                    autoplay 
+                    playsinline
+                    @ended="onVideoEnded"
+                    @timeupdate="onTimeUpdate"
+                    @loadedmetadata="onLoadedMetadata"
+                    class="main-video"
+                    @contextmenu.prevent
+                ></video>
+                
+                <!-- Play/Pause Overlay -->
+                <div v-if="!isPlaying" class="absolute inset-0 flex items-center justify-center bg-black/40">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-white opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+
+                <!-- Timer Overlay -->
+                <div v-if="!videoEnded" class="absolute top-3 right-3 flex items-center gap-2">
+                     <button v-if="tutorialSettings.allow_skip" @click="finishDashboardTutorial" class="bg-white/20 hover:bg-white/30 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white border border-white/10 transition-colors">
+                        Skip
+                    </button>
+                    <div class="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white border border-white/10">
+                        {{ remainingTime }}s remaining
+                    </div>
+                </div>
+            </div>
+
+            <button 
+                v-if="videoEnded"
+                @click="finishDashboardTutorial" 
+                class="btn-gold mt-6 w-full uppercase font-bold py-3 rounded-xl transition-all bg-yellow-500 hover:bg-yellow-400 text-black" 
+            >
+                Get Started
+            </button>
+        </div>
+    </div>
     <!-- Top Header -->
     <div class="top-header">
       <div class="user-info">
@@ -125,6 +276,12 @@ const squadGoalText = computed(() => {
           </div>
         </div>
       </div>
+
+      <!-- Center Logo -->
+      <div v-if="siteSettings.logo" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
+          <img :src="siteSettings.logo" class="h-8 max-w-[100px] object-contain" :alt="siteSettings.name" />
+      </div>
+
       <button class="notification-btn">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -154,8 +311,8 @@ const squadGoalText = computed(() => {
                  </span>
                  <span class="text-gray-500 text-[10px]">this week</span>
               </div>
-              <span class="text-gray-600 font-black text-xs tracking-widest opacity-50">PINNACLE</span>
-           </div>
+              <span class="text-gray-600 font-black text-xs tracking-widest opacity-50">{{ siteSettings.name }}</span>
+            </div>
         </div>
       </div>
 
@@ -387,5 +544,53 @@ const squadGoalText = computed(() => {
 }
 .animate-gradient-x {
     animation: gradient-x 3s ease infinite;
+}
+
+/* Tutorial Overlay */
+.tutorial-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.95);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    backdrop-filter: blur(10px);
+}
+.tutorial-card {
+    background: #111;
+    border: 1px solid #fbbf24;
+    border-radius: 20px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 0 50px rgba(251, 191, 36, 0.2);
+}
+.tutorial-title {
+    color: #fbbf24;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+.tutorial-desc {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+.video-wrapper {
+    background: black;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.1);
+    aspect-ratio: 16/9;
+}
+.main-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 </style>

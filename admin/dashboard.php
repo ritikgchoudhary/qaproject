@@ -8,9 +8,11 @@ require 'db_connect.php';
 
 // Stats
 $total_users = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
-$total_deposits = $pdo->query("SELECT SUM(amount) FROM deposits WHERE status = 'success'")->fetchColumn() ?: 0;
+$total_deposits = $pdo->query("SELECT SUM(amount) FROM deposits WHERE status IN ('success', 'approved', 'completed')")->fetchColumn() ?: 0;
+$total_withdrawals = $pdo->query("SELECT SUM(amount) FROM withdraws WHERE status = 'approved'")->fetchColumn() ?: 0;
 $pending_withdrawals = $pdo->query("SELECT COUNT(*) FROM withdraws WHERE status = 'pending'")->fetchColumn();
 $total_commissions = $pdo->query("SELECT SUM(amount) FROM agent_commissions")->fetchColumn() ?: 0;
+$system_liability = $pdo->query("SELECT SUM(withdrawable_balance + locked_balance) FROM wallets")->fetchColumn() ?: 0;
 
 // Recent Pending Withdrawals
 $stmt = $pdo->prepare("
@@ -57,31 +59,45 @@ $latest_users = $pdo->query("SELECT * FROM users ORDER BY created_at DESC LIMIT 
         </header>
         
         <!-- Stats Grid -->
-        <h2 class="text-xl font-bold mb-6 text-gray-400">Overview</h2>
+        <!-- Stats Grid -->
+        <h2 class="text-xl font-bold mb-6 text-gray-400">System Overview</h2>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-            <!-- Card 1 -->
-            <div class="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl -mr-4 -mt-4"></div>
+            <!-- Card 1: Users -->
+            <div class="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-all">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl -mr-4 -mt-4 group-hover:bg-blue-500/20 transition-all"></div>
                 <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Total Users</p>
-                <p class="text-3xl font-black text-white"><?= number_format($total_users) ?></p>
+                <div class="flex items-end gap-2">
+                    <p class="text-3xl font-black text-white"><?= number_format($total_users) ?></p>
+                    <span class="text-[10px] text-green-500 font-bold mb-1.5">Active</span>
+                </div>
             </div>
-            <!-- Card 2 -->
-            <div class="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden">
-                 <div class="absolute top-0 right-0 w-24 h-24 bg-green-500/10 rounded-full blur-2xl -mr-4 -mt-4"></div>
+            
+            <!-- Card 2: Deposits -->
+            <div class="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-all">
+                 <div class="absolute top-0 right-0 w-24 h-24 bg-green-500/10 rounded-full blur-2xl -mr-4 -mt-4 group-hover:bg-green-500/20 transition-all"></div>
                 <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Total Deposits</p>
                 <p class="text-3xl font-black text-green-400">₹<?= number_format($total_deposits, 2) ?></p>
             </div>
-            <!-- Card 3 -->
-            <div class="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden">
-                 <div class="absolute top-0 right-0 w-24 h-24 bg-red-500/10 rounded-full blur-2xl -mr-4 -mt-4"></div>
-                <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Pending Withdrawals</p>
-                <p class="text-3xl font-black text-red-400"><?= number_format($pending_withdrawals) ?></p>
+
+            <!-- Card 3: Withdrawals -->
+            <div class="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-all">
+                 <div class="absolute top-0 right-0 w-24 h-24 bg-red-500/10 rounded-full blur-2xl -mr-4 -mt-4 group-hover:bg-red-500/20 transition-all"></div>
+                <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Total Withdrawals</p>
+                <div class="flex items-end justify-between">
+                    <p class="text-3xl font-black text-red-400">₹<?= number_format($total_withdrawals, 2) ?></p>
+                    <?php if($pending_withdrawals > 0): ?>
+                        <a href="withdrawals.php?status=pending" class="px-2 py-1 bg-red-500 text-white text-[10px] font-bold rounded animate-pulse">
+                            <?= $pending_withdrawals ?> Pending
+                        </a>
+                    <?php endif; ?>
+                </div>
             </div>
-             <!-- Card 4 -->
-            <div class="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden">
-                 <div class="absolute top-0 right-0 w-24 h-24 bg-yellow-500/10 rounded-full blur-2xl -mr-4 -mt-4"></div>
-                <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Total Commissions</p>
-                <p class="text-3xl font-black text-yellow-400">₹<?= number_format($total_commissions, 2) ?></p>
+            
+             <!-- Card 4: Liability -->
+            <div class="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-all">
+                 <div class="absolute top-0 right-0 w-24 h-24 bg-yellow-500/10 rounded-full blur-2xl -mr-4 -mt-4 group-hover:bg-yellow-500/20 transition-all"></div>
+                <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">User Holdings (Liability)</p>
+                <p class="text-3xl font-black text-yellow-400">₹<?= number_format($system_liability, 2) ?></p>
             </div>
         </div>
 

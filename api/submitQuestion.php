@@ -90,6 +90,10 @@ if ($correct_answer && $user_clean === $db_clean) {
         $stmt = $pdo->prepare("UPDATE wallets SET withdrawable_balance = withdrawable_balance + ? WHERE user_id = ?");
         $stmt->execute([$stake_amount, $user_id]);
 
+        // Log Transaction (WIN)
+        $stmt = $pdo->prepare("INSERT INTO transactions (user_id, type, amount, description) VALUES (?, 'win', ?, 'Quiz Win: Question #$question_id')");
+        $stmt->execute([$user_id, $stake_amount]);
+
         $pdo->commit();
         echo json_encode(["message" => "शानदार! आपका पैसा 2X हो गया है (₹$stake_amount जोड़े गए)!", "success" => true]);
     } catch (Exception $e) {
@@ -108,6 +112,10 @@ if ($correct_answer && $user_clean === $db_clean) {
         // Deduct Stake
         $stmt = $pdo->prepare("UPDATE wallets SET withdrawable_balance = withdrawable_balance - ? WHERE user_id = ?");
         $stmt->execute([$stake_amount, $user_id]);
+        
+        // Log Transaction (LOSS)
+        $stmt = $pdo->prepare("INSERT INTO transactions (user_id, type, amount, description) VALUES (?, 'loss', ?, 'Quiz Loss: Question #$question_id')");
+        $stmt->execute([$user_id, $stake_amount]);
 
         $pdo->commit();
         echo json_encode(["message" => "ओह नहीं! गलत जवाब। आपके ₹$stake_amount कम हो गए हैं।", "success" => false]);

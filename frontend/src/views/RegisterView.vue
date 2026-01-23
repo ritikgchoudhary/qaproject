@@ -9,13 +9,35 @@ const router = useRouter()
 const userStore = useUserStore()
 
 const name = ref('')
-const mobile = ref('')
+const mobile = ref('') // Confirmed Backend uses 'mobile'
 const countryCode = ref('+91')
 const password = ref('')
-const referralCode = ref(route.query.ref || '') // Auto-fill from URL
+const referralCode = ref(route.query.ref || '') 
 const error = ref('')
 const success = ref('')
 const loading = ref(false)
+
+const siteSettings = ref({
+    name: 'Pinnacle',
+    logo: '/digiearn_logo_new.png' // Default fallback
+})
+
+async function fetchSettings() {
+    try {
+        const res = await axios.get('/api/getSettings.php')
+        if (res.data) {
+            siteSettings.value = {
+                name: res.data.site_name || siteSettings.value.name,
+                logo: res.data.site_logo || siteSettings.value.logo
+            }
+        }
+    } catch (e) {
+        console.error("Settings fetch failed", e)
+    }
+}
+
+// Fetch immediately
+fetchSettings()
 
 async function handleRegister() {
     error.value = ''
@@ -31,7 +53,7 @@ async function handleRegister() {
         
         if (res.data.success) {
             success.value = 'Registration Successful! Logging in...'
-            // Auto Login
+            // Auto Login - using mobile
             await userStore.login(mobile.value, password.value)
             router.push('/dashboard')
         } else {
@@ -49,54 +71,54 @@ async function handleRegister() {
 
 <template>
 <div class="register-wrapper">
+    <!-- Background (Dark Premium) -->
+    <div class="bg-glow"></div>
+
     <!-- Top Nav -->
     <div class="top-nav-bar">
-        <button class="nav-btn back-btn" @click="router.push('/')">
-            <img src="https://img.icons8.com/ios-filled/50/ffffff/left.png" alt="Back"/>
-        </button>
-
-        <!-- Logo moved to Header -->
-        <img src="https://img.icons8.com/3d-fluency/94/trophy.png" class="header-logo" alt="Logo"/>
+        <div class="nav-left">
+            <button class="nav-btn back-btn" @click="router.push('/')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <img :src="siteSettings.logo" class="header-logo" :alt="siteSettings.name"/>
+        </div>
 
         <div class="lang-pill">
-            <img src="https://img.icons8.com/color/48/usa.png" class="flag-icon" alt="EN"/>
             <span class="lang-text">EN</span>
         </div>
     </div>
 
     <div class="content-container">
-        <!-- Brand Section Removed -->
-
-
-        <!-- Register Form Area -->
+        <!-- Register Area -->
         <div class="register-area">
             <h2 class="form-header">Create Account</h2>
+            <p class="form-subtext">Join our community and start earning today.</p>
             
             <form @submit.prevent="handleRegister" class="form-body">
                 
                 <!-- Name -->
                 <div class="input-field">
                     <div class="icon-slot">
-                        <img src="https://img.icons8.com/3d-fluency/94/user-male-circle.png" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     </div>
                     <input type="text" v-model="name" placeholder="Full Name" maxlength="20" required />
                 </div>
 
-                <!-- Mobile Number -->
+                <!-- Mobile (Replaces Email) -->
                 <div class="input-field">
                     <div class="icon-slot">
-                        <img src="https://img.icons8.com/3d-fluency/94/phone.png" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                     </div>
                     <select v-model="countryCode" class="phone-prefix-select">
                         <option value="+91">+91</option>
                     </select>
-                    <input type="tel" v-model="mobile" placeholder="Mobile Number" maxlength="15" required />
+                    <input type="tel" v-model="mobile" placeholder="Mobile Number" required />
                 </div>
 
                 <!-- Password -->
                 <div class="input-field">
                     <div class="icon-slot">
-                        <img src="https://img.icons8.com/3d-fluency/94/lock.png" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                     </div>
                     <input type="password" v-model="password" placeholder="Password" required />
                 </div>
@@ -104,14 +126,14 @@ async function handleRegister() {
                 <!-- Referral Code -->
                 <div class="input-field" :class="{ 'ref-active': referralCode }">
                     <div class="icon-slot">
-                        <img src="https://img.icons8.com/3d-fluency/94/gift.png" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
                     </div>
                     <input type="text" v-model="referralCode" placeholder="Referral Code (Optional)" />
                     <span v-if="referralCode" class="ref-badge">APPLIED</span>
                 </div>
 
                 <button type="submit" class="cta-btn" :disabled="loading">
-                    <span v-if="!loading">REGISTER ACCOUNT</span>
+                    <span v-if="!loading">CREATE ACCOUNT</span>
                     <span v-else class="loader"></span>
                 </button>
             </form>
@@ -153,6 +175,13 @@ async function handleRegister() {
 </template>
 
 <style scoped>
+/* Theme Colors */
+:root {
+    --gold: #FBBF24;
+    --dark-bg: #050505;
+    --input-bg: rgba(255, 255, 255, 0.05);
+}
+
 /* Layout */
 .register-wrapper {
     min-height: 100vh;
@@ -160,13 +189,30 @@ async function handleRegister() {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: radial-gradient(circle at top, #1e293b 0%, #020617 100%);
+    background-color: #000;
+    background-image: radial-gradient(circle at 50% 0%, #291F08 0%, #050505 100%);
+    color: white;
+    font-family: 'Inter', sans-serif;
     position: relative;
+    overflow: hidden;
+}
+
+/* Subtle Glow Background */
+.bg-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(251, 191, 36, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .top-nav-bar {
     width: 100%;
-    max-width: 480px;
+    max-width: 500px;
     padding: 1.5rem;
     display: flex;
     justify-content: space-between;
@@ -176,17 +222,21 @@ async function handleRegister() {
     z-index: 20;
 }
 .nav-btn {
-    background: rgba(255,255,255,0.1);
-    border: none;
-    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
     width: 40px; height: 40px;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer;
     backdrop-filter: blur(5px);
     transition: 0.2s;
 }
-.nav-btn:hover { background: rgba(255,255,255,0.2); }
-.nav-btn img { width: 20px; height: 20px; }
+.nav-btn:hover { background: rgba(255,255,255,0.1); }
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
 .lang-pill {
     background: rgba(255, 255, 255, 0.05);
@@ -196,13 +246,14 @@ async function handleRegister() {
     align-items: center;
     gap: 8px;
     backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.05);
 }
 .flag-icon { width: 18px; height: 18px; }
 .lang-text { font-size: 0.8rem; font-weight: 700; color: #cbd5e1; }
 
 .content-container {
     width: 100%;
-    max-width: 480px; 
+    max-width: 500px; 
     z-index: 10;
     flex: 1;
     display: flex;
@@ -211,33 +262,33 @@ async function handleRegister() {
     padding: 80px 1.5rem 2rem;
 }
 
-.header-logo {
-    width: 40px; 
-    height: 40px; 
-    object-fit: contain;
-}
+.text-gold { color: #FBBF24; }
+.text-white { color: white; }
 
-/* Brand Styles Removed */
-
-/* Register Area (No Card) */
-.register-area {
-    width: 100%;
-}
+/* Register Area */
+.register-area { width: 100%; }
 
 .form-header {
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: 800;
-    margin-bottom: 2rem;
+    margin-bottom: 0.5rem;
     text-align: center;
-    color: #f1f5f9;
-    text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    color: #fff;
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
+}
+.form-subtext {
+    text-align: center;
+    color: #A3A3A3;
+    font-size: 0.95rem;
+    margin-bottom: 2.5rem;
 }
 
 .form-body { display: flex; flex-direction: column; gap: 1rem; }
 
 /* Inputs */
 .input-field {
-    background: rgba(255, 255, 255, 0.05);
+    background: #1A1A1A;
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 16px;
     display: flex;
     align-items: center;
@@ -245,81 +296,63 @@ async function handleRegister() {
     transition: all 0.3s ease;
 }
 .input-field:focus-within {
-    background: rgba(255, 255, 255, 0.08);
+    border-color: #FBBF24;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.15);
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2);
+    background: #1F1F1F;
 }
-.icon-slot { width: 48px; display: flex; justify-content: center; opacity: 0.8; }
-.icon-slot img { width: 22px; height: 22px; }
+
+.icon-slot { width: 48px; display: flex; justify-content: center; color: #FBBF24; }
 .input-field input {
     flex: 1;
     background: transparent;
     border: none;
-    padding: 14px 14px 14px 0;
+    padding: 16px 16px 16px 0;
     color: white;
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 500;
     outline: none;
 }
-.input-field input::placeholder { color: #64748b; }
-
-.phone-prefix-select {
-    background: transparent;
-    border: none;
-    color: #cbd5e1;
-    font-weight: 700;
-    margin-right: 4px;
-    padding: 0 4px;
-    outline: none;
-    cursor: pointer;
-    appearance: none; /* simple look */
-    -webkit-appearance: none;
-    font-size: 1rem;
-}
-.phone-prefix-select option {
-    background: #1e293b;
-    color: white;
-}
+.input-field input::placeholder { color: #525252; }
 
 .ref-active {
-    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-color: rgba(251, 191, 36, 0.5);
     background: rgba(251, 191, 36, 0.05);
 }
 .ref-badge {
     font-size: 0.65rem;
-    background: #fbbf24;
+    background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%);
     color: #000;
     padding: 4px 8px;
     border-radius: 6px;
     font-weight: 800;
     margin-right: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 /* Button */
-/* Button */
 .cta-btn {
     width: 100%;
-    background: #fbbf24;
+    background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%);
     color: #000;
     border: none;
-    padding: 15px;
-    border-radius: 12px;
-    font-weight: 700;
+    padding: 16px;
+    border-radius: 16px;
+    font-weight: 800;
     font-size: 1rem;
     cursor: pointer;
     margin-top: 1.5rem;
-    transition: background-color 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(251, 191, 36, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
-.cta-btn:hover { 
-    background: #f59e0b; 
+.cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px -5px rgba(251, 191, 36, 0.4);
 }
-.cta-btn:active {
-    background: #d97706;
-}
-.cta-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
+.cta-btn:active { transform: scale(0.98); }
+.cta-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
 /* Footer / Divider */
 .divider { 
@@ -334,15 +367,21 @@ async function handleRegister() {
     background: rgba(255,255,255,0.1); 
 }
 .divider span { 
-    color: #64748b; 
+    color: #525252; 
     font-size: 0.8rem; 
     font-weight: 600;
 }
 
-.login-link { text-align: center; font-size: 0.95rem; color: #94a3b8; }
-.login-link a { color: #fbbf24; text-decoration: none; font-weight: 700; margin-left: 5px; }
+.login-link { text-align: center; font-size: 0.95rem; color: #A3A3A3; }
+.login-link a { color: #FBBF24; text-decoration: none; font-weight: 700; margin-left: 5px; }
+.login-link a:hover { text-decoration: underline; color: #fff; }
 
 /* Loader */
+.header-logo {
+    height: 48px; 
+    width: auto;
+    object-fit: contain;
+}
 .loader {
     width: 20px; height: 20px;
     border: 3px solid #000;
@@ -369,8 +408,8 @@ async function handleRegister() {
     max-width: 400px;
     z-index: 100;
 }
-.error-toast { background: #ef4444; color: white; }
-.success-toast { background: #10b981; color: white; }
+.error-toast { background: #EF4444; color: white; box-shadow: 0 20px 25px -5px rgba(239, 68, 68, 0.3); }
+.success-toast { background: #10B981; color: white; box-shadow: 0 20px 25px -5px rgba(16, 185, 129, 0.3); }
 .toast-icon { font-size: 1.2rem; }
 .toast-content { flex: 1; }
 .toast-title { font-weight: 800; font-size: 0.9rem; margin-bottom: 2px; }

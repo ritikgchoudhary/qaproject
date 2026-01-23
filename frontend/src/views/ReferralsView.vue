@@ -58,7 +58,7 @@ function shareLink() {
           <p class="section-label">YOUR INVITE CODE</p>
           <div class="code-box">
               <span class="code-text">{{ myCode || '...' }}</span>
-<img src="https://img.icons8.com/3d-fluency/94/share.png" width="36" class="copy-icon" />
+<img src="https://img.icons8.com/3d-fluency/94/documents.png" width="36" class="copy-icon" />
           </div>
           <p class="tap-hint">Tap to Copy Code</p>
       </div>
@@ -66,7 +66,7 @@ function shareLink() {
       <!-- Share Actions -->
       <div class="share-grid">
           <button @click="shareLink" class="share-btn">
-              <img src="https://img.icons8.com/3d-fluency/94/share.png" width="32" />
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
               <span>Share Link</span>
           </button>
           <button @click="showQr = !showQr" class="share-btn">
@@ -268,5 +268,5 @@ function shareLink() {
 .badge-active { background: rgba(74, 222, 128, 0.1); color: #4ade80; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; border: 1px solid rgba(74, 222, 128, 0.2); }
 
 .empty-state { text-align: center; padding: 3rem; color: #94a3b8; border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; margin-top: 2rem; }
-.empty-icon { width: 64px; margin-bottom: 1rem; opacity: 0.5; }
+.empty-icon { width: 64px; margin: 0 auto 1rem auto; opacity: 0.5; }
 </style>

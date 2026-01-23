@@ -2,15 +2,37 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../stores/user'
+import axios from 'axios'
 
 const userStore = useUserStore()
 const router = useRouter()
 
-const mobile = ref('')
-const countryCode = ref('+91')
+const mobile = ref('') // Changed back from email to mobile
 const password = ref('')
 const error = ref('')
 const loading = ref(false)
+
+const siteSettings = ref({
+    name: 'Pinnacle',
+    logo: '/digiearn_logo_new.png' // Default fallback
+})
+
+async function fetchSettings() {
+    try {
+        const res = await axios.get('/api/getSettings.php')
+        if (res.data) {
+            siteSettings.value = {
+                name: res.data.site_name || siteSettings.value.name,
+                logo: res.data.site_logo || siteSettings.value.logo
+            }
+        }
+    } catch (e) {
+        console.error("Settings fetch failed", e)
+    }
+}
+
+// Fetch immediately
+fetchSettings()
 
 async function handleLogin() {
     error.value = ''
@@ -24,7 +46,6 @@ async function handleLogin() {
         }
     } catch (e) {
          error.value = e.response?.data?.error || e.message || 'Login failed'
-         // Auto-clear error after 3 seconds for a smoother feel
          setTimeout(() => error.value = '', 4000)
     } finally {
         loading.value = false
@@ -34,10 +55,15 @@ async function handleLogin() {
 
 <template>
 <div class="login-wrapper">
-    <!-- Top Nav with Logo -->
+    <!-- Background (Dark Premium) -->
+    <div class="bg-glow"></div>
+
+    <!-- Top Nav -->
     <div class="top-nav">
-        <!-- Logo here -->
-        <img src="https://img.icons8.com/3d-fluency/94/trophy.png" class="header-logo" alt="Logo"/>
+        <!-- Logo -->
+        <div class="logo-container">
+            <img :src="siteSettings.logo" :alt="siteSettings.name" class="main-logo-img" />
+        </div>
 
         <div class="lang-pill">
             <img src="https://img.icons8.com/color/48/usa.png" class="flag-icon" alt="EN"/>
@@ -46,26 +72,26 @@ async function handleLogin() {
     </div>
 
     <div class="content-container">
-        <!-- Brand Section Removed -->
-
-        <!-- Login Area -->
+        <!-- Login Area (No Card, just straight inputs like Old UI) -->
         <div class="login-area">
             <h2 class="form-header">Sign In</h2>
+            <p class="form-subtext">Welcome back! Please login to continue.</p>
             
             <form @submit.prevent="handleLogin" class="form-body">
+                <!-- Mobile Input (Replaces Email) -->
                 <div class="input-field">
                     <div class="icon-slot">
-                        <img src="https://img.icons8.com/3d-fluency/94/phone.png" />
+                        <!-- Phone Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                     </div>
-                     <select v-model="countryCode" class="phone-prefix-select">
-                        <option value="+91">+91</option>
-                    </select>
                     <input type="tel" v-model="mobile" placeholder="Mobile Number" required />
                 </div>
 
+                <!-- Password Input -->
                 <div class="input-field">
                     <div class="icon-slot">
-                        <img src="https://img.icons8.com/3d-fluency/94/lock.png" />
+                        <!-- Lock Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                     </div>
                     <input type="password" v-model="password" placeholder="Password" required />
                 </div>
@@ -76,11 +102,11 @@ async function handleLogin() {
                         <span class="checkmark"></span>
                         <span class="label-text">Remember me</span>
                     </label>
-                    <a href="#" class="forgot-link">Forgot?</a>
+                    <a href="#" class="forgot-link">Forgot Password?</a>
                 </div>
 
                 <button type="submit" class="cta-btn" :disabled="loading">
-                    <span v-if="!loading">LOGIN TO DASHBOARD</span>
+                    <span v-if="!loading">LOGIN</span>
                     <span v-else class="loader"></span>
                 </button>
             </form>
@@ -112,6 +138,13 @@ async function handleLogin() {
 </template>
 
 <style scoped>
+/* Theme Colors */
+:root {
+    --gold: #FBBF24;
+    --dark-bg: #050505;
+    --input-bg: rgba(255, 255, 255, 0.05);
+}
+
 /* Page Layout */
 .login-wrapper {
     min-height: 100vh;
@@ -119,30 +152,49 @@ async function handleLogin() {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: radial-gradient(circle at top, #1e293b 0%, #020617 100%);
+    background-color: #000;
+    background-image: radial-gradient(circle at 50% 0%, #291F08 0%, #050505 100%);
+    color: white;
+    font-family: 'Inter', sans-serif;
     position: relative;
+    overflow: hidden;
+}
+
+/* Subtle Glow Background - Enhanced */
+.bg-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(251, 191, 36, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .top-nav {
     width: 100%;
-    max-width: 480px;
+    max-width: 500px;
     padding: 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: absolute; /* Keep it absolute to overlay or stay top */
+    position: absolute;
     top: 0;
     z-index: 20;
 }
 
-.header-logo {
-    width: 40px; 
-    height: 40px; 
-    object-fit: contain;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+.logo-container {
+    display: flex;
+    align-items: center;
 }
+.main-logo-img {
+    height: 48px;
+    width: auto;
+    object-fit: contain;
+}
+.text-gold { color: #FBBF24; }
 
 .lang-pill {
     background: rgba(255, 255, 255, 0.05);
@@ -152,97 +204,81 @@ async function handleLogin() {
     align-items: center;
     gap: 8px;
     backdrop-filter: blur(10px);
-    margin-left: auto; /* Push to right */
+    border: 1px solid rgba(255,255,255,0.05);
 }
 .flag-icon { width: 18px; height: 18px; }
 .lang-text { font-size: 0.8rem; font-weight: 700; color: #cbd5e1; }
 
 .content-container {
     width: 100%;
-    max-width: 480px; 
+    max-width: 500px; 
     z-index: 10;
-    flex: 1; /* Take remaining height */
+    flex: 1; 
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Vertically center */
-    padding: 80px 1.5rem 2rem; /* Add top padding to account for nav, and side padding */
+    justify-content: center;
+    padding: 80px 1.5rem 2rem;
 }
 
-/* Brand Section Removed Styles */
-
-/* Login Area (No Card) */
-.login-area {
-    width: 100%;
-}
+/* Login Area (No Card, Pure Inputs) */
+.login-area { width: 100%; }
 
 .form-header {
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: 800;
-    margin-bottom: 2rem;
+    margin-bottom: 0.5rem;
     text-align: center;
-    color: #f1f5f9;
-    text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    color: #fff;
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
+}
+.form-subtext {
+    text-align: center;
+    color: #A3A3A3;
+    font-size: 0.95rem;
+    margin-bottom: 2.5rem;
 }
 
 .form-body {
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 1.25rem;
 }
 
-/* Inputs */
+/* Premium Inputs */
 .input-field {
-    background: rgba(255, 255, 255, 0.05); /* Slightly lighter than card */
-    border-radius: 16px;
+    background: #1A1A1A;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; /* Rounded corners like old UI */
     display: flex;
     align-items: center;
     padding: 4px;
     transition: all 0.3s ease;
 }
 .input-field:focus-within {
-    background: rgba(255, 255, 255, 0.08);
+    border-color: #FBBF24;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.15);
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2);
-    /* Focus glow instead of border */
+    background: #1F1F1F;
 }
 
 .icon-slot {
     width: 48px;
     display: flex;
     justify-content: center;
-    opacity: 0.8;
+    color: #FBBF24; /* Gold Icons */
 }
-.icon-slot img { width: 22px; height: 22px; }
 
 .input-field input {
     flex: 1;
     background: transparent;
     border: none;
-    padding: 14px 14px 14px 0;
+    padding: 16px 16px 16px 0;
     color: white;
     font-size: 1rem;
     font-weight: 500;
     outline: none;
 }
-.input-field input::placeholder { color: #64748b; }
-
-.phone-prefix-select {
-    background: transparent;
-    border: none;
-    color: #cbd5e1;
-    font-weight: 700;
-    margin-right: 4px;
-    padding: 0 4px;
-    outline: none;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    font-size: 1rem;
-}
-.phone-prefix-select option {
-    background: #1e293b;
-    color: white;
-}
+.input-field input::placeholder { color: #525252; }
 
 /* Options */
 .options-row {
@@ -250,55 +286,57 @@ async function handleLogin() {
     justify-content: space-between;
     align-items: center;
     font-size: 0.9rem;
-    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
 }
 .custom-checkbox {
-    display: flex; align-items: center; gap: 8px; cursor: pointer; color: #94a3b8; user-select: none;
+    display: flex; align-items: center; gap: 8px; cursor: pointer; color: #A3A3A3; user-select: none;
 }
 .custom-checkbox input { display: none; }
 .checkmark {
     width: 18px; height: 18px;
-    background: rgba(255,255,255,0.1);
+    background: #1A1A1A;
+    border: 1px solid rgba(255,255,255,0.2);
     border-radius: 5px;
     position: relative;
     transition: 0.2s;
 }
-.custom-checkbox input:checked ~ .checkmark { background: #fbbf24; }
+.custom-checkbox input:checked ~ .checkmark { 
+    background: #FBBF24; 
+    border-color: #FBBF24; 
+}
 .custom-checkbox input:checked ~ .checkmark:after {
     content: ''; position: absolute; left: 6px; top: 2px;
     width: 4px; height: 9px;
     border: solid black; border-width: 0 2px 2px 0;
     transform: rotate(45deg);
 }
-.forgot-link { color: #fbbf24; text-decoration: none; font-weight: 600; font-size: 0.85rem; }
+.forgot-link { color: #FBBF24; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
 
-/* Button */
-/* Button */
+/* Gold Button */
 .cta-btn {
     width: 100%;
-    background: #fbbf24;
+    background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%);
     color: #000;
     border: none;
-    padding: 15px;
-    border-radius: 12px;
-    font-weight: 700;
+    padding: 16px;
+    border-radius: 16px;
+    font-weight: 800;
     font-size: 1rem;
     cursor: pointer;
     margin-top: 1rem;
-    transition: background-color 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(251, 191, 36, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
-.cta-btn:hover { 
-    background: #f59e0b; 
+.cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px -5px rgba(251, 191, 36, 0.4);
 }
-.cta-btn:active {
-    background: #d97706;
-}
-.cta-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
+.cta-btn:active { transform: scale(0.98); }
+.cta-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
-/* Loader Snippet */
+/* Loader */
 .loader {
     width: 20px; height: 20px;
     border: 3px solid #000;
@@ -314,7 +352,7 @@ async function handleLogin() {
     display: flex; 
     align-items: center; 
     gap: 1rem; 
-    margin: 1.5rem 0; 
+    margin: 2rem 0; 
 }
 .line { 
     flex: 1; 
@@ -322,29 +360,29 @@ async function handleLogin() {
     background: rgba(255,255,255,0.1); 
 }
 .divider span { 
-    color: #64748b; 
+    color: #525252; 
     font-size: 0.8rem; 
     font-weight: 600;
 }
 
-.register-link { text-align: center; font-size: 0.95rem; color: #94a3b8; }
-.register-link a { color: #fbbf24; text-decoration: none; font-weight: 700; margin-left: 5px; }
-.register-link a:hover { text-decoration: underline; }
+.register-link { text-align: center; font-size: 0.95rem; color: #A3A3A3; }
+.register-link a { color: #FBBF24; text-decoration: none; font-weight: 700; margin-left: 5px; }
+.register-link a:hover { text-decoration: underline; color: #fff; }
 
-/* Error Toast Animation */
+/* Error Toast */
 .error-toast {
     position: absolute;
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
-    background: #ef4444;
+    background: #EF4444;
     color: white;
     padding: 1rem 1.5rem;
     border-radius: 12px;
     display: flex;
     align-items: center;
     gap: 12px;
-    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+    box-shadow: 0 20px 25px -5px rgba(239, 68, 68, 0.3);
     width: 90%;
     max-width: 400px;
     z-index: 100;

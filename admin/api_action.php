@@ -17,6 +17,66 @@ if (isset($_GET['get_user'])) {
     exit();
 }
 
+// Handle GET for fetching users list (Infinite Scroll)
+if (isset($_GET['action']) && $_GET['action'] === 'get_users') {
+    try {
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = 20;
+        $offset = ($page - 1) * $limit;
+        $search = $_GET['search'] ?? '';
+
+        $where_clause = "";
+        $params = [];
+        if ($search) {
+            $where_clause = "WHERE users.name LIKE ? OR users.email LIKE ?";
+            $params = ["%$search%", "%$search%"];
+        }
+
+        // Fix ambition column names by adding table prefixes
+        $sql = "SELECT users.*, wallets.withdrawable_balance as wallet_balance 
+                FROM users 
+                LEFT JOIN wallets ON users.id = wallets.user_id 
+                $where_clause 
+                ORDER BY users.id DESC 
+                LIMIT $limit OFFSET $offset";
+                
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode(['users' => $users]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit();
+}
+
+// Handle GET for fetching deposits list (Infinite Scroll)
+if (isset($_GET['action']) && $_GET['action'] === 'get_deposits') {
+    try {
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = 20;
+        $offset = ($page - 1) * $limit;
+
+        $sql = "SELECT d.*, u.name, u.email 
+                FROM deposits d 
+                JOIN users u ON d.user_id = u.id 
+                ORDER BY d.created_at DESC 
+                LIMIT $limit OFFSET $offset";
+                
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $deposits = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode(['deposits' => $deposits]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit();
+}
+
 if ($data['action'] === 'edit_user') {
     $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ?, role = ? WHERE id = ?");
     $stmt->execute([$data['name'], $data['email'], $data['role'], $data['id']]);
@@ -63,6 +123,11 @@ if ($data['action'] === 'adjust_wallet') {
 
     $stmt = $pdo->prepare("UPDATE wallets SET withdrawable_balance = withdrawable_balance $sign ? WHERE user_id = ?");
     $stmt->execute([$amount, $uid]);
+
+    // Log Transaction
+    $desc = "Manual Adjustment by Admin: " . ucfirst($op) . "ed $amount";
+    $stmt = $pdo->prepare("INSERT INTO transactions (user_id, type, amount, description) VALUES (?, 'admin_adjustment', ?, ?)");
+    $stmt->execute([$uid, $amount, $desc]);
 
     echo json_encode(["success" => true]);
     exit();

@@ -52,6 +52,12 @@ async function fetchQuestion() {
         return // Stop here, template will handle UI
     }
     
+    // Check Tutorial (Unskippable)
+    if (!checkTutorialStatus()) {
+        loading.value = false
+        return
+    }
+
     // Also fetch history on load
     fetchHistory()
 
@@ -155,11 +161,96 @@ function restartQuiz() {
     fetchQuestion()
 }
 
-onMounted(fetchQuestion)
+// Tutorial Video State
+const showTutorial = ref(false)
+const videoEnded = ref(false)
+const videoRef = ref(null)
+
+// Dynamic Settings
+const tutorialSettings = ref({
+    video_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    title: 'How It Works',
+    desc: 'Watch the full video to unlock your quiz.',
+    btn_text: 'WATCH TO CONTINUE'
+})
+
+async function fetchSettings() {
+    try {
+        const res = await axios.get('/api/getSettings.php')
+        if (res.data) {
+            tutorialSettings.value = {
+                video_url: res.data.tutorial_video_url || tutorialSettings.value.video_url,
+                title: res.data.tutorial_title || tutorialSettings.value.title,
+                desc: res.data.tutorial_desc || tutorialSettings.value.desc,
+                btn_text: res.data.tutorial_btn_text || tutorialSettings.value.btn_text,
+            }
+        }
+    } catch (e) {
+        console.error("Failed to load settings", e)
+    }
+}
+
+function checkTutorialStatus() {
+    const key = `tutorial_watched_${userStore.user.id}`
+    const hasWatched = localStorage.getItem(key)
+    
+    if (!hasWatched) {
+        showTutorial.value = true
+        return false // Block access
+    }
+    return true // Allow access
+}
+
+function onVideoEnded() {
+    videoEnded.value = true
+}
+
+function finishTutorial() {
+    const key = `tutorial_watched_${userStore.user.id}`
+    localStorage.setItem(key, 'true')
+    showTutorial.value = false
+    // Resume loading question
+    fetchQuestion()
+}
+
+onMounted(() => {
+    fetchSettings().then(() => {
+        // Initial fetch handled by logic inside fetchQuestion
+        fetchQuestion()
+    })
+})
 </script>
 
 <template>
 <div class="page-container">
+    <!-- Tutorial Modal (Unskippable) -->
+    <div v-if="showTutorial" class="tutorial-overlay">
+        <div class="tutorial-card">
+            <h2 class="tutorial-title">{{ tutorialSettings.title }}</h2>
+            <p class="tutorial-desc">{{ tutorialSettings.desc }}</p>
+            
+            <div class="video-wrapper">
+                <video 
+                    ref="videoRef"
+                    :src="tutorialSettings.video_url" 
+                    autoplay 
+                    playsinline
+                    @ended="onVideoEnded"
+                    class="main-video"
+                    @contextmenu.prevent
+                ></video>
+                <!-- Cover controls with invisible div if needed, but removing 'controls' attr is enough -->
+            </div>
+
+            <button 
+                v-if="videoEnded"
+                @click="finishTutorial" 
+                class="btn-gold mt-6 w-full"
+            >
+                START PLAYING
+            </button>
+        </div>
+    </div>
     <div class="header-section">
         <h1 class="page-title">Daily Quiz</h1>
         <div class="score-badge">
@@ -459,5 +550,53 @@ onMounted(fetchQuestion)
     line-clamp: 1; 
     -webkit-box-orient: vertical;  
     overflow: hidden;
+}
+
+/* Tutorial Overlay */
+.tutorial-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.95);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    backdrop-filter: blur(10px);
+}
+.tutorial-card {
+    background: #111;
+    border: 1px solid #fbbf24;
+    border-radius: 20px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 0 50px rgba(251, 191, 36, 0.2);
+}
+.tutorial-title {
+    color: #fbbf24;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+.tutorial-desc {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+.video-wrapper {
+    background: black;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.1);
+    aspect-ratio: 16/9;
+}
+.main-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 </style>

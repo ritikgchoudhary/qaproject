@@ -38,7 +38,9 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
     const userStore = useUserStore()
 
-    if (!userStore.user && to.meta.requiresAuth) {
+    // Check user status on every page load if not loaded, 
+    // to handle redirects for 'login'/'register' if already logged in.
+    if (!userStore.user) {
         try {
             await userStore.fetchUser()
         } catch (e) { }
