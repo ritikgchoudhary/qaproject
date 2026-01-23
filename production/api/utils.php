@@ -83,5 +83,48 @@ function distributeAgentCommissions($pdo, $depositor_id, $amount) {
         $child_id = $parent['id'];
     }
 }
+
+// --- AUTO LEVEL UP LOGIC --- //
+
+function getActiveDirects($pdo, $uid) {
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE referred_by = (SELECT referral_code FROM users WHERE id = ?) AND has_deposited = 1");
+    $stmt->execute([$uid]);
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+
+function checkTeamStructure($pdo, $uid, $target_depth, $current_depth) {
+    $directs = getActiveDirects($pdo, $uid);
+    if (count($directs) < 3) return false;
+    if ($current_depth >= $target_depth) return true;
+    foreach ($directs as $child_id) {
+        if (!checkTeamStructure($pdo, $child_id, $target_depth, $current_depth + 1)) return false;
+    }
+    return true;
+}
+
+function autoLevelUp($pdo, $user_id) {
+    $stmt = $pdo->prepare("SELECT level FROM users WHERE id = ?");
+    $stmt->execute([$user_id]);
+    $current_level = (int)($stmt->fetchColumn() ?: 1);
+
+    $new_level = $current_level;
+    
+    // Check for next level(s)
+    // We check up to level 5 for now (or loop until fail)
+    for ($check_lvl = $current_level; $check_lvl <= 5; $check_lvl++) {
+        if (checkTeamStructure($pdo, $user_id, $check_lvl, 1)) {
+            $new_level = $check_lvl + 1;
+        } else {
+            break;
+        }
+    }
+
+    if ($new_level > $current_level) {
+        $stmt = $pdo->prepare("UPDATE users SET level = ? WHERE id = ?");
+        $stmt->execute([$new_level, $user_id]);
+        return $new_level;
+    }
+    return $current_level;
+}
 ?>
 

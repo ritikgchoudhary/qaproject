@@ -7,7 +7,12 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+require_once 'utils.php';
+
 $user_id = $_SESSION['user_id'];
+
+// Auto Level Up check whenever user profile is fetched
+autoLevelUp($pdo, $user_id);
 
 $stmt = $pdo->prepare("SELECT id, name, email, referral_code, referred_by, level, role, bank_account_number, bank_ifsc_code, bank_holder_name FROM users WHERE id = ?");
 $stmt->execute([$user_id]);

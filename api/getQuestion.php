@@ -8,7 +8,12 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+require_once 'utils.php';
+
 $user_id = $_SESSION['user_id'];
+
+// Sync level with current referrals before serving question
+autoLevelUp($pdo, $user_id);
 
 // Get User Level
 $stmt = $pdo->prepare("SELECT level FROM users WHERE id = ?");

@@ -9,6 +9,10 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
+require_once 'utils.php';
+
+// Sync level with current team structure
+autoLevelUp($pdo, $user_id);
 
 // Fetch user level
 $stmt = $pdo->prepare("SELECT level, referral_code FROM users WHERE id = ?");

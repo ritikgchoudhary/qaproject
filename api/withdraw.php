@@ -97,11 +97,8 @@ try {
         $stmt = $pdo->prepare("INSERT INTO withdraws (user_id, amount, status) VALUES (?, ?, 'pending')");
         $stmt->execute([$user_id, $amount]);
 
-        // LEVEL UP: "Jab User First Withdraw kar le tab Uske Limit Of Depost 1X Se bahegi"
-        // Meaning: After withdrawing, they move to next level.
-        // LEVEL UP: Increment level. Handle NULL by treating it as 1.
-        $stmt = $pdo->prepare("UPDATE users SET level = COALESCE(level, 1) + 1 WHERE id = ?");
-        $stmt->execute([$user_id]);
+        // LEVEL UP is now handled automatically via utils.php / autoLevelUp() 
+        // throughout the user journey.
 
         // Also lock them out again until they deposit the NEW amount?
         // Actually, prompt says "Limit of Deposit ... badhegi".
