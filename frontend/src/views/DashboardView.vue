@@ -356,7 +356,19 @@ onMounted(async () => {
           <p class="greeting">Hello, Champion 👋</p>
           <div class="name-row">
             <h2 class="username text-base">{{ user?.name?.split(' ')[0] || 'User' }}</h2>
-            <span class="level-badge pt-0.5">LVL 01</span>
+            <span class="level-badge pt-0.5">LVL {{ user?.level || 1 }}</span>
+            <span v-if="hasDeposited" class="status-badge verified">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-2 w-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                Payment Verified
+            </span>
+            <span v-else class="status-badge pending">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-2 w-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+                Payment Pending
+            </span>
           </div>
         </div>
       </div>
@@ -587,6 +599,15 @@ onMounted(async () => {
 }
 .level-badge {
     @apply text-[9px] font-bold bg-yellow-500/10 text-yellow-500 px-1.5 py-0.5 rounded border border-yellow-500/20;
+}
+.status-badge {
+    @apply text-[8px] font-black uppercase px-2 py-0.5 rounded flex items-center gap-1 border;
+}
+.status-badge.verified {
+    @apply bg-emerald-500/10 text-emerald-500 border-emerald-500/20;
+}
+.status-badge.pending {
+    @apply bg-rose-500/10 text-rose-500 border-rose-500/20;
 }
 
 .notification-btn {
