@@ -205,6 +205,29 @@
         </div>
       </div>
       
+      <!-- Telegram Community Link Section -->
+      <div class="relative overflow-hidden rounded-2xl bg-[#1a1a1a] border border-white/5 p-5">
+        <div class="flex items-center justify-between mb-3">
+             <div class="flex items-center gap-2">
+                 <div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.48-1.02-2.4-1.63-1.06-.69-.37-1.07.23-1.68.14-.14 2.56-2.35 2.6-2.54 0-.02.01-.1-.04-.14-.05-.04-.13-.02-.19.01-.08.03-1.36.86-3.84 2.54-.36.25-.69.37-1 .36-.33-.01-.96-.18-1.44-.33-.58-.19-1.04-.29-1-.62.03-.17.25-.34.69-.52 2.7-1.17 4.5-1.95 5.4-2.28 2.56-.93 3.09-1.09 3.44-1.09.08 0 .25.02.36.11.09.08.12.18.13.27 0 .1 0 .22 0 .22z"/></svg>
+                 </div>
+                 <h3 class="text-white font-bold text-sm">Your Community Link</h3>
+             </div>
+             <button @click="saveTelegramLink" :disabled="savingLink" class="text-[10px] font-bold bg-blue-500 hover:bg-blue-400 text-white px-3 py-1.5 rounded-lg transition-all disabled:opacity-50">
+                 {{ savingLink ? 'Saving...' : 'Save' }}
+             </button>
+        </div>
+        <p class="text-xs text-gray-500 mb-3 leading-relaxed">Add your Telegram Channel/Group link. Your team members will see this on their dashboard to join your community.</p>
+        <div class="relative">
+             <input type="text" v-model="agentData.telegram_link" placeholder="https://t.me/your_channel" class="w-full bg-[#111] border border-white/10 rounded-xl pl-4 pr-4 py-3 text-sm text-blue-400 focus:outline-none focus:border-blue-500/50 transition-colors placeholder-gray-700" />
+        </div>
+        <p v-if="saveLinkSuccess" class="text-[10px] text-green-400 mt-2 flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+            Link saved successfully!
+        </p>
+      </div>
+
       <!-- Team Modal -->
       <div v-if="showTeamModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/90 backdrop-blur-sm p-0 sm:p-4 transition-all">
          <div class="bg-[#121212] border-t sm:border border-white/10 rounded-t-3xl sm:rounded-3xl w-full max-w-lg h-[90vh] sm:h-[80vh] flex flex-col relative shadow-2xl">
@@ -436,6 +459,11 @@ const fetchAgentData = async () => {
       if (agentData.value.usdt_address) {
           withdrawDetails.value.usdt_address = agentData.value.usdt_address;
       }
+      
+      // Ensure telegram_link is set
+      if (response.data.agent_data.telegram_link) {
+          agentData.value.telegram_link = response.data.agent_data.telegram_link;
+      }
     } else {
       error.value = response.data.message || "Failed to load data";
     }
@@ -444,7 +472,7 @@ const fetchAgentData = async () => {
       error.value = "Access restricted to Agents only.";
     } else if (err.response?.status === 401) {
       agentData.value = { 
-         name: '', email: '', referral_code: '', total_earnings: 0, commissions: [], 
+         name: '', email: '', referral_code: '', telegram_link: '', total_earnings: 0, commissions: [], 
          stats: { level1:{}, level2:{}, level3:{} }, team_list: [] 
       };
       router.push('/login');
@@ -456,6 +484,31 @@ const fetchAgentData = async () => {
     loading.value = false;
   }
 };
+
+const savingLink = ref(false);
+const saveLinkSuccess = ref(false);
+
+const saveTelegramLink = async () => {
+    if (!agentData.value.telegram_link) return;
+    
+    savingLink.value = true;
+    saveLinkSuccess.value = false;
+    
+    try {
+        const response = await axios.post('/api/update_profile.php', {
+            telegram_link: agentData.value.telegram_link
+        });
+        
+        if (response.data.status === 'success') {
+            saveLinkSuccess.value = true;
+            setTimeout(() => saveLinkSuccess.value = false, 3000);
+        }
+    } catch (e) {
+        console.error("Failed to save link", e);
+    } finally {
+        savingLink.value = false;
+    }
+}
 
 const copyLink = async () => {
   if (!referralLink.value) return;

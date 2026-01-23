@@ -1,26 +1,48 @@
 <script setup>
 import { RouterLink, RouterView, useRouter, useRoute } from 'vue-router'
 import { useUserStore } from './stores/user'
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import BottomNav from './components/BottomNav.vue'
+import { useLoadingStore } from './stores/loading'
+import axios from 'axios'
 
 const userStore = useUserStore()
+const loadingStore = useLoadingStore()
 const router = useRouter()
 const route = useRoute()
 const isLoggedIn = computed(() => !!userStore.user)
 const isAgentPage = computed(() => route.name === 'agent_dashboard')
 
+const siteLogo = ref('/digiearn_logo_new.png')
+
+async function fetchGlobalSettings() {
+    try {
+        const res = await axios.get('/api/getSettings.php')
+        if (res.data && res.data.site_logo) {
+            siteLogo.value = res.data.site_logo
+        }
+    } catch (e) {
+        console.error("Global settings fetch failed", e)
+    }
+}
+
 async function logout() {
   await userStore.logout()
   router.push('/')
 }
+
+onMounted(() => {
+    if (isLoggedIn.value) {
+        fetchGlobalSettings()
+    }
+})
 </script>
 
 <template>
   <div class="app-container">
     <header class="main-header" v-if="isLoggedIn && !isAgentPage">
       <div class="logo-area">
-          <img src="/digiearn_logo_new.png" alt="DigiEarn" class="brand-logo-img" />
+          <img :src="siteLogo" alt="Site Logo" class="brand-logo-img" />
       </div>
       
       <button @click="logout" class="icon-btn-logout">
@@ -33,6 +55,24 @@ async function logout() {
     </main>
 
     <BottomNav v-if="isLoggedIn && !isAgentPage" />
+    
+    <!-- Global Loader Overlay -->
+    <div v-if="loadingStore.isLoading" class="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-md flex flex-col items-center justify-center transition-opacity duration-300">
+        <div class="relative w-24 h-24">
+            <!-- Pulsing Rings -->
+            <div class="absolute inset-0 rounded-full border-4 border-yellow-500/20 animate-ping"></div>
+            <div class="absolute inset-2 rounded-full border-4 border-yellow-500/40 animate-pulse"></div>
+            
+            <!-- Rotating Spinner -->
+            <div class="absolute inset-0 rounded-full border-4 border-t-yellow-500 border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
+            
+            <!-- Center Icon -->
+             <div class="absolute inset-0 flex items-center justify-center">
+                <span class="text-3xl animate-pulse">⚡</span>
+             </div>
+        </div>
+        <p class="mt-8 text-yellow-500 font-bold tracking-[0.3em] uppercase text-xs animate-pulse">Processing...</p>
+    </div>
   </div>
 </template>
 

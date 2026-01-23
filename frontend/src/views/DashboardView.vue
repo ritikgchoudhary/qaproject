@@ -125,7 +125,7 @@ const tutorialSettings = ref({
 
 const siteSettings = ref({
     name: 'Pinnacle',
-    logo: ''
+    logo: '/digiearn_logo_new.png'
 })
 
 async function fetchSettings() {
@@ -134,7 +134,7 @@ async function fetchSettings() {
         if (res.data) {
             siteSettings.value = {
                 name: res.data.site_name || 'Pinnacle',
-                logo: res.data.site_logo || ''
+                logo: res.data.site_logo || '/digiearn_logo_new.png'
             }
             
             tutorialSettings.value = {
@@ -200,21 +200,123 @@ function finishDashboardTutorial() {
 }
 
 // Watch for user load or deposit status change
+const isLoading = ref(true)
+const referrerTelegram = ref(null)
+
+const fetchReferrerInfo = async () => {
+    try {
+        const res = await axios.get('/api/get_referrer_info.php')
+        if (res.data.status === 'success' && res.data.telegram_link) {
+            referrerTelegram.value = res.data.telegram_link
+        }
+    } catch (e) {
+        console.error("Failed to fetch referrer info", e)
+    }
+}
+
+const openTelegram = () => {
+    if (referrerTelegram.value) {
+        window.open(referrerTelegram.value, '_blank')
+    }
+}
+
+const showCommunityPopup = ref(false)
+
+const checkCommunityPopup = () => {
+    const seen = localStorage.getItem(`community_popup_u${userStore.user.id}`)
+    if (!seen && referrerTelegram.value) {
+        // Show after a slight delay for better UX
+        setTimeout(() => {
+            showCommunityPopup.value = true
+        }, 1500)
+    }
+}
+
+const closeCommunityPopup = (forever = true) => {
+    showCommunityPopup.value = false
+    if (forever && userStore.user) {
+        localStorage.setItem(`community_popup_u${userStore.user.id}`, 'true')
+    }
+}
+
+const joinCommunityFromPopup = () => {
+    openTelegram()
+    closeCommunityPopup(true)
+}
+
 onMounted(async () => {
-    // Parallel fetch settings & user
-    await Promise.all([userStore.fetchUser(), fetchSettings()])
-    
-    fetchReferrals()
-    
-    // Check after user data is ready
-    if(userStore.user) {
-        checkDashboardTutorial()
+    isLoading.value = true
+    try {
+        // Parallel fetch settings & user
+        await Promise.all([userStore.fetchUser(), fetchSettings(), fetchReferrerInfo()])
+        
+        await fetchReferrals()
+        
+        // Check after user data and referrer info is ready
+        if(userStore.user) {
+            checkDashboardTutorial()
+            checkCommunityPopup()
+        }
+    } catch (e) {
+        console.error("Dashboard load failed", e)
+    } finally {
+        // Small delay for smooth transition
+        setTimeout(() => {
+            isLoading.value = false
+        }, 800)
     }
 })
 </script>
 
 <template>
   <div class="dashboard-wrapper">
+    <!-- Screen Loader -->
+    <div v-if="isLoading" class="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md flex flex-col items-center justify-center">
+        <div class="relative w-20 h-20">
+            <!-- Pulsing Rings -->
+            <div class="absolute inset-0 rounded-full border-4 border-yellow-500/20 animate-ping"></div>
+            <div class="absolute inset-2 rounded-full border-4 border-yellow-500/40 animate-pulse"></div>
+            
+            <!-- Rotating Spinner -->
+            <div class="absolute inset-0 rounded-full border-4 border-t-yellow-500 border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
+            
+            <!-- Center Logo/Icon -->
+             <div class="absolute inset-0 flex items-center justify-center">
+                <img v-if="siteSettings.logo" :src="siteSettings.logo" class="w-8 h-8 object-contain" />
+                <span v-else class="text-2xl">⚡</span>
+             </div>
+        </div>
+        <p class="mt-6 text-yellow-500 font-bold tracking-[0.3em] uppercase text-xs animate-pulse">Loading...</p>
+    </div>
+
+    <!-- Community Join Popup -->
+    <div v-if="showCommunityPopup" class="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md transition-all">
+        <div class="bg-[#121212] border border-[#0088cc]/30 rounded-3xl w-full max-w-sm relative overflow-hidden shadow-2xl animate-fade-in-up">
+            <!-- decorative bg -->
+            <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-[#0088cc]/20 to-transparent"></div>
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-[#0088cc]/20 rounded-full blur-3xl"></div>
+
+            <div class="relative z-10 p-8 flex flex-col items-center text-center">
+                <div class="w-20 h-20 rounded-full bg-[#0088cc] flex items-center justify-center shadow-lg shadow-[#0088cc]/40 mb-6 ring-4 ring-[#0088cc]/20 animate-bounce-slow">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.48-1.02-2.4-1.63-1.06-.69-.37-1.07.23-1.68.14-.14 2.56-2.35 2.6-2.54 0-.02.01-.1-.04-.14-.05-.04-.13-.02-.19.01-.08.03-1.36.86-3.84 2.54-.36.25-.69.37-1 .36-.33-.01-.96-.18-1.44-.33-.58-.19-1.04-.29-1-.62.03-.17.25-.34.69-.52 2.7-1.17 4.5-1.95 5.4-2.28 2.56-.93 3.09-1.09 3.44-1.09.08 0 .25.02.36.11.09.08.12.18.13.27 0 .1 0 .22 0 .22z"/></svg>
+                </div>
+                
+                <h3 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">Join The Squad!</h3>
+                <p class="text-sm text-gray-400 mb-8 leading-relaxed">
+                    Connect with your team leader and other members for exclusive updates & support.
+                </p>
+
+                <button @click="joinCommunityFromPopup" class="w-full py-3.5 bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 active:scale-95 transition-all uppercase tracking-wider mb-3">
+                    Join Community Now
+                </button>
+                
+                <button @click="closeCommunityPopup(true)" class="text-xs font-bold text-gray-500 hover:text-white transition-colors py-2">
+                    Skip for now
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Tutorial Modal (Unskippable) -->
     <div v-if="showDashboardTutorial" class="tutorial-overlay">
         <div class="tutorial-card">
@@ -262,9 +364,11 @@ onMounted(async () => {
             </button>
         </div>
     </div>
-    <!-- Top Header -->
-    <div class="top-header">
-      <div class="user-info">
+    <!-- Main Content -->
+    <div class="content-scroll">
+      
+      <!-- User Info Row -->
+      <div class="user-info w-full flex items-center gap-3 mb-2">
         <div class="avatar-circle">
           <img src="https://img.icons8.com/3d-fluency/94/user-male-circle.png" alt="User" />
         </div>
@@ -272,26 +376,11 @@ onMounted(async () => {
           <p class="greeting">Hello, Champion 👋</p>
           <div class="name-row">
             <h2 class="username">{{ user?.name?.split(' ')[0] || 'User' }}</h2>
-            <span class="level-badge">LVL 01</span>
+            <span class="level-badge pt-0.5">LVL 01</span>
           </div>
         </div>
       </div>
 
-      <!-- Center Logo -->
-      <div v-if="siteSettings.logo" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
-          <img :src="siteSettings.logo" class="h-8 max-w-[100px] object-contain" :alt="siteSettings.name" />
-      </div>
-
-      <button class="notification-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-        </svg>
-      </button>
-    </div>
-
-    <!-- Main Content -->
-    <div class="content-scroll">
-      
       <!-- Total Balance Card -->
       <div class="earning-card">
         <div class="card-glow"></div>
@@ -373,6 +462,20 @@ onMounted(async () => {
 
 
 
+
+      <!-- Join Community Card (Visible if parent agent has link) -->
+      <div v-if="referrerTelegram" class="mb-6 relative overflow-hidden rounded-2xl bg-[#0088cc]/10 border border-[#0088cc]/20 p-5 cursor-pointer hover:bg-[#0088cc]/20 transition-colors group" @click="openTelegram">
+         <div class="flex items-center gap-4 relative z-10">
+             <div class="w-12 h-12 rounded-full bg-[#0088cc] flex items-center justify-center shadow-lg shadow-[#0088cc]/30 group-hover:scale-110 transition-transform">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.48-1.02-2.4-1.63-1.06-.69-.37-1.07.23-1.68.14-.14 2.56-2.35 2.6-2.54 0-.02.01-.1-.04-.14-.05-.04-.13-.02-.19.01-.08.03-1.36.86-3.84 2.54-.36.25-.69.37-1 .36-.33-.01-.96-.18-1.44-.33-.58-.19-1.04-.29-1-.62.03-.17.25-.34.69-.52 2.7-1.17 4.5-1.95 5.4-2.28 2.56-.93 3.09-1.09 3.44-1.09.08 0 .25.02.36.11.09.08.12.18.13.27 0 .1 0 .22 0 .22z"/></svg>
+             </div>
+             <div>
+                 <h3 class="text-white font-bold text-lg leading-tight">Join Community</h3>
+                 <p class="text-[#0088cc] text-xs font-medium">Get support & updates from your team leader.</p>
+             </div>
+         </div>
+         <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-[#0088cc]/20 rounded-full blur-2xl"></div>
+      </div>
 
       <!-- Referral Team Section -->
       <div class="referral-section mt-6">
