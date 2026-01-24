@@ -33,7 +33,7 @@ const hasDeposited = computed(() => userStore.user?.has_deposited)
 const refLink = computed(() => `${window.location.origin}/register?ref=${myRefCode.value}`)
 const isAlreadyDeposited = computed(() => {
     if (!userStore.user || !userStore.wallet) return false
-    const required = 100 * Math.pow(2, (userStore.user.level || 1) - 1)
+    const required = parseFloat(userStore.user.next_deposit_required || 100)
     const currentLocked = parseFloat(userStore.wallet.locked_balance || 0)
     return currentLocked >= required
 })
