@@ -12,6 +12,9 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 
+// Set global axios defaults
+axios.defaults.withCredentials = true;
+
 // Initialize loading store (must be after pinia is active)
 const loadingStore = useLoadingStore()
 
