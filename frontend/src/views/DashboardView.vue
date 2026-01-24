@@ -31,6 +31,12 @@ const totalBalance = computed(() => {
 })
 const hasDeposited = computed(() => userStore.user?.has_deposited)
 const refLink = computed(() => `${window.location.origin}/register?ref=${myRefCode.value}`)
+const isAlreadyDeposited = computed(() => {
+    if (!userStore.user || !userStore.wallet) return false
+    const required = 100 * Math.pow(2, (userStore.user.level || 1) - 1)
+    const currentLocked = parseFloat(userStore.wallet.locked_balance || 0)
+    return currentLocked >= required
+})
 
 const fetchReferrals = async (isLoadMore = false) => {
     if (loadingReferrals.value) return
@@ -399,14 +405,17 @@ onMounted(async () => {
 
       <!-- Action Buttons -->
       <div class="grid grid-cols-2 gap-4">
-        <router-link to="/deposit" class="group relative overflow-hidden bg-[#111] border border-white/10 rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all active:scale-95 hover:bg-[#161616]">
+        <router-link to="/deposit" :class="{'pointer-events-none opacity-80': isAlreadyDeposited}" class="group relative overflow-hidden bg-[#111] border border-white/10 rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all active:scale-95 hover:bg-[#161616]">
            <div class="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-           <div class="w-10 h-10 bg-green-500/10 rounded-full flex items-center justify-center border border-green-500/20 group-hover:bg-green-500/20 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+           <div class="w-10 h-10 rounded-full flex items-center justify-center border transition-colors" :class="isAlreadyDeposited ? 'bg-yellow-500/10 border-yellow-500/20' : 'bg-green-500/10 border-green-500/20 group-hover:bg-green-500/20'">
+              <svg v-if="!isAlreadyDeposited" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
+              <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
            </div>
-           <span class="font-bold text-sm text-gray-200">Deposit</span>
+           <span class="font-bold text-sm" :class="isAlreadyDeposited ? 'text-yellow-500' : 'text-gray-200'">{{ isAlreadyDeposited ? 'Funded' : 'Deposit' }}</span>
         </router-link>
 
         <router-link to="/withdraw" class="group relative overflow-hidden bg-[#111] border border-white/10 rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all active:scale-95 hover:bg-[#161616]">
