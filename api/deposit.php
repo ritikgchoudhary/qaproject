@@ -52,9 +52,12 @@ try {
     $stmt = $pdo->prepare("UPDATE users SET has_deposited = 1 WHERE id = ?");
     $stmt->execute([$user_id]);
 
-    // Distribute Agent Commissions
+    // Distribute Agent Commissions (Percentage based)
     distributeAgentCommissions($pdo, $user_id, $amount);
     
+    // NEW: Check for "Full Tree" Completion Bonus (₹30 for Agent)
+    // If this deposit completes a 3-member tree for the parent
+    checkAndDistributeTreeBonus($pdo, $user_id);
     
     $pdo->commit();
 

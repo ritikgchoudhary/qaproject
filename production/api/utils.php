@@ -126,5 +126,56 @@ function autoLevelUp($pdo, $user_id) {
     }
     return $current_level;
 }
+
+function checkAndDistributeTreeBonus($pdo, $new_active_user_id) {
+    // 1. Get the parent of the user who just deposited
+    $stmt = $pdo->prepare("SELECT referred_by FROM users WHERE id = ?");
+    $stmt->execute([$new_active_user_id]);
+    $parent_code = $stmt->fetchColumn();
+    
+    if (!$parent_code) return;
+
+    $stmt = $pdo->prepare("SELECT id, tree_bonus_distributed FROM users WHERE referral_code = ?");
+    $stmt->execute([$parent_code]);
+    $parent = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$parent || $parent['tree_bonus_distributed']) return;
+
+    // 2. Check if this parent now has 3 active directs
+    $directs = getActiveDirects($pdo, $parent['id']);
+    if (count($directs) >= 3) {
+        // TREE IS COMPLETE!
+        // 3. Mark as distributed so we don't pay again for this node
+        $stmt = $pdo->prepare("UPDATE users SET tree_bonus_distributed = 1 WHERE id = ?");
+        $stmt->execute([$parent['id']]);
+
+        // 4. Go up and pay AGENTS in the chain
+        $commission_amount = 30.00;
+        $child_id = $parent['id'];
+        
+        // Go up 5 levels for tree bonus
+        for ($depth = 1; $depth <= 5; $depth++) {
+            $stmt = $pdo->prepare("SELECT referred_by FROM users WHERE id = ?");
+            $stmt->execute([$child_id]);
+            $upline_code = $stmt->fetchColumn();
+            if (!$upline_code) break;
+
+            $stmt = $pdo->prepare("SELECT id, role FROM users WHERE referral_code = ?");
+            $stmt->execute([$upline_code]);
+            $upline = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$upline) break;
+
+            if ($upline['role'] === 'agent') {
+                // Give ₹30 Bonus
+                $stmt = $pdo->prepare("INSERT INTO agent_commissions (agent_id, from_user_id, amount, level, commission_type) VALUES (?, ?, ?, ?, 'tree_bonus')");
+                $stmt->execute([$upline['id'], $parent['id'], $commission_amount, $depth]);
+
+                $stmt = $pdo->prepare("INSERT INTO wallets (user_id, withdrawable_balance) VALUES (?, ?) ON DUPLICATE KEY UPDATE withdrawable_balance = withdrawable_balance + ?");
+                $stmt->execute([$upline['id'], $commission_amount, $commission_amount]);
+            }
+            $child_id = $upline['id'];
+        }
+    }
+}
 ?>
 
