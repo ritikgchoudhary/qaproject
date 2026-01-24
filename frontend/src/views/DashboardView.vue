@@ -33,10 +33,16 @@ const hasDeposited = computed(() => userStore.user?.has_deposited)
 const refLink = computed(() => `${window.location.origin}/register?ref=${myRefCode.value}`)
 const isAlreadyDeposited = computed(() => {
     if (!userStore.user || !userStore.wallet) return false
+    
+    // IF CURRENT LEVEL IS ALREADY WON, no need for deposit on this level
+    if (userStore.user.current_level_completed) return true
+
     const required = parseFloat(userStore.user.next_deposit_required || 100)
     const currentLocked = parseFloat(userStore.wallet.locked_balance || 0)
     return currentLocked >= required
 })
+
+const isLevelDone = computed(() => userStore.user?.current_level_completed)
 
 const fetchReferrals = async (isLoadMore = false) => {
     if (loadingReferrals.value) return
@@ -411,11 +417,14 @@ onMounted(async () => {
               <svg v-if="!isAlreadyDeposited" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
-              <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :class="isLevelDone ? 'text-blue-500' : 'text-yellow-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path v-if="!isLevelDone" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
            </div>
-           <span class="font-bold text-sm" :class="isAlreadyDeposited ? 'text-yellow-500' : 'text-gray-200'">{{ isAlreadyDeposited ? 'Funded' : 'Deposit' }}</span>
+           <span class="font-bold text-sm" :class="isAlreadyDeposited ? (isLevelDone ? 'text-blue-500' : 'text-yellow-500') : 'text-gray-200'">
+               {{ isLevelDone ? 'Level Done' : (isAlreadyDeposited ? 'Funded' : 'Deposit') }}
+           </span>
         </router-link>
 
         <router-link to="/withdraw" class="group relative overflow-hidden bg-[#111] border border-white/10 rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all active:scale-95 hover:bg-[#161616]">
