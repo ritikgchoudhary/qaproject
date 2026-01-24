@@ -39,11 +39,16 @@ async function handleLogin() {
     error.value = ''
     loadingStore.startLoading(true) // Show premium overlay for login
     try {
-        await userStore.login(mobile.value, password.value) 
-        if (userStore.user.role === 'agent') {
-            router.push('/agent')
+        const success = await userStore.login(mobile.value, password.value) 
+        if (success && userStore.user) {
+            if (userStore.user.role === 'agent') {
+                router.push('/agent')
+            } else {
+                router.push('/dashboard')
+            }
         } else {
-            router.push('/dashboard')
+            error.value = 'Invalid mobile or password'
+            setTimeout(() => error.value = '', 4000)
         }
     } catch (e) {
          error.value = e.response?.data?.error || e.message || 'Login failed'
