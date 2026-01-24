@@ -35,8 +35,25 @@ if ($user) {
     // Level 1: 100
     // Level 2: 200 (Increases by 1X/100)
     // Level 3: 300
-    $user['current_level'] = $user['level'] ?? 1;
-    $user['next_deposit_required'] = $user['current_level'] * 100;
+    $user['current_level'] = (int)($user['level'] ?? 1);
+    // 2X Logic: Level 1: 100, Level 2: 200, Level 3: 400, Level 4: 800
+    $user['next_deposit_required'] = 100 * pow(2, $user['current_level'] - 1);
+
+    // Check if current level is already answered correctly
+    $offset = (int)($user['current_level'] - 1);
+    $stmt = $pdo->prepare("SELECT id FROM questions ORDER BY id ASC LIMIT 1 OFFSET :offset");
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+    $curr_q_id = $stmt->fetchColumn();
+    
+    $user['current_level_completed'] = false;
+    if ($curr_q_id) {
+        $stmt = $pdo->prepare("SELECT id FROM answers WHERE user_id = ? AND question_id = ? AND is_correct = 1");
+        $stmt->execute([$user_id, $curr_q_id]);
+        if ($stmt->fetchColumn()) {
+            $user['current_level_completed'] = true;
+        }
+    }
 
     echo json_encode(["user" => $user, "wallet" => $wallet]);
 } else {
