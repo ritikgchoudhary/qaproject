@@ -1,0 +1,444 @@
+<script setup>
+import { ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useUserStore } from '../stores/user'
+import axios from 'axios'
+
+const route = useRoute()
+const router = useRouter()
+const userStore = useUserStore()
+
+const name = ref('')
+const mobile = ref('') // Confirmed Backend uses 'mobile'
+const countryCode = ref('+91')
+const password = ref('')
+const showPassword = ref(false)
+const referralCode = ref(route.query.ref || '') 
+const error = ref('')
+const success = ref('')
+const loading = ref(false)
+
+const siteSettings = ref({
+    name: 'Pinnacle',
+    logo: '/digiearn_logo_new.png' // Default fallback
+})
+
+async function fetchSettings() {
+    try {
+        const res = await axios.get('/api/getSettings.php')
+        if (res.data) {
+            siteSettings.value = {
+                name: res.data.site_name || siteSettings.value.name,
+                logo: res.data.site_logo || siteSettings.value.logo
+            }
+        }
+    } catch (e) {
+        console.error("Settings fetch failed", e)
+    }
+}
+
+// Fetch immediately
+fetchSettings()
+
+async function handleRegister() {
+    error.value = ''
+    success.value = ''
+    loading.value = true
+    try {
+        const res = await axios.post('/api/register.php', {
+            name: name.value,
+            mobile: mobile.value,
+            password: password.value,
+            referral_code: referralCode.value
+        })
+        
+        if (res.data.success) {
+            success.value = 'Registration Successful! Logging in...'
+            // Auto Login - using mobile
+            await userStore.login(mobile.value, password.value)
+            router.push('/dashboard')
+        } else {
+             if (res.data.error) error.value = res.data.error;
+             setTimeout(() => error.value = '', 4000)
+        }
+    } catch (e) {
+        error.value = e.response?.data?.error || 'Registration failed'
+        setTimeout(() => error.value = '', 4000)
+    } finally {
+        loading.value = false
+    }
+}
+</script>
+
+<template>
+<div class="register-wrapper">
+    <!-- Background (Dark Premium) -->
+    <div class="bg-glow"></div>
+
+    <!-- Top Nav -->
+    <div class="top-nav-bar">
+        <div class="nav-left">
+            <button class="nav-btn back-btn" @click="router.push('/')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <img :src="siteSettings.logo" class="header-logo" :alt="siteSettings.name"/>
+        </div>
+
+        <div class="lang-pill">
+            <span class="lang-text">EN</span>
+        </div>
+    </div>
+
+    <div class="content-container">
+        <!-- Register Area -->
+        <div class="register-area">
+            <h2 class="form-header">Create Account</h2>
+            <p class="form-subtext">Join our community and start earning today.</p>
+            
+            <form @submit.prevent="handleRegister" class="form-body">
+                
+                <!-- Name -->
+                <div class="input-field">
+                    <div class="icon-slot">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                    <input type="text" v-model="name" placeholder="Full Name" maxlength="20" required />
+                </div>
+
+                <!-- Mobile (Replaces Email) -->
+                <div class="input-field">
+                    <div class="icon-slot">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </div>
+                    <select v-model="countryCode" class="phone-prefix-select">
+                        <option value="+91">+91</option>
+                    </select>
+                    <input type="tel" v-model="mobile" placeholder="Mobile Number" required />
+                </div>
+
+                <!-- Password -->
+                <div class="input-field">
+                    <div class="icon-slot">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </div>
+                    <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Password" required />
+                    <button type="button" @click="showPassword = !showPassword" class="password-toggle-btn">
+                        <svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                </div>
+
+                <!-- Referral Code -->
+                <div class="input-field" :class="{ 'ref-active': referralCode }">
+                    <div class="icon-slot">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+                    </div>
+                    <input type="text" v-model="referralCode" placeholder="Referral Code (Optional)" />
+                    <span v-if="referralCode" class="ref-badge">APPLIED</span>
+                </div>
+
+                <button type="submit" class="cta-btn" :disabled="loading">
+                    <span v-if="!loading">CREATE ACCOUNT</span>
+                    <span v-else class="loader"></span>
+                </button>
+            </form>
+
+            <div class="divider">
+                <div class="line"></div>
+                <span>OR</span>
+                <div class="line"></div>
+            </div>
+
+            <div class="login-link">
+                <p>Already have an account? <router-link to="/">Login Here</router-link></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <transition name="slide-up">
+        <div v-if="error" class="toast error-toast">
+            <div class="toast-icon">⚠️</div>
+            <div class="toast-content">
+                <p class="toast-title">Error</p>
+                <p class="toast-desc">{{ error }}</p>
+            </div>
+            <button @click="error = ''" class="close-btn">×</button>
+        </div>
+    </transition>
+
+    <transition name="slide-up">
+        <div v-if="success" class="toast success-toast">
+            <div class="toast-icon">🎉</div>
+            <div class="toast-content">
+                <p class="toast-title">Welcome!</p>
+                <p class="toast-desc">{{ success }}</p>
+            </div>
+        </div>
+    </transition>
+</div>
+</template>
+
+<style scoped>
+/* Theme Colors */
+:root {
+    --gold: #FBBF24;
+    --dark-bg: #050505;
+    --input-bg: rgba(255, 255, 255, 0.05);
+}
+
+/* Layout */
+.register-wrapper {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #000;
+    background-image: radial-gradient(circle at 50% 0%, #291F08 0%, #050505 100%);
+    color: white;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle Glow Background */
+.bg-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(251, 191, 36, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.top-nav-bar {
+    width: 100%;
+    max-width: 500px;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    z-index: 20;
+}
+.nav-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    transition: 0.2s;
+}
+.nav-btn:hover { background: rgba(255,255,255,0.1); }
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.lang-pill {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.05);
+}
+.flag-icon { width: 18px; height: 18px; }
+.lang-text { font-size: 0.8rem; font-weight: 700; color: #cbd5e1; }
+
+.content-container {
+    width: 100%;
+    max-width: 500px; 
+    z-index: 10;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 1.5rem 1.5rem; /* Reduced top/bottom padding */
+}
+
+.text-gold { color: #FBBF24; }
+.text-white { color: white; }
+
+/* Register Area */
+.register-area { width: 100%; }
+
+.form-header {
+    font-size: 1.3rem; /* Much smaller */
+    font-weight: 800;
+    margin-bottom: 0.15rem;
+    text-align: center;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
+}
+.form-subtext {
+    text-align: center;
+    color: #A3A3A3;
+    font-size: 0.75rem; /* Smaller */
+    margin-bottom: 1rem;
+}
+
+.form-body { display: flex; flex-direction: column; gap: 1rem; }
+
+/* Inputs */
+.input-field {
+    background: #1A1A1A;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    transition: all 0.3s ease;
+}
+.input-field:focus-within {
+    border-color: #FBBF24;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.15);
+    transform: translateY(-2px);
+    background: #1F1F1F;
+}
+
+.icon-slot { width: 48px; display: flex; justify-content: center; color: #FBBF24; }
+.input-field input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 10px 12px 10px 0; /* Tightened padding */
+    color: white;
+    font-size: 0.85rem; /* Smaller text */
+    font-weight: 500;
+    outline: none;
+}
+.input-field input::placeholder { color: #525252; }
+
+.password-toggle-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FBBF24;
+    transition: opacity 0.2s;
+}
+.password-toggle-btn:hover {
+    opacity: 0.7;
+}
+.password-toggle-btn:active {
+    opacity: 0.5;
+}
+
+.ref-active {
+    border-color: rgba(251, 191, 36, 0.5);
+    background: rgba(251, 191, 36, 0.05);
+}
+.ref-badge {
+    font-size: 0.65rem;
+    background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%);
+    color: #000;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 800;
+    margin-right: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Button */
+.cta-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%);
+    color: #000;
+    border: none;
+    padding: 10px; /* Thinner button */
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(251, 191, 36, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px -5px rgba(251, 191, 36, 0.4);
+}
+.cta-btn:active { transform: scale(0.98); }
+.cta-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+/* Footer / Divider */
+.divider { 
+    display: flex; 
+    align-items: center; 
+    gap: 1rem; 
+    margin: 1.5rem 0; 
+}
+.line { 
+    flex: 1; 
+    height: 1px; 
+    background: rgba(255,255,255,0.1); 
+}
+.divider span { 
+    color: #525252; 
+    font-size: 0.8rem; 
+    font-weight: 600;
+}
+
+.login-link { text-align: center; font-size: 0.95rem; color: #A3A3A3; }
+.login-link a { color: #FBBF24; text-decoration: none; font-weight: 700; margin-left: 5px; }
+.login-link a:hover { text-decoration: underline; color: #fff; }
+
+/* Loader */
+.header-logo {
+    height: 36px; /* Smaller logo */
+    width: auto;
+    object-fit: contain;
+}
+.loader {
+    width: 20px; height: 20px;
+    border: 3px solid #000;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* Toast */
+.toast {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 400px;
+    z-index: 100;
+}
+.error-toast { background: #EF4444; color: white; box-shadow: 0 20px 25px -5px rgba(239, 68, 68, 0.3); }
+.success-toast { background: #10B981; color: white; box-shadow: 0 20px 25px -5px rgba(16, 185, 129, 0.3); }
+.toast-icon { font-size: 1.2rem; }
+.toast-content { flex: 1; }
+.toast-title { font-weight: 800; font-size: 0.9rem; margin-bottom: 2px; }
+.toast-desc { font-size: 0.8rem; opacity: 0.9; }
+.close-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; opacity: 0.7; }
+
+.slide-up-enter-active, .slide-up-leave-active { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.slide-up-enter-from, .slide-up-leave-to { opacity: 0; transform: translate(-50%, 20px); }
+</style>

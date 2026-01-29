@@ -1,0 +1,44 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  
+  # Exclude /pay directory from SPA routing
+  RewriteCond %{REQUEST_URI} ^/pay [NC]
+  RewriteRule ^ - [L]
+  
+  # Exclude /api directory from SPA routing
+  RewriteCond %{REQUEST_URI} ^/api [NC]
+  RewriteRule ^ - [L]
+  
+  # Exclude /admin directory from SPA routing
+  RewriteCond %{REQUEST_URI} ^/admin [NC]
+  RewriteRule ^ - [L]
+  
+  # Exclude /assets directory from SPA routing
+  RewriteCond %{REQUEST_URI} ^/assets [NC]
+  RewriteRule ^ - [L]
+  
+  # Exclude static files from SPA routing
+  RewriteCond %{REQUEST_URI} \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ [NC]
+  RewriteRule ^ - [L]
+  
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# Cache Control for Assets - Force reload on changes
+<IfModule mod_headers.c>
+  # Cache JS and CSS files for 1 hour, but allow revalidation
+  <FilesMatch "\.(js|css)$">
+    Header set Cache-Control "public, max-age=3600, must-revalidate"
+  </FilesMatch>
+  
+  # No cache for HTML files
+  <FilesMatch "\.(html|htm)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+  </FilesMatch>
+</IfModule>

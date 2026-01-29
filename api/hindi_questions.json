@@ -1,0 +1,112 @@
+[
+    {
+        "question": "Is chitra mein dikhai gayi imarat ka naam kya hai?",
+        "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Taj_Mahal_%28Edited%29.jpeg/800px-Taj_Mahal_%28Edited%29.jpeg",
+        "answer": "Taj Mahal",
+        "options": [
+            "Qutub Minar",
+            "Red Fort",
+            "India Gate",
+            "Taj Mahal"
+        ]
+    },
+    {
+        "question": "Ye pakshi kon sa hai?",
+        "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Peacock_Plumage.jpg/800px-Peacock_Plumage.jpg",
+        "answer": "Mor",
+        "options": [
+            "Kabutar",
+            "Tota",
+            "Mor",
+            "Hans"
+        ]
+    },
+    {
+        "question": "Ye kis desh ka jhanda hai?",
+        "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/4/41/Flag_of_India.svg/1200px-Flag_of_India.svg.png",
+        "answer": "Bharat",
+        "options": [
+            "America",
+            "Bharat",
+            "China",
+            "Pakistan"
+        ]
+    },
+    {
+        "question": "Is phal ka naam bataiye?",
+        "image_url": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg",
+        "answer": "Aam",
+        "options": [
+            "Kela",
+            "Seb",
+            "Aam",
+            "Angoor"
+        ]
+    },
+    {
+        "question": "Ye kaunsa khel hai?",
+        "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Ph_cricket.jpg/1200px-Ph_cricket.jpg",
+        "answer": "Cricket",
+        "options": [
+            "Hockey",
+            "Football",
+            "Cricket",
+            "Tennis"
+        ]
+    },
+    {
+        "question": "Bharat ka rashtriya phool kaunsa hai?",
+        "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Nelumbo_nucifera_4.JPG/800px-Nelumbo_nucifera_4.JPG",
+        "answer": "Kamal",
+        "options": [
+            "Gulab",
+            "Kamal",
+            "Surajmukhi",
+            "Chameli"
+        ]
+    },
+    {
+        "question": "Ye mahan vyakti kaun hain?",
+        "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/54/Bhagat_Singh_1929.jpg",
+        "answer": "Bhagat Singh",
+        "options": [
+            "Gandhi Ji",
+            "Nehru Ji",
+            "Bhagat Singh",
+            "Subhash Chandra Bose"
+        ]
+    },
+    {
+        "question": "Is currency symbol ko kya kehte hain?",
+        "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Indian_Rupee_symbol.svg/800px-Indian_Rupee_symbol.svg.png",
+        "answer": "Rupya",
+        "options": [
+            "Dollar",
+            "Euro",
+            "Rupya",
+            "Yen"
+        ]
+    },
+    {
+        "question": "Ye swadisht vyanjan kya hai?",
+        "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Samosachutney.jpg/800px-Samosachutney.jpg",
+        "answer": "Samosa",
+        "options": [
+            "Burger",
+            "Pizza",
+            "Samosa",
+            "Dosa"
+        ]
+    },
+    {
+        "question": "Ye kaunsa janwar hai?",
+        "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/African_Bush_Elephant.jpg/800px-African_Bush_Elephant.jpg",
+        "answer": "Haathi",
+        "options": [
+            "Sher",
+            "Haathi",
+            "Bhalu",
+            "Zebra"
+        ]
+    }
+]
