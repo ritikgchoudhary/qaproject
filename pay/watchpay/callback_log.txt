@@ -1654,3 +1654,517 @@
 2026-01-29 21:56:30 - ✅ Signature verified
 2026-01-29 21:56:30 - ✅ Payment successful for Order: DEP17696949101026352193323131, Amount: 100.00
 2026-01-29 21:56:30 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17696949101026352193323131
+2026-01-29 22:31:55 - === CALLBACK HIT ===
+2026-01-29 22:31:55 - Request Method: POST
+2026-01-29 22:31:55 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918610556","mchOrderNo":"DEP17696872111184685048632948","merRetMsg":"Deposit for User ID: 2948","sign":"36c24d15273292f0179c15a49671032f","signType":"MD5","orderDate":"2026-01-29 19:46:53"}
+2026-01-29 22:31:55 - GET Data: []
+2026-01-29 22:31:55 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918610556&mchOrderNo=DEP17696872111184685048632948&merRetMsg=Deposit+for+User+ID%3A+2948&sign=36c24d15273292f0179c15a49671032f&signType=MD5&orderDate=2026-01-29+19%3A46%3A53
+2026-01-29 22:31:55 - Parsed - Order: DEP17696872111184685048632948, Result: 1, Amount: 100.00, Sign: 36c24d15273292f0179c15a49671032f
+2026-01-29 22:31:55 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918610556","mchOrderNo":"DEP17696872111184685048632948","merRetMsg":"Deposit for User ID: 2948","orderDate":"2026-01-29 19:46:53"}
+2026-01-29 22:31:55 - ✅ Signature verified
+2026-01-29 22:31:55 - ✅ Payment successful for Order: DEP17696872111184685048632948, Amount: 100.00
+2026-01-29 22:31:55 - 💰 Processing deposit - User: 2948, Amount: 100.00, Deposit ID: 2774
+2026-01-29 22:31:55 - ✅ Deposit processed successfully - User: 2948, Amount: 100.00
+2026-01-29 22:32:01 - === CALLBACK HIT ===
+2026-01-29 22:32:01 - Request Method: POST
+2026-01-29 22:32:01 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918610556","mchOrderNo":"DEP17696872111184685048632948","merRetMsg":"Deposit for User ID: 2948","sign":"36c24d15273292f0179c15a49671032f","signType":"MD5","orderDate":"2026-01-29 19:46:53"}
+2026-01-29 22:32:01 - GET Data: []
+2026-01-29 22:32:01 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918610556&mchOrderNo=DEP17696872111184685048632948&merRetMsg=Deposit+for+User+ID%3A+2948&sign=36c24d15273292f0179c15a49671032f&signType=MD5&orderDate=2026-01-29+19%3A46%3A53
+2026-01-29 22:32:01 - Parsed - Order: DEP17696872111184685048632948, Result: 1, Amount: 100.00, Sign: 36c24d15273292f0179c15a49671032f
+2026-01-29 22:32:01 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918610556","mchOrderNo":"DEP17696872111184685048632948","merRetMsg":"Deposit for User ID: 2948","orderDate":"2026-01-29 19:46:53"}
+2026-01-29 22:32:01 - ✅ Signature verified
+2026-01-29 22:32:01 - ✅ Payment successful for Order: DEP17696872111184685048632948, Amount: 100.00
+2026-01-29 22:32:01 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17696872111184685048632948
+2026-01-29 22:35:58 - === CALLBACK HIT ===
+2026-01-29 22:35:58 - Request Method: POST
+2026-01-29 22:35:58 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918615720","mchOrderNo":"DEP17696970757556771256073165","merRetMsg":"Deposit for User ID: 3165","sign":"7dd37b54d81d08ba5e462216635eedbe","signType":"MD5","orderDate":"2026-01-29 22:31:21"}
+2026-01-29 22:35:58 - GET Data: []
+2026-01-29 22:35:58 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918615720&mchOrderNo=DEP17696970757556771256073165&merRetMsg=Deposit+for+User+ID%3A+3165&sign=7dd37b54d81d08ba5e462216635eedbe&signType=MD5&orderDate=2026-01-29+22%3A31%3A21
+2026-01-29 22:35:58 - Parsed - Order: DEP17696970757556771256073165, Result: 1, Amount: 100.00, Sign: 7dd37b54d81d08ba5e462216635eedbe
+2026-01-29 22:35:58 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918615720","mchOrderNo":"DEP17696970757556771256073165","merRetMsg":"Deposit for User ID: 3165","orderDate":"2026-01-29 22:31:21"}
+2026-01-29 22:35:58 - ✅ Signature verified
+2026-01-29 22:35:58 - ✅ Payment successful for Order: DEP17696970757556771256073165, Amount: 100.00
+2026-01-29 22:35:58 - 💰 Processing deposit - User: 3165, Amount: 100.00, Deposit ID: 2822
+2026-01-29 22:35:58 - ✅ Deposit processed successfully - User: 3165, Amount: 100.00
+2026-01-29 22:36:01 - === CALLBACK HIT ===
+2026-01-29 22:36:01 - Request Method: POST
+2026-01-29 22:36:01 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918615720","mchOrderNo":"DEP17696970757556771256073165","merRetMsg":"Deposit for User ID: 3165","sign":"7dd37b54d81d08ba5e462216635eedbe","signType":"MD5","orderDate":"2026-01-29 22:31:21"}
+2026-01-29 22:36:01 - GET Data: []
+2026-01-29 22:36:01 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918615720&mchOrderNo=DEP17696970757556771256073165&merRetMsg=Deposit+for+User+ID%3A+3165&sign=7dd37b54d81d08ba5e462216635eedbe&signType=MD5&orderDate=2026-01-29+22%3A31%3A21
+2026-01-29 22:36:01 - Parsed - Order: DEP17696970757556771256073165, Result: 1, Amount: 100.00, Sign: 7dd37b54d81d08ba5e462216635eedbe
+2026-01-29 22:36:01 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918615720","mchOrderNo":"DEP17696970757556771256073165","merRetMsg":"Deposit for User ID: 3165","orderDate":"2026-01-29 22:31:21"}
+2026-01-29 22:36:01 - ✅ Signature verified
+2026-01-29 22:36:01 - ✅ Payment successful for Order: DEP17696970757556771256073165, Amount: 100.00
+2026-01-29 22:36:01 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17696970757556771256073165
+2026-01-29 23:16:12 - === CALLBACK HIT ===
+2026-01-29 23:16:12 - Request Method: POST
+2026-01-29 23:16:12 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918617025","mchOrderNo":"DEP17696996797997825934843171","merRetMsg":"Deposit for User ID: 3171","sign":"bdca1f5b33c6dae39b8c519109fe93e5","signType":"MD5","orderDate":"2026-01-29 23:14:41"}
+2026-01-29 23:16:12 - GET Data: []
+2026-01-29 23:16:12 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918617025&mchOrderNo=DEP17696996797997825934843171&merRetMsg=Deposit+for+User+ID%3A+3171&sign=bdca1f5b33c6dae39b8c519109fe93e5&signType=MD5&orderDate=2026-01-29+23%3A14%3A41
+2026-01-29 23:16:12 - Parsed - Order: DEP17696996797997825934843171, Result: 1, Amount: 100.00, Sign: bdca1f5b33c6dae39b8c519109fe93e5
+2026-01-29 23:16:12 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918617025","mchOrderNo":"DEP17696996797997825934843171","merRetMsg":"Deposit for User ID: 3171","orderDate":"2026-01-29 23:14:41"}
+2026-01-29 23:16:12 - ✅ Signature verified
+2026-01-29 23:16:12 - ✅ Payment successful for Order: DEP17696996797997825934843171, Amount: 100.00
+2026-01-29 23:16:12 - 💰 Processing deposit - User: 3171, Amount: 100.00, Deposit ID: 2835
+2026-01-29 23:16:12 - ✅ Deposit processed successfully - User: 3171, Amount: 100.00
+2026-01-29 23:16:30 - === CALLBACK HIT ===
+2026-01-29 23:16:30 - Request Method: POST
+2026-01-29 23:16:30 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918617025","mchOrderNo":"DEP17696996797997825934843171","merRetMsg":"Deposit for User ID: 3171","sign":"bdca1f5b33c6dae39b8c519109fe93e5","signType":"MD5","orderDate":"2026-01-29 23:14:41"}
+2026-01-29 23:16:30 - GET Data: []
+2026-01-29 23:16:30 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918617025&mchOrderNo=DEP17696996797997825934843171&merRetMsg=Deposit+for+User+ID%3A+3171&sign=bdca1f5b33c6dae39b8c519109fe93e5&signType=MD5&orderDate=2026-01-29+23%3A14%3A41
+2026-01-29 23:16:30 - Parsed - Order: DEP17696996797997825934843171, Result: 1, Amount: 100.00, Sign: bdca1f5b33c6dae39b8c519109fe93e5
+2026-01-29 23:16:30 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918617025","mchOrderNo":"DEP17696996797997825934843171","merRetMsg":"Deposit for User ID: 3171","orderDate":"2026-01-29 23:14:41"}
+2026-01-29 23:16:30 - ✅ Signature verified
+2026-01-29 23:16:30 - ✅ Payment successful for Order: DEP17696996797997825934843171, Amount: 100.00
+2026-01-29 23:16:30 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17696996797997825934843171
+2026-01-29 23:23:08 - === CALLBACK HIT ===
+2026-01-29 23:23:08 - Request Method: POST
+2026-01-29 23:23:08 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918617275","mchOrderNo":"DEP17697001161661878795313125","merRetMsg":"Deposit for User ID: 3125","sign":"ab371afd7a29e83889354e2bfc25f23e","signType":"MD5","orderDate":"2026-01-29 23:21:57"}
+2026-01-29 23:23:08 - GET Data: []
+2026-01-29 23:23:08 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918617275&mchOrderNo=DEP17697001161661878795313125&merRetMsg=Deposit+for+User+ID%3A+3125&sign=ab371afd7a29e83889354e2bfc25f23e&signType=MD5&orderDate=2026-01-29+23%3A21%3A57
+2026-01-29 23:23:08 - Parsed - Order: DEP17697001161661878795313125, Result: 1, Amount: 100.00, Sign: ab371afd7a29e83889354e2bfc25f23e
+2026-01-29 23:23:08 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918617275","mchOrderNo":"DEP17697001161661878795313125","merRetMsg":"Deposit for User ID: 3125","orderDate":"2026-01-29 23:21:57"}
+2026-01-29 23:23:08 - ✅ Signature verified
+2026-01-29 23:23:08 - ✅ Payment successful for Order: DEP17697001161661878795313125, Amount: 100.00
+2026-01-29 23:23:08 - 💰 Processing deposit - User: 3125, Amount: 100.00, Deposit ID: 2841
+2026-01-29 23:23:08 - ✅ Deposit processed successfully - User: 3125, Amount: 100.00
+2026-01-29 23:23:30 - === CALLBACK HIT ===
+2026-01-29 23:23:30 - Request Method: POST
+2026-01-29 23:23:30 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918617275","mchOrderNo":"DEP17697001161661878795313125","merRetMsg":"Deposit for User ID: 3125","sign":"ab371afd7a29e83889354e2bfc25f23e","signType":"MD5","orderDate":"2026-01-29 23:21:57"}
+2026-01-29 23:23:30 - GET Data: []
+2026-01-29 23:23:30 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918617275&mchOrderNo=DEP17697001161661878795313125&merRetMsg=Deposit+for+User+ID%3A+3125&sign=ab371afd7a29e83889354e2bfc25f23e&signType=MD5&orderDate=2026-01-29+23%3A21%3A57
+2026-01-29 23:23:30 - Parsed - Order: DEP17697001161661878795313125, Result: 1, Amount: 100.00, Sign: ab371afd7a29e83889354e2bfc25f23e
+2026-01-29 23:23:30 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918617275","mchOrderNo":"DEP17697001161661878795313125","merRetMsg":"Deposit for User ID: 3125","orderDate":"2026-01-29 23:21:57"}
+2026-01-29 23:23:30 - ✅ Signature verified
+2026-01-29 23:23:30 - ✅ Payment successful for Order: DEP17697001161661878795313125, Amount: 100.00
+2026-01-29 23:23:30 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697001161661878795313125
+2026-01-29 23:27:17 - === CALLBACK HIT ===
+2026-01-29 23:27:17 - Request Method: POST
+2026-01-29 23:27:17 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918577446","mchOrderNo":"DEP17696240313134164262662960","merRetMsg":"Deposit for User ID: 2960","sign":"bd7ec8374f5a9f53097dd00cff36386f","signType":"MD5","orderDate":"2026-01-29 02:13:52"}
+2026-01-29 23:27:17 - GET Data: []
+2026-01-29 23:27:17 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918577446&mchOrderNo=DEP17696240313134164262662960&merRetMsg=Deposit+for+User+ID%3A+2960&sign=bd7ec8374f5a9f53097dd00cff36386f&signType=MD5&orderDate=2026-01-29+02%3A13%3A52
+2026-01-29 23:27:17 - Parsed - Order: DEP17696240313134164262662960, Result: 1, Amount: 100.00, Sign: bd7ec8374f5a9f53097dd00cff36386f
+2026-01-29 23:27:17 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918577446","mchOrderNo":"DEP17696240313134164262662960","merRetMsg":"Deposit for User ID: 2960","orderDate":"2026-01-29 02:13:52"}
+2026-01-29 23:27:17 - ✅ Signature verified
+2026-01-29 23:27:17 - ✅ Payment successful for Order: DEP17696240313134164262662960, Amount: 100.00
+2026-01-29 23:27:17 - 💰 Processing deposit - User: 2960, Amount: 100.00, Deposit ID: 2520
+2026-01-29 23:27:17 - ✅ Deposit processed successfully - User: 2960, Amount: 100.00
+2026-01-29 23:27:30 - === CALLBACK HIT ===
+2026-01-29 23:27:30 - Request Method: POST
+2026-01-29 23:27:30 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918577446","mchOrderNo":"DEP17696240313134164262662960","merRetMsg":"Deposit for User ID: 2960","sign":"bd7ec8374f5a9f53097dd00cff36386f","signType":"MD5","orderDate":"2026-01-29 02:13:52"}
+2026-01-29 23:27:30 - GET Data: []
+2026-01-29 23:27:30 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918577446&mchOrderNo=DEP17696240313134164262662960&merRetMsg=Deposit+for+User+ID%3A+2960&sign=bd7ec8374f5a9f53097dd00cff36386f&signType=MD5&orderDate=2026-01-29+02%3A13%3A52
+2026-01-29 23:27:30 - Parsed - Order: DEP17696240313134164262662960, Result: 1, Amount: 100.00, Sign: bd7ec8374f5a9f53097dd00cff36386f
+2026-01-29 23:27:30 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918577446","mchOrderNo":"DEP17696240313134164262662960","merRetMsg":"Deposit for User ID: 2960","orderDate":"2026-01-29 02:13:52"}
+2026-01-29 23:27:30 - ✅ Signature verified
+2026-01-29 23:27:30 - ✅ Payment successful for Order: DEP17696240313134164262662960, Amount: 100.00
+2026-01-29 23:27:30 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17696240313134164262662960
+2026-01-29 23:48:05 - === CALLBACK HIT ===
+2026-01-29 23:48:05 - Request Method: POST
+2026-01-29 23:48:05 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918618071","mchOrderNo":"DEP17697015915912932612793156","merRetMsg":"Deposit for User ID: 3156","sign":"d4744771b3c0aed7acbacce86f792d52","signType":"MD5","orderDate":"2026-01-29 23:46:31"}
+2026-01-29 23:48:05 - GET Data: []
+2026-01-29 23:48:05 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918618071&mchOrderNo=DEP17697015915912932612793156&merRetMsg=Deposit+for+User+ID%3A+3156&sign=d4744771b3c0aed7acbacce86f792d52&signType=MD5&orderDate=2026-01-29+23%3A46%3A31
+2026-01-29 23:48:05 - Parsed - Order: DEP17697015915912932612793156, Result: 1, Amount: 100.00, Sign: d4744771b3c0aed7acbacce86f792d52
+2026-01-29 23:48:05 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918618071","mchOrderNo":"DEP17697015915912932612793156","merRetMsg":"Deposit for User ID: 3156","orderDate":"2026-01-29 23:46:31"}
+2026-01-29 23:48:05 - ✅ Signature verified
+2026-01-29 23:48:05 - ✅ Payment successful for Order: DEP17697015915912932612793156, Amount: 100.00
+2026-01-29 23:48:05 - 💰 Processing deposit - User: 3156, Amount: 100.00, Deposit ID: 2848
+2026-01-29 23:48:05 - ✅ Deposit processed successfully - User: 3156, Amount: 100.00
+2026-01-29 23:48:30 - === CALLBACK HIT ===
+2026-01-29 23:48:30 - Request Method: POST
+2026-01-29 23:48:30 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918618071","mchOrderNo":"DEP17697015915912932612793156","merRetMsg":"Deposit for User ID: 3156","sign":"d4744771b3c0aed7acbacce86f792d52","signType":"MD5","orderDate":"2026-01-29 23:46:31"}
+2026-01-29 23:48:30 - GET Data: []
+2026-01-29 23:48:30 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918618071&mchOrderNo=DEP17697015915912932612793156&merRetMsg=Deposit+for+User+ID%3A+3156&sign=d4744771b3c0aed7acbacce86f792d52&signType=MD5&orderDate=2026-01-29+23%3A46%3A31
+2026-01-29 23:48:30 - Parsed - Order: DEP17697015915912932612793156, Result: 1, Amount: 100.00, Sign: d4744771b3c0aed7acbacce86f792d52
+2026-01-29 23:48:30 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918618071","mchOrderNo":"DEP17697015915912932612793156","merRetMsg":"Deposit for User ID: 3156","orderDate":"2026-01-29 23:46:31"}
+2026-01-29 23:48:30 - ✅ Signature verified
+2026-01-29 23:48:30 - ✅ Payment successful for Order: DEP17697015915912932612793156, Amount: 100.00
+2026-01-29 23:48:30 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697015915912932612793156
+2026-01-30 00:41:21 - === CALLBACK HIT ===
+2026-01-30 00:41:21 - Request Method: POST
+2026-01-30 00:41:21 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918619379","mchOrderNo":"DEP17697047151518326747303181","merRetMsg":"Deposit for User ID: 3181","sign":"956066dcb08e6bdc577801d0dfcacb5f","signType":"MD5","orderDate":"2026-01-30 00:38:35"}
+2026-01-30 00:41:21 - GET Data: []
+2026-01-30 00:41:21 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918619379&mchOrderNo=DEP17697047151518326747303181&merRetMsg=Deposit+for+User+ID%3A+3181&sign=956066dcb08e6bdc577801d0dfcacb5f&signType=MD5&orderDate=2026-01-30+00%3A38%3A35
+2026-01-30 00:41:21 - Parsed - Order: DEP17697047151518326747303181, Result: 1, Amount: 100.00, Sign: 956066dcb08e6bdc577801d0dfcacb5f
+2026-01-30 00:41:21 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918619379","mchOrderNo":"DEP17697047151518326747303181","merRetMsg":"Deposit for User ID: 3181","orderDate":"2026-01-30 00:38:35"}
+2026-01-30 00:41:21 - ✅ Signature verified
+2026-01-30 00:41:21 - ✅ Payment successful for Order: DEP17697047151518326747303181, Amount: 100.00
+2026-01-30 00:41:21 - 💰 Processing deposit - User: 3181, Amount: 100.00, Deposit ID: 2850
+2026-01-30 00:41:21 - ✅ Deposit processed successfully - User: 3181, Amount: 100.00
+2026-01-30 00:41:30 - === CALLBACK HIT ===
+2026-01-30 00:41:30 - Request Method: POST
+2026-01-30 00:41:30 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918619379","mchOrderNo":"DEP17697047151518326747303181","merRetMsg":"Deposit for User ID: 3181","sign":"956066dcb08e6bdc577801d0dfcacb5f","signType":"MD5","orderDate":"2026-01-30 00:38:35"}
+2026-01-30 00:41:30 - GET Data: []
+2026-01-30 00:41:30 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918619379&mchOrderNo=DEP17697047151518326747303181&merRetMsg=Deposit+for+User+ID%3A+3181&sign=956066dcb08e6bdc577801d0dfcacb5f&signType=MD5&orderDate=2026-01-30+00%3A38%3A35
+2026-01-30 00:41:30 - Parsed - Order: DEP17697047151518326747303181, Result: 1, Amount: 100.00, Sign: 956066dcb08e6bdc577801d0dfcacb5f
+2026-01-30 00:41:30 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918619379","mchOrderNo":"DEP17697047151518326747303181","merRetMsg":"Deposit for User ID: 3181","orderDate":"2026-01-30 00:38:35"}
+2026-01-30 00:41:30 - ✅ Signature verified
+2026-01-30 00:41:30 - ✅ Payment successful for Order: DEP17697047151518326747303181, Amount: 100.00
+2026-01-30 00:41:30 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697047151518326747303181
+2026-01-30 00:50:22 - === CALLBACK HIT ===
+2026-01-30 00:50:22 - Request Method: POST
+2026-01-30 00:50:22 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918619724","mchOrderNo":"DEP17697053424296766322623184","merRetMsg":"Deposit for User ID: 3184","sign":"dbe72d7a5c50510cd9433996f3b63e3b","signType":"MD5","orderDate":"2026-01-30 00:49:03"}
+2026-01-30 00:50:22 - GET Data: []
+2026-01-30 00:50:22 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918619724&mchOrderNo=DEP17697053424296766322623184&merRetMsg=Deposit+for+User+ID%3A+3184&sign=dbe72d7a5c50510cd9433996f3b63e3b&signType=MD5&orderDate=2026-01-30+00%3A49%3A03
+2026-01-30 00:50:22 - Parsed - Order: DEP17697053424296766322623184, Result: 1, Amount: 100.00, Sign: dbe72d7a5c50510cd9433996f3b63e3b
+2026-01-30 00:50:22 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918619724","mchOrderNo":"DEP17697053424296766322623184","merRetMsg":"Deposit for User ID: 3184","orderDate":"2026-01-30 00:49:03"}
+2026-01-30 00:50:22 - ✅ Signature verified
+2026-01-30 00:50:22 - ✅ Payment successful for Order: DEP17697053424296766322623184, Amount: 100.00
+2026-01-30 00:50:22 - 💰 Processing deposit - User: 3184, Amount: 100.00, Deposit ID: 2852
+2026-01-30 00:50:22 - ✅ Deposit processed successfully - User: 3184, Amount: 100.00
+2026-01-30 00:50:30 - === CALLBACK HIT ===
+2026-01-30 00:50:30 - Request Method: POST
+2026-01-30 00:50:30 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918619724","mchOrderNo":"DEP17697053424296766322623184","merRetMsg":"Deposit for User ID: 3184","sign":"dbe72d7a5c50510cd9433996f3b63e3b","signType":"MD5","orderDate":"2026-01-30 00:49:03"}
+2026-01-30 00:50:30 - GET Data: []
+2026-01-30 00:50:30 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918619724&mchOrderNo=DEP17697053424296766322623184&merRetMsg=Deposit+for+User+ID%3A+3184&sign=dbe72d7a5c50510cd9433996f3b63e3b&signType=MD5&orderDate=2026-01-30+00%3A49%3A03
+2026-01-30 00:50:30 - Parsed - Order: DEP17697053424296766322623184, Result: 1, Amount: 100.00, Sign: dbe72d7a5c50510cd9433996f3b63e3b
+2026-01-30 00:50:30 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918619724","mchOrderNo":"DEP17697053424296766322623184","merRetMsg":"Deposit for User ID: 3184","orderDate":"2026-01-30 00:49:03"}
+2026-01-30 00:50:30 - ✅ Signature verified
+2026-01-30 00:50:30 - ✅ Payment successful for Order: DEP17697053424296766322623184, Amount: 100.00
+2026-01-30 00:50:30 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697053424296766322623184
+2026-01-30 01:01:32 - === CALLBACK HIT ===
+2026-01-30 01:01:32 - Request Method: POST
+2026-01-30 01:01:32 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918619988","mchOrderNo":"DEP17697060707054635683623192","merRetMsg":"Deposit for User ID: 3192","sign":"6b104c6339a80c8e607924864f014c8d","signType":"MD5","orderDate":"2026-01-30 01:01:11"}
+2026-01-30 01:01:32 - GET Data: []
+2026-01-30 01:01:32 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918619988&mchOrderNo=DEP17697060707054635683623192&merRetMsg=Deposit+for+User+ID%3A+3192&sign=6b104c6339a80c8e607924864f014c8d&signType=MD5&orderDate=2026-01-30+01%3A01%3A11
+2026-01-30 01:01:32 - Parsed - Order: DEP17697060707054635683623192, Result: 1, Amount: 100.00, Sign: 6b104c6339a80c8e607924864f014c8d
+2026-01-30 01:01:32 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918619988","mchOrderNo":"DEP17697060707054635683623192","merRetMsg":"Deposit for User ID: 3192","orderDate":"2026-01-30 01:01:11"}
+2026-01-30 01:01:32 - ✅ Signature verified
+2026-01-30 01:01:32 - ✅ Payment successful for Order: DEP17697060707054635683623192, Amount: 100.00
+2026-01-30 01:01:32 - 💰 Processing deposit - User: 3192, Amount: 100.00, Deposit ID: 2855
+2026-01-30 01:01:32 - ✅ Deposit processed successfully - User: 3192, Amount: 100.00
+2026-01-30 01:02:00 - === CALLBACK HIT ===
+2026-01-30 01:02:00 - Request Method: POST
+2026-01-30 01:02:00 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918619988","mchOrderNo":"DEP17697060707054635683623192","merRetMsg":"Deposit for User ID: 3192","sign":"6b104c6339a80c8e607924864f014c8d","signType":"MD5","orderDate":"2026-01-30 01:01:11"}
+2026-01-30 01:02:00 - GET Data: []
+2026-01-30 01:02:00 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918619988&mchOrderNo=DEP17697060707054635683623192&merRetMsg=Deposit+for+User+ID%3A+3192&sign=6b104c6339a80c8e607924864f014c8d&signType=MD5&orderDate=2026-01-30+01%3A01%3A11
+2026-01-30 01:02:00 - Parsed - Order: DEP17697060707054635683623192, Result: 1, Amount: 100.00, Sign: 6b104c6339a80c8e607924864f014c8d
+2026-01-30 01:02:00 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918619988","mchOrderNo":"DEP17697060707054635683623192","merRetMsg":"Deposit for User ID: 3192","orderDate":"2026-01-30 01:01:11"}
+2026-01-30 01:02:00 - ✅ Signature verified
+2026-01-30 01:02:00 - ✅ Payment successful for Order: DEP17697060707054635683623192, Amount: 100.00
+2026-01-30 01:02:00 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697060707054635683623192
+2026-01-30 01:05:07 - === CALLBACK HIT ===
+2026-01-30 01:05:07 - Request Method: POST
+2026-01-30 01:05:07 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620050","mchOrderNo":"DEP17697062372371898609123193","merRetMsg":"Deposit for User ID: 3193","sign":"01d03af15fe5cf8fc16dd6e1efcefb31","signType":"MD5","orderDate":"2026-01-30 01:03:59"}
+2026-01-30 01:05:07 - GET Data: []
+2026-01-30 01:05:07 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918620050&mchOrderNo=DEP17697062372371898609123193&merRetMsg=Deposit+for+User+ID%3A+3193&sign=01d03af15fe5cf8fc16dd6e1efcefb31&signType=MD5&orderDate=2026-01-30+01%3A03%3A59
+2026-01-30 01:05:07 - Parsed - Order: DEP17697062372371898609123193, Result: 1, Amount: 100.00, Sign: 01d03af15fe5cf8fc16dd6e1efcefb31
+2026-01-30 01:05:07 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620050","mchOrderNo":"DEP17697062372371898609123193","merRetMsg":"Deposit for User ID: 3193","orderDate":"2026-01-30 01:03:59"}
+2026-01-30 01:05:07 - ✅ Signature verified
+2026-01-30 01:05:07 - ✅ Payment successful for Order: DEP17697062372371898609123193, Amount: 100.00
+2026-01-30 01:05:07 - 💰 Processing deposit - User: 3193, Amount: 100.00, Deposit ID: 2862
+2026-01-30 01:05:07 - ✅ Deposit processed successfully - User: 3193, Amount: 100.00
+2026-01-30 01:05:30 - === CALLBACK HIT ===
+2026-01-30 01:05:30 - Request Method: POST
+2026-01-30 01:05:30 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620050","mchOrderNo":"DEP17697062372371898609123193","merRetMsg":"Deposit for User ID: 3193","sign":"01d03af15fe5cf8fc16dd6e1efcefb31","signType":"MD5","orderDate":"2026-01-30 01:03:59"}
+2026-01-30 01:05:30 - GET Data: []
+2026-01-30 01:05:30 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918620050&mchOrderNo=DEP17697062372371898609123193&merRetMsg=Deposit+for+User+ID%3A+3193&sign=01d03af15fe5cf8fc16dd6e1efcefb31&signType=MD5&orderDate=2026-01-30+01%3A03%3A59
+2026-01-30 01:05:30 - Parsed - Order: DEP17697062372371898609123193, Result: 1, Amount: 100.00, Sign: 01d03af15fe5cf8fc16dd6e1efcefb31
+2026-01-30 01:05:30 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620050","mchOrderNo":"DEP17697062372371898609123193","merRetMsg":"Deposit for User ID: 3193","orderDate":"2026-01-30 01:03:59"}
+2026-01-30 01:05:30 - ✅ Signature verified
+2026-01-30 01:05:30 - ✅ Payment successful for Order: DEP17697062372371898609123193, Amount: 100.00
+2026-01-30 01:05:30 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697062372371898609123193
+2026-01-30 01:10:37 - === CALLBACK HIT ===
+2026-01-30 01:10:37 - Request Method: POST
+2026-01-30 01:10:37 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620136","mchOrderNo":"DEP17697065010102253246293195","merRetMsg":"Deposit for User ID: 3195","sign":"f32e9c565bb09c5beb00df905a33a409","signType":"MD5","orderDate":"2026-01-30 01:08:21"}
+2026-01-30 01:10:37 - GET Data: []
+2026-01-30 01:10:37 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918620136&mchOrderNo=DEP17697065010102253246293195&merRetMsg=Deposit+for+User+ID%3A+3195&sign=f32e9c565bb09c5beb00df905a33a409&signType=MD5&orderDate=2026-01-30+01%3A08%3A21
+2026-01-30 01:10:37 - Parsed - Order: DEP17697065010102253246293195, Result: 1, Amount: 100.00, Sign: f32e9c565bb09c5beb00df905a33a409
+2026-01-30 01:10:37 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620136","mchOrderNo":"DEP17697065010102253246293195","merRetMsg":"Deposit for User ID: 3195","orderDate":"2026-01-30 01:08:21"}
+2026-01-30 01:10:37 - ✅ Signature verified
+2026-01-30 01:10:37 - ✅ Payment successful for Order: DEP17697065010102253246293195, Amount: 100.00
+2026-01-30 01:10:37 - 💰 Processing deposit - User: 3195, Amount: 100.00, Deposit ID: 2865
+2026-01-30 01:10:37 - ✅ Deposit processed successfully - User: 3195, Amount: 100.00
+2026-01-30 01:11:00 - === CALLBACK HIT ===
+2026-01-30 01:11:00 - Request Method: POST
+2026-01-30 01:11:00 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620136","mchOrderNo":"DEP17697065010102253246293195","merRetMsg":"Deposit for User ID: 3195","sign":"f32e9c565bb09c5beb00df905a33a409","signType":"MD5","orderDate":"2026-01-30 01:08:21"}
+2026-01-30 01:11:00 - GET Data: []
+2026-01-30 01:11:00 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918620136&mchOrderNo=DEP17697065010102253246293195&merRetMsg=Deposit+for+User+ID%3A+3195&sign=f32e9c565bb09c5beb00df905a33a409&signType=MD5&orderDate=2026-01-30+01%3A08%3A21
+2026-01-30 01:11:00 - Parsed - Order: DEP17697065010102253246293195, Result: 1, Amount: 100.00, Sign: f32e9c565bb09c5beb00df905a33a409
+2026-01-30 01:11:00 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620136","mchOrderNo":"DEP17697065010102253246293195","merRetMsg":"Deposit for User ID: 3195","orderDate":"2026-01-30 01:08:21"}
+2026-01-30 01:11:00 - ✅ Signature verified
+2026-01-30 01:11:00 - ✅ Payment successful for Order: DEP17697065010102253246293195, Amount: 100.00
+2026-01-30 01:11:00 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697065010102253246293195
+2026-01-30 01:19:04 - === CALLBACK HIT ===
+2026-01-30 01:19:04 - Request Method: POST
+2026-01-30 01:19:04 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620231","mchOrderNo":"DEP17697067979785835474123196","merRetMsg":"Deposit for User ID: 3196","sign":"ff2e7d3390620371750e159330ab0ebd","signType":"MD5","orderDate":"2026-01-30 01:13:18"}
+2026-01-30 01:19:04 - GET Data: []
+2026-01-30 01:19:04 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918620231&mchOrderNo=DEP17697067979785835474123196&merRetMsg=Deposit+for+User+ID%3A+3196&sign=ff2e7d3390620371750e159330ab0ebd&signType=MD5&orderDate=2026-01-30+01%3A13%3A18
+2026-01-30 01:19:04 - Parsed - Order: DEP17697067979785835474123196, Result: 1, Amount: 100.00, Sign: ff2e7d3390620371750e159330ab0ebd
+2026-01-30 01:19:04 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620231","mchOrderNo":"DEP17697067979785835474123196","merRetMsg":"Deposit for User ID: 3196","orderDate":"2026-01-30 01:13:18"}
+2026-01-30 01:19:04 - ✅ Signature verified
+2026-01-30 01:19:04 - ✅ Payment successful for Order: DEP17697067979785835474123196, Amount: 100.00
+2026-01-30 01:19:04 - 💰 Processing deposit - User: 3196, Amount: 100.00, Deposit ID: 2869
+2026-01-30 01:19:04 - ✅ Deposit processed successfully - User: 3196, Amount: 100.00
+2026-01-30 01:19:30 - === CALLBACK HIT ===
+2026-01-30 01:19:30 - Request Method: POST
+2026-01-30 01:19:30 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620231","mchOrderNo":"DEP17697067979785835474123196","merRetMsg":"Deposit for User ID: 3196","sign":"ff2e7d3390620371750e159330ab0ebd","signType":"MD5","orderDate":"2026-01-30 01:13:18"}
+2026-01-30 01:19:30 - GET Data: []
+2026-01-30 01:19:30 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918620231&mchOrderNo=DEP17697067979785835474123196&merRetMsg=Deposit+for+User+ID%3A+3196&sign=ff2e7d3390620371750e159330ab0ebd&signType=MD5&orderDate=2026-01-30+01%3A13%3A18
+2026-01-30 01:19:30 - Parsed - Order: DEP17697067979785835474123196, Result: 1, Amount: 100.00, Sign: ff2e7d3390620371750e159330ab0ebd
+2026-01-30 01:19:30 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620231","mchOrderNo":"DEP17697067979785835474123196","merRetMsg":"Deposit for User ID: 3196","orderDate":"2026-01-30 01:13:18"}
+2026-01-30 01:19:30 - ✅ Signature verified
+2026-01-30 01:19:30 - ✅ Payment successful for Order: DEP17697067979785835474123196, Amount: 100.00
+2026-01-30 01:19:30 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697067979785835474123196
+2026-01-30 01:28:08 - === CALLBACK HIT ===
+2026-01-30 01:28:08 - Request Method: POST
+2026-01-30 01:28:08 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620521","mchOrderNo":"DEP17697076161670264505853137","merRetMsg":"Deposit for User ID: 3137","sign":"587eaf2de0f8b314a3c13912ac68fbe8","signType":"MD5","orderDate":"2026-01-30 01:26:57"}
+2026-01-30 01:28:08 - GET Data: []
+2026-01-30 01:28:08 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918620521&mchOrderNo=DEP17697076161670264505853137&merRetMsg=Deposit+for+User+ID%3A+3137&sign=587eaf2de0f8b314a3c13912ac68fbe8&signType=MD5&orderDate=2026-01-30+01%3A26%3A57
+2026-01-30 01:28:08 - Parsed - Order: DEP17697076161670264505853137, Result: 1, Amount: 100.00, Sign: 587eaf2de0f8b314a3c13912ac68fbe8
+2026-01-30 01:28:08 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620521","mchOrderNo":"DEP17697076161670264505853137","merRetMsg":"Deposit for User ID: 3137","orderDate":"2026-01-30 01:26:57"}
+2026-01-30 01:28:08 - ✅ Signature verified
+2026-01-30 01:28:08 - ✅ Payment successful for Order: DEP17697076161670264505853137, Amount: 100.00
+2026-01-30 01:28:08 - 💰 Processing deposit - User: 3137, Amount: 100.00, Deposit ID: 2875
+2026-01-30 01:28:08 - ✅ Deposit processed successfully - User: 3137, Amount: 100.00
+2026-01-30 01:28:30 - === CALLBACK HIT ===
+2026-01-30 01:28:30 - Request Method: POST
+2026-01-30 01:28:30 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620521","mchOrderNo":"DEP17697076161670264505853137","merRetMsg":"Deposit for User ID: 3137","sign":"587eaf2de0f8b314a3c13912ac68fbe8","signType":"MD5","orderDate":"2026-01-30 01:26:57"}
+2026-01-30 01:28:30 - GET Data: []
+2026-01-30 01:28:30 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918620521&mchOrderNo=DEP17697076161670264505853137&merRetMsg=Deposit+for+User+ID%3A+3137&sign=587eaf2de0f8b314a3c13912ac68fbe8&signType=MD5&orderDate=2026-01-30+01%3A26%3A57
+2026-01-30 01:28:30 - Parsed - Order: DEP17697076161670264505853137, Result: 1, Amount: 100.00, Sign: 587eaf2de0f8b314a3c13912ac68fbe8
+2026-01-30 01:28:30 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620521","mchOrderNo":"DEP17697076161670264505853137","merRetMsg":"Deposit for User ID: 3137","orderDate":"2026-01-30 01:26:57"}
+2026-01-30 01:28:30 - ✅ Signature verified
+2026-01-30 01:28:30 - ✅ Payment successful for Order: DEP17697076161670264505853137, Amount: 100.00
+2026-01-30 01:28:30 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697076161670264505853137
+2026-01-30 01:35:41 - === CALLBACK HIT ===
+2026-01-30 01:35:41 - Request Method: POST
+2026-01-30 01:35:41 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620703","mchOrderNo":"DEP17697080450452937379733198","merRetMsg":"Deposit for User ID: 3198","sign":"0878ec05b38039d872df10faf5e6b0e2","signType":"MD5","orderDate":"2026-01-30 01:34:11"}
+2026-01-30 01:35:41 - GET Data: []
+2026-01-30 01:35:41 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918620703&mchOrderNo=DEP17697080450452937379733198&merRetMsg=Deposit+for+User+ID%3A+3198&sign=0878ec05b38039d872df10faf5e6b0e2&signType=MD5&orderDate=2026-01-30+01%3A34%3A11
+2026-01-30 01:35:41 - Parsed - Order: DEP17697080450452937379733198, Result: 1, Amount: 100.00, Sign: 0878ec05b38039d872df10faf5e6b0e2
+2026-01-30 01:35:41 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918620703","mchOrderNo":"DEP17697080450452937379733198","merRetMsg":"Deposit for User ID: 3198","orderDate":"2026-01-30 01:34:11"}
+2026-01-30 01:35:41 - ✅ Signature verified
+2026-01-30 01:35:41 - ✅ Payment successful for Order: DEP17697080450452937379733198, Amount: 100.00
+2026-01-30 01:35:41 - ⚠️ Deposit found but status is 'failed' (not pending) for Order: DEP17697080450452937379733198
+2026-01-30 01:56:54 - === CALLBACK HIT ===
+2026-01-30 01:56:54 - Request Method: POST
+2026-01-30 01:56:54 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918621071","mchOrderNo":"DEP17697092999944635945313209","merRetMsg":"Deposit for User ID: 3209","sign":"b1a2979ac9db851f7b66b03a1ad1a4fd","signType":"MD5","orderDate":"2026-01-30 01:55:00"}
+2026-01-30 01:56:54 - GET Data: []
+2026-01-30 01:56:54 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918621071&mchOrderNo=DEP17697092999944635945313209&merRetMsg=Deposit+for+User+ID%3A+3209&sign=b1a2979ac9db851f7b66b03a1ad1a4fd&signType=MD5&orderDate=2026-01-30+01%3A55%3A00
+2026-01-30 01:56:54 - Parsed - Order: DEP17697092999944635945313209, Result: 1, Amount: 100.00, Sign: b1a2979ac9db851f7b66b03a1ad1a4fd
+2026-01-30 01:56:54 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918621071","mchOrderNo":"DEP17697092999944635945313209","merRetMsg":"Deposit for User ID: 3209","orderDate":"2026-01-30 01:55:00"}
+2026-01-30 01:56:54 - ✅ Signature verified
+2026-01-30 01:56:54 - ✅ Payment successful for Order: DEP17697092999944635945313209, Amount: 100.00
+2026-01-30 01:56:54 - 💰 Processing deposit - User: 3209, Amount: 100.00, Deposit ID: 2903
+2026-01-30 01:56:54 - ✅ Deposit processed successfully - User: 3209, Amount: 100.00
+2026-01-30 01:57:00 - === CALLBACK HIT ===
+2026-01-30 01:57:00 - Request Method: POST
+2026-01-30 01:57:00 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918621071","mchOrderNo":"DEP17697092999944635945313209","merRetMsg":"Deposit for User ID: 3209","sign":"b1a2979ac9db851f7b66b03a1ad1a4fd","signType":"MD5","orderDate":"2026-01-30 01:55:00"}
+2026-01-30 01:57:00 - GET Data: []
+2026-01-30 01:57:00 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918621071&mchOrderNo=DEP17697092999944635945313209&merRetMsg=Deposit+for+User+ID%3A+3209&sign=b1a2979ac9db851f7b66b03a1ad1a4fd&signType=MD5&orderDate=2026-01-30+01%3A55%3A00
+2026-01-30 01:57:00 - Parsed - Order: DEP17697092999944635945313209, Result: 1, Amount: 100.00, Sign: b1a2979ac9db851f7b66b03a1ad1a4fd
+2026-01-30 01:57:00 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918621071","mchOrderNo":"DEP17697092999944635945313209","merRetMsg":"Deposit for User ID: 3209","orderDate":"2026-01-30 01:55:00"}
+2026-01-30 01:57:00 - ✅ Signature verified
+2026-01-30 01:57:00 - ✅ Payment successful for Order: DEP17697092999944635945313209, Amount: 100.00
+2026-01-30 01:57:00 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697092999944635945313209
+2026-01-30 02:17:06 - === CALLBACK HIT ===
+2026-01-30 02:17:06 - Request Method: POST
+2026-01-30 02:17:06 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918621400","mchOrderNo":"DEP17697105555556195918503217","merRetMsg":"Deposit for User ID: 3217","sign":"d47bf31532598788fdea14db1fb6a01f","signType":"MD5","orderDate":"2026-01-30 02:15:56"}
+2026-01-30 02:17:06 - GET Data: []
+2026-01-30 02:17:06 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918621400&mchOrderNo=DEP17697105555556195918503217&merRetMsg=Deposit+for+User+ID%3A+3217&sign=d47bf31532598788fdea14db1fb6a01f&signType=MD5&orderDate=2026-01-30+02%3A15%3A56
+2026-01-30 02:17:06 - Parsed - Order: DEP17697105555556195918503217, Result: 1, Amount: 100.00, Sign: d47bf31532598788fdea14db1fb6a01f
+2026-01-30 02:17:06 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918621400","mchOrderNo":"DEP17697105555556195918503217","merRetMsg":"Deposit for User ID: 3217","orderDate":"2026-01-30 02:15:56"}
+2026-01-30 02:17:06 - ✅ Signature verified
+2026-01-30 02:17:06 - ✅ Payment successful for Order: DEP17697105555556195918503217, Amount: 100.00
+2026-01-30 02:17:06 - 💰 Processing deposit - User: 3217, Amount: 100.00, Deposit ID: 2910
+2026-01-30 02:17:06 - ✅ Deposit processed successfully - User: 3217, Amount: 100.00
+2026-01-30 02:17:30 - === CALLBACK HIT ===
+2026-01-30 02:17:30 - Request Method: POST
+2026-01-30 02:17:30 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918621400","mchOrderNo":"DEP17697105555556195918503217","merRetMsg":"Deposit for User ID: 3217","sign":"d47bf31532598788fdea14db1fb6a01f","signType":"MD5","orderDate":"2026-01-30 02:15:56"}
+2026-01-30 02:17:30 - GET Data: []
+2026-01-30 02:17:30 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918621400&mchOrderNo=DEP17697105555556195918503217&merRetMsg=Deposit+for+User+ID%3A+3217&sign=d47bf31532598788fdea14db1fb6a01f&signType=MD5&orderDate=2026-01-30+02%3A15%3A56
+2026-01-30 02:17:30 - Parsed - Order: DEP17697105555556195918503217, Result: 1, Amount: 100.00, Sign: d47bf31532598788fdea14db1fb6a01f
+2026-01-30 02:17:30 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918621400","mchOrderNo":"DEP17697105555556195918503217","merRetMsg":"Deposit for User ID: 3217","orderDate":"2026-01-30 02:15:56"}
+2026-01-30 02:17:30 - ✅ Signature verified
+2026-01-30 02:17:30 - ✅ Payment successful for Order: DEP17697105555556195918503217, Amount: 100.00
+2026-01-30 02:17:30 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697105555556195918503217
+2026-01-30 02:21:01 - === CALLBACK HIT ===
+2026-01-30 02:21:01 - Request Method: POST
+2026-01-30 02:21:01 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918621431","mchOrderNo":"DEP17697106736737992934953212","merRetMsg":"Deposit for User ID: 3212","sign":"f143eccb45acb4d23387ab6a25372e42","signType":"MD5","orderDate":"2026-01-30 02:17:54"}
+2026-01-30 02:21:01 - GET Data: []
+2026-01-30 02:21:01 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918621431&mchOrderNo=DEP17697106736737992934953212&merRetMsg=Deposit+for+User+ID%3A+3212&sign=f143eccb45acb4d23387ab6a25372e42&signType=MD5&orderDate=2026-01-30+02%3A17%3A54
+2026-01-30 02:21:01 - Parsed - Order: DEP17697106736737992934953212, Result: 1, Amount: 100.00, Sign: f143eccb45acb4d23387ab6a25372e42
+2026-01-30 02:21:01 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918621431","mchOrderNo":"DEP17697106736737992934953212","merRetMsg":"Deposit for User ID: 3212","orderDate":"2026-01-30 02:17:54"}
+2026-01-30 02:21:01 - ✅ Signature verified
+2026-01-30 02:21:01 - ✅ Payment successful for Order: DEP17697106736737992934953212, Amount: 100.00
+2026-01-30 02:21:01 - 💰 Processing deposit - User: 3212, Amount: 100.00, Deposit ID: 2911
+2026-01-30 02:21:01 - ✅ Deposit processed successfully - User: 3212, Amount: 100.00
+2026-01-30 02:21:30 - === CALLBACK HIT ===
+2026-01-30 02:21:30 - Request Method: POST
+2026-01-30 02:21:30 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918621431","mchOrderNo":"DEP17697106736737992934953212","merRetMsg":"Deposit for User ID: 3212","sign":"f143eccb45acb4d23387ab6a25372e42","signType":"MD5","orderDate":"2026-01-30 02:17:54"}
+2026-01-30 02:21:30 - GET Data: []
+2026-01-30 02:21:30 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918621431&mchOrderNo=DEP17697106736737992934953212&merRetMsg=Deposit+for+User+ID%3A+3212&sign=f143eccb45acb4d23387ab6a25372e42&signType=MD5&orderDate=2026-01-30+02%3A17%3A54
+2026-01-30 02:21:30 - Parsed - Order: DEP17697106736737992934953212, Result: 1, Amount: 100.00, Sign: f143eccb45acb4d23387ab6a25372e42
+2026-01-30 02:21:30 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918621431","mchOrderNo":"DEP17697106736737992934953212","merRetMsg":"Deposit for User ID: 3212","orderDate":"2026-01-30 02:17:54"}
+2026-01-30 02:21:30 - ✅ Signature verified
+2026-01-30 02:21:30 - ✅ Payment successful for Order: DEP17697106736737992934953212, Amount: 100.00
+2026-01-30 02:21:30 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697106736737992934953212
+2026-01-30 10:37:58 - === CALLBACK HIT ===
+2026-01-30 10:37:58 - Request Method: POST
+2026-01-30 10:37:58 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918624341","mchOrderNo":"DEP17697406000075428223503230","merRetMsg":"Deposit for User ID: 3230","sign":"d4959ef02af6941ebb3ce47d4fd7ebaf","signType":"MD5","orderDate":"2026-01-30 10:36:41"}
+2026-01-30 10:37:58 - GET Data: []
+2026-01-30 10:37:58 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918624341&mchOrderNo=DEP17697406000075428223503230&merRetMsg=Deposit+for+User+ID%3A+3230&sign=d4959ef02af6941ebb3ce47d4fd7ebaf&signType=MD5&orderDate=2026-01-30+10%3A36%3A41
+2026-01-30 10:37:58 - Parsed - Order: DEP17697406000075428223503230, Result: 1, Amount: 100.00, Sign: d4959ef02af6941ebb3ce47d4fd7ebaf
+2026-01-30 10:37:58 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918624341","mchOrderNo":"DEP17697406000075428223503230","merRetMsg":"Deposit for User ID: 3230","orderDate":"2026-01-30 10:36:41"}
+2026-01-30 10:37:58 - ✅ Signature verified
+2026-01-30 10:37:58 - ✅ Payment successful for Order: DEP17697406000075428223503230, Amount: 100.00
+2026-01-30 10:37:58 - 💰 Processing deposit - User: 3230, Amount: 100.00, Deposit ID: 2920
+2026-01-30 10:37:58 - ✅ Deposit processed successfully - User: 3230, Amount: 100.00
+2026-01-30 10:38:00 - === CALLBACK HIT ===
+2026-01-30 10:38:00 - Request Method: POST
+2026-01-30 10:38:00 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918624341","mchOrderNo":"DEP17697406000075428223503230","merRetMsg":"Deposit for User ID: 3230","sign":"d4959ef02af6941ebb3ce47d4fd7ebaf","signType":"MD5","orderDate":"2026-01-30 10:36:41"}
+2026-01-30 10:38:00 - GET Data: []
+2026-01-30 10:38:00 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918624341&mchOrderNo=DEP17697406000075428223503230&merRetMsg=Deposit+for+User+ID%3A+3230&sign=d4959ef02af6941ebb3ce47d4fd7ebaf&signType=MD5&orderDate=2026-01-30+10%3A36%3A41
+2026-01-30 10:38:00 - Parsed - Order: DEP17697406000075428223503230, Result: 1, Amount: 100.00, Sign: d4959ef02af6941ebb3ce47d4fd7ebaf
+2026-01-30 10:38:00 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918624341","mchOrderNo":"DEP17697406000075428223503230","merRetMsg":"Deposit for User ID: 3230","orderDate":"2026-01-30 10:36:41"}
+2026-01-30 10:38:00 - ✅ Signature verified
+2026-01-30 10:38:00 - ✅ Payment successful for Order: DEP17697406000075428223503230, Amount: 100.00
+2026-01-30 10:38:00 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697406000075428223503230
+2026-01-30 10:38:05 - === CALLBACK HIT ===
+2026-01-30 10:38:05 - Request Method: POST
+2026-01-30 10:38:05 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918624335","mchOrderNo":"DEP17697405616159495984583231","merRetMsg":"Deposit for User ID: 3231","sign":"0b50634be1f132cf1d5bcd515db61f74","signType":"MD5","orderDate":"2026-01-30 10:36:07"}
+2026-01-30 10:38:05 - GET Data: []
+2026-01-30 10:38:05 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918624335&mchOrderNo=DEP17697405616159495984583231&merRetMsg=Deposit+for+User+ID%3A+3231&sign=0b50634be1f132cf1d5bcd515db61f74&signType=MD5&orderDate=2026-01-30+10%3A36%3A07
+2026-01-30 10:38:05 - Parsed - Order: DEP17697405616159495984583231, Result: 1, Amount: 100.00, Sign: 0b50634be1f132cf1d5bcd515db61f74
+2026-01-30 10:38:05 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918624335","mchOrderNo":"DEP17697405616159495984583231","merRetMsg":"Deposit for User ID: 3231","orderDate":"2026-01-30 10:36:07"}
+2026-01-30 10:38:05 - ✅ Signature verified
+2026-01-30 10:38:05 - ✅ Payment successful for Order: DEP17697405616159495984583231, Amount: 100.00
+2026-01-30 10:38:05 - 💰 Processing deposit - User: 3231, Amount: 100.00, Deposit ID: 2919
+2026-01-30 10:38:05 - ✅ Deposit processed successfully - User: 3231, Amount: 100.00
+2026-01-30 10:38:30 - === CALLBACK HIT ===
+2026-01-30 10:38:30 - Request Method: POST
+2026-01-30 10:38:30 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918624335","mchOrderNo":"DEP17697405616159495984583231","merRetMsg":"Deposit for User ID: 3231","sign":"0b50634be1f132cf1d5bcd515db61f74","signType":"MD5","orderDate":"2026-01-30 10:36:07"}
+2026-01-30 10:38:30 - GET Data: []
+2026-01-30 10:38:30 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918624335&mchOrderNo=DEP17697405616159495984583231&merRetMsg=Deposit+for+User+ID%3A+3231&sign=0b50634be1f132cf1d5bcd515db61f74&signType=MD5&orderDate=2026-01-30+10%3A36%3A07
+2026-01-30 10:38:30 - Parsed - Order: DEP17697405616159495984583231, Result: 1, Amount: 100.00, Sign: 0b50634be1f132cf1d5bcd515db61f74
+2026-01-30 10:38:30 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918624335","mchOrderNo":"DEP17697405616159495984583231","merRetMsg":"Deposit for User ID: 3231","orderDate":"2026-01-30 10:36:07"}
+2026-01-30 10:38:30 - ✅ Signature verified
+2026-01-30 10:38:30 - ✅ Payment successful for Order: DEP17697405616159495984583231, Amount: 100.00
+2026-01-30 10:38:30 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697405616159495984583231
+2026-01-30 11:50:36 - === CALLBACK HIT ===
+2026-01-30 11:50:36 - Request Method: POST
+2026-01-30 11:50:36 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918625565","mchOrderNo":"DEP17697449555594419440923213","merRetMsg":"Deposit for User ID: 3213","sign":"0dc50b6c9a776a21824124b4640352aa","signType":"MD5","orderDate":"2026-01-30 11:49:21"}
+2026-01-30 11:50:36 - GET Data: []
+2026-01-30 11:50:36 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918625565&mchOrderNo=DEP17697449555594419440923213&merRetMsg=Deposit+for+User+ID%3A+3213&sign=0dc50b6c9a776a21824124b4640352aa&signType=MD5&orderDate=2026-01-30+11%3A49%3A21
+2026-01-30 11:50:36 - Parsed - Order: DEP17697449555594419440923213, Result: 1, Amount: 100.00, Sign: 0dc50b6c9a776a21824124b4640352aa
+2026-01-30 11:50:36 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918625565","mchOrderNo":"DEP17697449555594419440923213","merRetMsg":"Deposit for User ID: 3213","orderDate":"2026-01-30 11:49:21"}
+2026-01-30 11:50:36 - ✅ Signature verified
+2026-01-30 11:50:36 - ✅ Payment successful for Order: DEP17697449555594419440923213, Amount: 100.00
+2026-01-30 11:50:36 - 💰 Processing deposit - User: 3213, Amount: 100.00, Deposit ID: 2934
+2026-01-30 11:50:36 - ✅ Deposit processed successfully - User: 3213, Amount: 100.00
+2026-01-30 11:51:01 - === CALLBACK HIT ===
+2026-01-30 11:51:01 - Request Method: POST
+2026-01-30 11:51:01 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918625565","mchOrderNo":"DEP17697449555594419440923213","merRetMsg":"Deposit for User ID: 3213","sign":"0dc50b6c9a776a21824124b4640352aa","signType":"MD5","orderDate":"2026-01-30 11:49:21"}
+2026-01-30 11:51:01 - GET Data: []
+2026-01-30 11:51:01 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918625565&mchOrderNo=DEP17697449555594419440923213&merRetMsg=Deposit+for+User+ID%3A+3213&sign=0dc50b6c9a776a21824124b4640352aa&signType=MD5&orderDate=2026-01-30+11%3A49%3A21
+2026-01-30 11:51:01 - Parsed - Order: DEP17697449555594419440923213, Result: 1, Amount: 100.00, Sign: 0dc50b6c9a776a21824124b4640352aa
+2026-01-30 11:51:01 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918625565","mchOrderNo":"DEP17697449555594419440923213","merRetMsg":"Deposit for User ID: 3213","orderDate":"2026-01-30 11:49:21"}
+2026-01-30 11:51:01 - ✅ Signature verified
+2026-01-30 11:51:01 - ✅ Payment successful for Order: DEP17697449555594419440923213, Amount: 100.00
+2026-01-30 11:51:01 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697449555594419440923213
+2026-01-30 11:54:07 - === CALLBACK HIT ===
+2026-01-30 11:54:07 - Request Method: POST
+2026-01-30 11:54:07 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918625646","mchOrderNo":"DEP17697451767688528528473230","merRetMsg":"Deposit for User ID: 3230","sign":"795caa6c242000ab8f4c5cbcedfeba45","signType":"MD5","orderDate":"2026-01-30 11:52:58"}
+2026-01-30 11:54:07 - GET Data: []
+2026-01-30 11:54:07 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918625646&mchOrderNo=DEP17697451767688528528473230&merRetMsg=Deposit+for+User+ID%3A+3230&sign=795caa6c242000ab8f4c5cbcedfeba45&signType=MD5&orderDate=2026-01-30+11%3A52%3A58
+2026-01-30 11:54:07 - Parsed - Order: DEP17697451767688528528473230, Result: 1, Amount: 100.00, Sign: 795caa6c242000ab8f4c5cbcedfeba45
+2026-01-30 11:54:07 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918625646","mchOrderNo":"DEP17697451767688528528473230","merRetMsg":"Deposit for User ID: 3230","orderDate":"2026-01-30 11:52:58"}
+2026-01-30 11:54:07 - ✅ Signature verified
+2026-01-30 11:54:07 - ✅ Payment successful for Order: DEP17697451767688528528473230, Amount: 100.00
+2026-01-30 11:54:07 - 💰 Processing deposit - User: 3230, Amount: 100.00, Deposit ID: 2935
+2026-01-30 11:54:07 - ✅ Deposit processed successfully - User: 3230, Amount: 100.00
+2026-01-30 11:54:30 - === CALLBACK HIT ===
+2026-01-30 11:54:30 - Request Method: POST
+2026-01-30 11:54:30 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918625646","mchOrderNo":"DEP17697451767688528528473230","merRetMsg":"Deposit for User ID: 3230","sign":"795caa6c242000ab8f4c5cbcedfeba45","signType":"MD5","orderDate":"2026-01-30 11:52:58"}
+2026-01-30 11:54:30 - GET Data: []
+2026-01-30 11:54:30 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918625646&mchOrderNo=DEP17697451767688528528473230&merRetMsg=Deposit+for+User+ID%3A+3230&sign=795caa6c242000ab8f4c5cbcedfeba45&signType=MD5&orderDate=2026-01-30+11%3A52%3A58
+2026-01-30 11:54:30 - Parsed - Order: DEP17697451767688528528473230, Result: 1, Amount: 100.00, Sign: 795caa6c242000ab8f4c5cbcedfeba45
+2026-01-30 11:54:30 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918625646","mchOrderNo":"DEP17697451767688528528473230","merRetMsg":"Deposit for User ID: 3230","orderDate":"2026-01-30 11:52:58"}
+2026-01-30 11:54:30 - ✅ Signature verified
+2026-01-30 11:54:30 - ✅ Payment successful for Order: DEP17697451767688528528473230, Amount: 100.00
+2026-01-30 11:54:30 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697451767688528528473230
+2026-01-30 12:14:39 - === CALLBACK HIT ===
+2026-01-30 12:14:39 - Request Method: POST
+2026-01-30 12:14:39 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918626105","mchOrderNo":"DEP17697464121296999406333238","merRetMsg":"Deposit for User ID: 3238","sign":"c12391d030039e8aaaa28e9c89656e3f","signType":"MD5","orderDate":"2026-01-30 12:13:33"}
+2026-01-30 12:14:39 - GET Data: []
+2026-01-30 12:14:39 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918626105&mchOrderNo=DEP17697464121296999406333238&merRetMsg=Deposit+for+User+ID%3A+3238&sign=c12391d030039e8aaaa28e9c89656e3f&signType=MD5&orderDate=2026-01-30+12%3A13%3A33
+2026-01-30 12:14:39 - Parsed - Order: DEP17697464121296999406333238, Result: 1, Amount: 100.00, Sign: c12391d030039e8aaaa28e9c89656e3f
+2026-01-30 12:14:39 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918626105","mchOrderNo":"DEP17697464121296999406333238","merRetMsg":"Deposit for User ID: 3238","orderDate":"2026-01-30 12:13:33"}
+2026-01-30 12:14:39 - ✅ Signature verified
+2026-01-30 12:14:39 - ✅ Payment successful for Order: DEP17697464121296999406333238, Amount: 100.00
+2026-01-30 12:14:39 - 💰 Processing deposit - User: 3238, Amount: 100.00, Deposit ID: 2940
+2026-01-30 12:14:39 - ✅ Deposit processed successfully - User: 3238, Amount: 100.00
+2026-01-30 12:15:00 - === CALLBACK HIT ===
+2026-01-30 12:15:00 - Request Method: POST
+2026-01-30 12:15:00 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918626105","mchOrderNo":"DEP17697464121296999406333238","merRetMsg":"Deposit for User ID: 3238","sign":"c12391d030039e8aaaa28e9c89656e3f","signType":"MD5","orderDate":"2026-01-30 12:13:33"}
+2026-01-30 12:15:00 - GET Data: []
+2026-01-30 12:15:00 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918626105&mchOrderNo=DEP17697464121296999406333238&merRetMsg=Deposit+for+User+ID%3A+3238&sign=c12391d030039e8aaaa28e9c89656e3f&signType=MD5&orderDate=2026-01-30+12%3A13%3A33
+2026-01-30 12:15:00 - Parsed - Order: DEP17697464121296999406333238, Result: 1, Amount: 100.00, Sign: c12391d030039e8aaaa28e9c89656e3f
+2026-01-30 12:15:00 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918626105","mchOrderNo":"DEP17697464121296999406333238","merRetMsg":"Deposit for User ID: 3238","orderDate":"2026-01-30 12:13:33"}
+2026-01-30 12:15:00 - ✅ Signature verified
+2026-01-30 12:15:00 - ✅ Payment successful for Order: DEP17697464121296999406333238, Amount: 100.00
+2026-01-30 12:15:00 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697464121296999406333238
+2026-01-30 12:20:47 - === CALLBACK HIT ===
+2026-01-30 12:20:47 - Request Method: POST
+2026-01-30 12:20:47 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918626285","mchOrderNo":"DEP17697467454500621401273022","merRetMsg":"Deposit for User ID: 3022","sign":"68325bf3918bf890c4db81908cd7ff6f","signType":"MD5","orderDate":"2026-01-30 12:19:06"}
+2026-01-30 12:20:47 - GET Data: []
+2026-01-30 12:20:47 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918626285&mchOrderNo=DEP17697467454500621401273022&merRetMsg=Deposit+for+User+ID%3A+3022&sign=68325bf3918bf890c4db81908cd7ff6f&signType=MD5&orderDate=2026-01-30+12%3A19%3A06
+2026-01-30 12:20:47 - Parsed - Order: DEP17697467454500621401273022, Result: 1, Amount: 100.00, Sign: 68325bf3918bf890c4db81908cd7ff6f
+2026-01-30 12:20:47 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918626285","mchOrderNo":"DEP17697467454500621401273022","merRetMsg":"Deposit for User ID: 3022","orderDate":"2026-01-30 12:19:06"}
+2026-01-30 12:20:47 - ✅ Signature verified
+2026-01-30 12:20:47 - ✅ Payment successful for Order: DEP17697467454500621401273022, Amount: 100.00
+2026-01-30 12:20:47 - 💰 Processing deposit - User: 3022, Amount: 100.00, Deposit ID: 2944
+2026-01-30 12:20:47 - ✅ Deposit processed successfully - User: 3022, Amount: 100.00
+2026-01-30 12:21:00 - === CALLBACK HIT ===
+2026-01-30 12:21:00 - Request Method: POST
+2026-01-30 12:21:00 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918626285","mchOrderNo":"DEP17697467454500621401273022","merRetMsg":"Deposit for User ID: 3022","sign":"68325bf3918bf890c4db81908cd7ff6f","signType":"MD5","orderDate":"2026-01-30 12:19:06"}
+2026-01-30 12:21:00 - GET Data: []
+2026-01-30 12:21:00 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918626285&mchOrderNo=DEP17697467454500621401273022&merRetMsg=Deposit+for+User+ID%3A+3022&sign=68325bf3918bf890c4db81908cd7ff6f&signType=MD5&orderDate=2026-01-30+12%3A19%3A06
+2026-01-30 12:21:00 - Parsed - Order: DEP17697467454500621401273022, Result: 1, Amount: 100.00, Sign: 68325bf3918bf890c4db81908cd7ff6f
+2026-01-30 12:21:00 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918626285","mchOrderNo":"DEP17697467454500621401273022","merRetMsg":"Deposit for User ID: 3022","orderDate":"2026-01-30 12:19:06"}
+2026-01-30 12:21:00 - ✅ Signature verified
+2026-01-30 12:21:00 - ✅ Payment successful for Order: DEP17697467454500621401273022, Amount: 100.00
+2026-01-30 12:21:00 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697467454500621401273022
+2026-01-30 12:22:37 - === CALLBACK HIT ===
+2026-01-30 12:22:37 - Request Method: POST
+2026-01-30 12:22:37 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918626344","mchOrderNo":"DEP17697468858540067576933242","merRetMsg":"Deposit for User ID: 3242","sign":"39e7d2adeb434f1caf5d0f72cf520150","signType":"MD5","orderDate":"2026-01-30 12:21:26"}
+2026-01-30 12:22:37 - GET Data: []
+2026-01-30 12:22:37 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918626344&mchOrderNo=DEP17697468858540067576933242&merRetMsg=Deposit+for+User+ID%3A+3242&sign=39e7d2adeb434f1caf5d0f72cf520150&signType=MD5&orderDate=2026-01-30+12%3A21%3A26
+2026-01-30 12:22:37 - Parsed - Order: DEP17697468858540067576933242, Result: 1, Amount: 100.00, Sign: 39e7d2adeb434f1caf5d0f72cf520150
+2026-01-30 12:22:37 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918626344","mchOrderNo":"DEP17697468858540067576933242","merRetMsg":"Deposit for User ID: 3242","orderDate":"2026-01-30 12:21:26"}
+2026-01-30 12:22:37 - ✅ Signature verified
+2026-01-30 12:22:37 - ✅ Payment successful for Order: DEP17697468858540067576933242, Amount: 100.00
+2026-01-30 12:22:37 - 💰 Processing deposit - User: 3242, Amount: 100.00, Deposit ID: 2948
+2026-01-30 12:22:37 - ✅ Deposit processed successfully - User: 3242, Amount: 100.00
+2026-01-30 12:23:00 - === CALLBACK HIT ===
+2026-01-30 12:23:00 - Request Method: POST
+2026-01-30 12:23:00 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918626344","mchOrderNo":"DEP17697468858540067576933242","merRetMsg":"Deposit for User ID: 3242","sign":"39e7d2adeb434f1caf5d0f72cf520150","signType":"MD5","orderDate":"2026-01-30 12:21:26"}
+2026-01-30 12:23:00 - GET Data: []
+2026-01-30 12:23:00 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918626344&mchOrderNo=DEP17697468858540067576933242&merRetMsg=Deposit+for+User+ID%3A+3242&sign=39e7d2adeb434f1caf5d0f72cf520150&signType=MD5&orderDate=2026-01-30+12%3A21%3A26
+2026-01-30 12:23:00 - Parsed - Order: DEP17697468858540067576933242, Result: 1, Amount: 100.00, Sign: 39e7d2adeb434f1caf5d0f72cf520150
+2026-01-30 12:23:00 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918626344","mchOrderNo":"DEP17697468858540067576933242","merRetMsg":"Deposit for User ID: 3242","orderDate":"2026-01-30 12:21:26"}
+2026-01-30 12:23:00 - ✅ Signature verified
+2026-01-30 12:23:00 - ✅ Payment successful for Order: DEP17697468858540067576933242, Amount: 100.00
+2026-01-30 12:23:00 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697468858540067576933242
+2026-01-30 13:50:37 - === CALLBACK HIT ===
+2026-01-30 13:50:37 - Request Method: POST
+2026-01-30 13:50:37 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918629156","mchOrderNo":"DEP17697522111140971271633255","merRetMsg":"Deposit for User ID: 3255","sign":"b2a59917f15bffb6e4c7481f13cf883f","signType":"MD5","orderDate":"2026-01-30 13:50:12"}
+2026-01-30 13:50:37 - GET Data: []
+2026-01-30 13:50:37 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918629156&mchOrderNo=DEP17697522111140971271633255&merRetMsg=Deposit+for+User+ID%3A+3255&sign=b2a59917f15bffb6e4c7481f13cf883f&signType=MD5&orderDate=2026-01-30+13%3A50%3A12
+2026-01-30 13:50:37 - Parsed - Order: DEP17697522111140971271633255, Result: 1, Amount: 100.00, Sign: b2a59917f15bffb6e4c7481f13cf883f
+2026-01-30 13:50:37 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918629156","mchOrderNo":"DEP17697522111140971271633255","merRetMsg":"Deposit for User ID: 3255","orderDate":"2026-01-30 13:50:12"}
+2026-01-30 13:50:37 - ✅ Signature verified
+2026-01-30 13:50:37 - ✅ Payment successful for Order: DEP17697522111140971271633255, Amount: 100.00
+2026-01-30 13:50:37 - 💰 Processing deposit - User: 3255, Amount: 100.00, Deposit ID: 2961
+2026-01-30 13:50:37 - ✅ Deposit processed successfully - User: 3255, Amount: 100.00
+2026-01-30 13:51:00 - === CALLBACK HIT ===
+2026-01-30 13:51:00 - Request Method: POST
+2026-01-30 13:51:00 - POST Data: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918629156","mchOrderNo":"DEP17697522111140971271633255","merRetMsg":"Deposit for User ID: 3255","sign":"b2a59917f15bffb6e4c7481f13cf883f","signType":"MD5","orderDate":"2026-01-30 13:50:12"}
+2026-01-30 13:51:00 - GET Data: []
+2026-01-30 13:51:00 - Raw Input: tradeResult=1&oriAmount=100.00&amount=100.00&mchId=100225567&orderNo=20000918629156&mchOrderNo=DEP17697522111140971271633255&merRetMsg=Deposit+for+User+ID%3A+3255&sign=b2a59917f15bffb6e4c7481f13cf883f&signType=MD5&orderDate=2026-01-30+13%3A50%3A12
+2026-01-30 13:51:00 - Parsed - Order: DEP17697522111140971271633255, Result: 1, Amount: 100.00, Sign: b2a59917f15bffb6e4c7481f13cf883f
+2026-01-30 13:51:00 - Params for signature: {"tradeResult":"1","oriAmount":"100.00","amount":"100.00","mchId":"100225567","orderNo":"20000918629156","mchOrderNo":"DEP17697522111140971271633255","merRetMsg":"Deposit for User ID: 3255","orderDate":"2026-01-30 13:50:12"}
+2026-01-30 13:51:00 - ✅ Signature verified
+2026-01-30 13:51:00 - ✅ Payment successful for Order: DEP17697522111140971271633255, Amount: 100.00
+2026-01-30 13:51:00 - ⚠️ Deposit found but status is 'success' (not pending) for Order: DEP17697522111140971271633255
