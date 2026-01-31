@@ -1,4 +1,5 @@
 <?php
+header('Content-Type: application/json');
 include 'config.php';
 include 'utils.php';
 
@@ -60,33 +61,53 @@ $amount = $required_amount;
 
 // FEATURE 4: Generate Unique Order ID (completely unique format)
 do {
-    // Use timestamp + microseconds + random + user_id for maximum uniqueness
-    $timestamp = time();
-    $microseconds = substr(str_replace('.', '', microtime(true)), -6); // 6 digits
-    $random = mt_rand(100000, 999999); // 6 digit random
-    $order_id = "DEP" . $timestamp . $microseconds . $random . $user_id;
-    // Limit to 32 chars (payment gateway requirement)
-    if (strlen($order_id) > 32) {
-        $order_id = substr($order_id, 0, 32);
+    $order_id = "DEP" . time() . rand(100000, 999999) . $user_id;
+    if (strlen($order_id) > 64) {
+        $order_id = substr($order_id, 0, 64);
     }
     $stmt = $pdo->prepare("SELECT id FROM deposits WHERE order_id = ?");
     $stmt->execute([$order_id]);
 } while ($stmt->fetch());
 
+// Get payment channel from request (default: WATCHPAY for backward compatibility)
+$data = json_decode(file_get_contents("php://input"), true);
+$channel = isset($data['channel']) ? strtoupper($data['channel']) : 'WATCHPAY';
+
 // Create pending deposit record
 $pdo->beginTransaction();
 try {
-    $stmt = $pdo->prepare("INSERT INTO deposits (user_id, amount, status, order_id) VALUES (?, ?, 'pending', ?)");
-    $stmt->execute([$user_id, $amount, $order_id]);
+    // Set payment_method for Custom QR
+    $payment_method = ($channel === 'CUSTOM_QR') ? 'CUSTOM_QR' : null;
+    
+    $stmt = $pdo->prepare("INSERT INTO deposits (user_id, amount, status, order_id, payment_method) VALUES (?, ?, 'pending', ?, ?)");
+    $stmt->execute([$user_id, $amount, $order_id, $payment_method]);
     $deposit_id = $pdo->lastInsertId();
     
     $pdo->commit();
     
-    // WatchPay Payment Gateway Only
-    $channel = 'WATCHPAY';
+    // Handle Custom QR channel - just return success with deposit_id
+    if ($channel === 'CUSTOM_QR') {
+        echo json_encode([
+            "success" => true,
+            "message" => "Deposit record created. Please scan QR code and complete payment.",
+            "deposit_id" => $deposit_id,
+            "order_id" => $order_id,
+            "requires_utr" => true
+        ]);
+        exit();
+    }
     
-    // Redirect to WatchPay Payment Gateway - Direct GET URL with parameters
+    // Validate channel
+    if (!in_array($channel, ['WATCHPAY', 'SILKPAY'])) {
+        $channel = 'WATCHPAY'; // Default to WatchPay if invalid
+    }
+    
+    // Set payment gateway URL based on channel
+    if ($channel === 'SILKPAY') {
+        $base_url = "https://iquizz.in/pay/silkpay/deposit_payment.php";
+    } else {
     $base_url = "https://iquizz.in/pay/watchpay/deposit_payment.php";
+    }
     
     // Add GET parameters
     $payment_url = $base_url;
@@ -110,9 +131,10 @@ try {
             "deposit_id" => $deposit_id,
             "order_id" => $order_id
         ]
-    ], JSON_UNESCAPED_SLASHES);
+    ]);
 } catch (Exception $e) {
     $pdo->rollBack();
-    echo json_encode(["error" => "Deposit failed: " . $e->getMessage()]);
+    http_response_code(500);
+    echo json_encode(["error" => $e->getMessage()]);
 }
 ?>

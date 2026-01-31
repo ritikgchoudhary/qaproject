@@ -19,10 +19,10 @@ const showManualRedirect = ref(false)
 const channelErrors = ref({})
 const channelStatus = ref({}) // 'idle', 'loading', 'success', 'error'
 const channels = [
-    { id: 'WATCHPAY_1', name: 'WatchPay Channel 1', icon: '💳' },
-    { id: 'WATCHPAY_2', name: 'WatchPay Channel 2', icon: '💳' },
-    { id: 'WATCHPAY_3', name: 'WatchPay Channel 3', icon: '💳' },
-    { id: 'WATCHPAY_4', name: 'WatchPay Channel 4', icon: '💳' }
+    { id: 'WATCHPAY_1', name: 'WatchPay 1', icon: '💳', gateway: 'WATCHPAY' },
+    { id: 'WATCHPAY_2', name: 'WatchPay 2', icon: '💳', gateway: 'WATCHPAY' },
+    { id: 'SILKPAY_1', name: 'SilkPay 1', icon: '💎', gateway: 'SILKPAY' },
+    { id: 'SILKPAY_2', name: 'SilkPay 2', icon: '💎', gateway: 'SILKPAY' }
 ]
 const depositHistory = ref([])
 const loadingHistory = ref(false)
@@ -183,8 +183,12 @@ async function tryChannelById(channelId) {
     channelStatus.value[channelId] = 'loading'
     channelErrors.value[channelId] = ''
     
-    // All channels use WATCHPAY gateway
-    const result = await tryChannel('WATCHPAY')
+    // Find the channel to get its gateway
+    const channel = channels.find(ch => ch.id === channelId)
+    const gateway = channel?.gateway || 'WATCHPAY'
+    
+    // Use the correct gateway for this channel
+    const result = await tryChannel(gateway)
     
     if (result.success) {
         channelStatus.value[channelId] = 'success'
@@ -196,35 +200,48 @@ async function tryChannelById(channelId) {
     }
 }
 
+// Select a single channel (disable multi-select)
+function selectChannel(channelId) {
+    if (loading.value || isAlreadyDeposited.value || mustWithdrawFirst.value) return
+    
+    // Only allow one channel to be selected at a time
+    selectedChannel.value = selectedChannel.value === channelId ? '' : channelId
+    
+    // Reset status for all channels
+    channels.forEach(ch => {
+        if (ch.id !== channelId) {
+            channelStatus.value[ch.id] = 'idle'
+            channelErrors.value[ch.id] = ''
+        }
+    })
+}
+
 async function makeDeposit() {
     if (loading.value) return // Prevent double clicks
+    
+    // Check if a channel is selected
+    if (!selectedChannel.value) {
+        error.value = 'Please select a payment channel first.'
+        return
+    }
+    
     loading.value = true
     message.value = ''
     error.value = ''
     showManualRedirect.value = false
     paymentUrl.value = ''
     
-    // Reset all channel statuses
-    channels.forEach(ch => {
-        channelStatus.value[ch.id] = 'idle'
-        channelErrors.value[ch.id] = ''
-    })
+    // Reset status for selected channel
+    channelStatus.value[selectedChannel.value] = 'idle'
+    channelErrors.value[selectedChannel.value] = ''
     
-    // Try channels one by one
-    let successResult = null
-    for (const channel of channels) {
-        const result = await tryChannelById(channel.id)
-        if (result && result.success) {
-            successResult = result
-            selectedChannel.value = channel.id
-            break
-        }
-    }
+    // Try only the selected channel
+    const result = await tryChannelById(selectedChannel.value)
     
-    if (successResult) {
-        // Success with one of the channels
-        console.log('Setting payment URL:', successResult.payment_url)
-        paymentUrl.value = successResult.payment_url
+    if (result && result.success) {
+        // Success with selected channel
+        console.log('Setting payment URL:', result.payment_url)
+        paymentUrl.value = result.payment_url
         
         // Always show manual button immediately
         showManualRedirect.value = true
@@ -234,8 +251,8 @@ async function makeDeposit() {
         
         // Try to open in new tab immediately
         try {
-            console.log('Attempting to open:', successResult.payment_url)
-            const newWindow = window.open(successResult.payment_url, '_blank', 'noopener,noreferrer')
+            console.log('Attempting to open:', result.payment_url)
+            const newWindow = window.open(result.payment_url, '_blank', 'noopener,noreferrer')
             
             // Wait a bit to check if window was blocked
             setTimeout(() => {
@@ -253,14 +270,11 @@ async function makeDeposit() {
             console.error('Error opening window:', e)
             message.value = 'Please click the button below to open payment gateway.'
         }
-        
-        loading.value = false
-        return
+    } else {
+        // Selected channel failed
+        error.value = channelErrors.value[selectedChannel.value] || 'Payment gateway error. Please try another channel.'
     }
     
-    // All channels failed
-    error.value = 'All payment channels failed. Please try again later or contact support.'
-    message.value = ''
     loading.value = false
 }
 
@@ -317,46 +331,34 @@ async function retryChannel(channelId) {
       
       <!-- Multiple Payment Channels -->
       <div class="glass-card channel-selection">
-          <p class="label">Payment Method</p>
-          <p class="text-xs text-gray-400 mb-3">Select a payment channel. If one fails, try another.</p>
+          <p class="label" style="font-size: 0.85rem; margin-bottom: 0.5rem;">Payment Method</p>
+          <p class="text-xs text-gray-400 mb-1" style="font-size: 0.7rem;">Select one payment channel</p>
           <div class="channel-options">
-              <div 
+              <button 
                   v-for="channel in channels" 
                   :key="channel.id"
-                  class="channel-item-wrapper"
+                  :class="['channel-btn', {
+                      active: selectedChannel === channel.id,
+                      error: channelStatus[channel.id] === 'error',
+                      success: channelStatus[channel.id] === 'success',
+                      loading: channelStatus[channel.id] === 'loading'
+                  }]"
+                  :disabled="loading || isAlreadyDeposited || mustWithdrawFirst || channelStatus[channel.id] === 'loading'"
+                  @click="selectChannel(channel.id)"
               >
-                  <button 
-                      :class="['channel-btn', {
-                          active: selectedChannel === channel.id,
-                          error: channelStatus[channel.id] === 'error',
-                          success: channelStatus[channel.id] === 'success',
-                          loading: channelStatus[channel.id] === 'loading'
-                      }]"
-                      :disabled="loading || isAlreadyDeposited || mustWithdrawFirst || channelStatus[channel.id] === 'loading'"
-                      @click="retryChannel(channel.id)"
-                  >
-                      <span class="channel-icon">{{ channel.icon }}</span>
-                      <span class="channel-name">{{ channel.name }}</span>
-                      <span class="channel-desc">Secure Payment Gateway</span>
-                      
-                      <!-- Status indicators -->
-                      <span v-if="channelStatus[channel.id] === 'loading'" class="channel-status loading-spinner">⏳</span>
-                      <span v-else-if="channelStatus[channel.id] === 'success'" class="channel-status">✅</span>
-                      <span v-else-if="channelStatus[channel.id] === 'error'" class="channel-status">❌</span>
-                  </button>
+                  <span class="channel-icon">{{ channel.icon }}</span>
+                  <span class="channel-name">{{ channel.name }}</span>
                   
-                  <!-- Error message for this channel -->
-                  <div v-if="channelErrors[channel.id]" class="channel-error-message">
-                      <p class="error-text">{{ channelErrors[channel.id] }}</p>
-                      <button 
-                          @click="retryChannel(channel.id)"
-                          class="retry-btn"
-                          :disabled="loading"
-                      >
-                          🔄 Retry
-                      </button>
-                  </div>
-              </div>
+                  <!-- Status indicators -->
+                  <span v-if="channelStatus[channel.id] === 'loading'" class="channel-status loading-spinner">⏳</span>
+                  <span v-else-if="channelStatus[channel.id] === 'success'" class="channel-status">✅</span>
+                  <span v-else-if="channelStatus[channel.id] === 'error'" class="channel-status">❌</span>
+              </button>
+          </div>
+          
+          <!-- Error message for selected channel -->
+          <div v-if="selectedChannel && channelErrors[selectedChannel]" class="channel-error-message mt-2">
+              <p class="error-text">{{ channelErrors[selectedChannel] }}</p>
           </div>
       </div>
       
@@ -617,17 +619,17 @@ async function retryChannel(channelId) {
 
 .channel-selection {
     margin-top: 1.5rem;
-    padding: 1.5rem;
+    padding: 0.75rem;
     background: #111;
     border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 16px;
+    border-radius: 10px;
 }
 
 .channel-options {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
-    margin-top: 1rem;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
 }
 
 .channel-item-wrapper {
@@ -641,13 +643,15 @@ async function retryChannel(channelId) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1rem 0.5rem;
+    justify-content: center;
+    padding: 0.4rem 0.3rem;
     background: #1a1a1a;
-    border: 2px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.3s;
     color: white;
+    min-height: 50px;
 }
 
 .channel-btn:hover:not(:disabled) {
@@ -668,21 +672,23 @@ async function retryChannel(channelId) {
 }
 
 .channel-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    margin-bottom: 0.2rem;
 }
 
 .channel-name {
-    font-weight: 700;
-    font-size: 0.9rem;
-    margin-bottom: 0.25rem;
+    font-weight: 600;
+    font-size: 0.65rem;
+    margin-bottom: 0;
+    line-height: 1.2;
 }
 
 .channel-desc {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #94a3b8;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    display: none;
 }
 
 .channel-info {
@@ -705,9 +711,9 @@ async function retryChannel(channelId) {
 
 .channel-status {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    font-size: 0.9rem;
+    top: 3px;
+    right: 3px;
+    font-size: 0.7rem;
 }
 
 .loading-spinner {

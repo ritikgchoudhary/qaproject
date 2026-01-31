@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Database connection (use our project's config)
+// Database connection
 $host = '72.60.96.75';
 $db_name = 'qa_platform';
 $username = 'qa_platform';
@@ -46,7 +46,7 @@ echo '<!DOCTYPE html>
 <body>
   <div class="loader-container">
       <div class="loader"></div>
-      <p>Initiating Payment via WatchPay...</p>
+      <p>Initiating Payment via SilkPay...</p>
       <p style="font-size:0.8rem; margin-top:10px;">Please do not close this window.</p>
   </div>
 </body>
@@ -66,54 +66,50 @@ if (!$userData) {
     die("User not found.");
 }
 
-// Payment Gateway Config
-$merchantKey = "R3BEQZSVERC1GEBJXCBJLNV3DJQNH5KE";
-$merchantId = "100225567";
-$requestUrl = "https://api.watchglb.com/pay/web";
+// SilkPay Configuration
+$merchantId = "F7092";
+$secretKey = "89055L7zH3";
+$apiUrl = "https://api.silkpay.ai/transaction/payin/v2";
+$notifyUrl = "https://iquizz.in/pay/silkpay/deposit_callback.php";
+$returnUrl = "https://iquizz.in/deposit?status=success";
 
-// Prepare Gateway Parameters
-$params = [
-    "version"       => "1.0",
-    "mch_id"        => $merchantId,
-    "notify_url"    => "https://iquizz.in/pay/watchpay/deposit_callback.php",
-    "page_url"      => "https://iquizz.in/deposit?status=success",
-    "mch_order_no"  => $order_id,
-    "pay_type"      => '101', // UPI/QR Code
-    "trade_amount"  => $amount,
-    "order_date"    => date("Y-m-d H:i:s"),
-    "goods_name"    => "Quiz Deposit",
-    "mch_return_msg" => "Deposit for User ID: $uid",
-    "sign_type"     => "MD5"
+// Generate timestamp (milliseconds)
+$timestamp = round(microtime(true) * 1000);
+
+// Prepare request data
+$requestData = [
+    "amount" => $amount,
+    "mId" => $merchantId,
+    "mOrderId" => $order_id,
+    "timestamp" => $timestamp,
+    "notifyUrl" => $notifyUrl,
+    "returnUrl" => $returnUrl
 ];
 
-// Generate Signature
-$filtered = [];
-foreach ($params as $k => $v) {
-    if ($v !== "" && $v !== null && $k != "sign" && $k != "sign_type") {
-        $filtered[$k] = $v;
-    }
-}
-ksort($filtered);
-$queryString = "";
-foreach ($filtered as $k => $v) {
-    $queryString .= $k . "=" . $v . "&";
-}
-$queryString .= "key=" . $merchantKey;
-$sign = strtolower(md5($queryString));
-$params["sign"] = $sign;
+// Generate signature: md5(mId+mOrderId+amount+timestamp+secret)
+$signString = $merchantId . $order_id . $amount . $timestamp . $secretKey;
+$sign = strtolower(md5($signString));
+$requestData["sign"] = $sign;
 
-// Call Payment API
+// Log request for debugging
+error_log("SilkPay Request - Order: $order_id, Amount: $amount, Sign String: $signString, Sign: $sign");
+
+// Call SilkPay API
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $requestUrl);
+curl_setopt($ch, CURLOPT_URL, $apiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
-curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/x-www-form-urlencoded"]);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($requestData));
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    "Content-Type: application/json",
+    "Accept: application/json"
+]);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
 $response = curl_exec($ch);
 $curlError = curl_error($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
 if ($curlError) {
@@ -145,9 +141,8 @@ if ($curlError) {
 // Parse Response
 $data = json_decode($response, true);
 
-// Check if response is valid and successful
+// Check if response is valid
 if (!$data) {
-    // Invalid JSON response
     $stmt = $pdo->prepare("UPDATE deposits SET status = 'failed' WHERE id = ?");
     $stmt->execute([$deposit_id]);
     
@@ -170,18 +165,16 @@ if (!$data) {
     </div>
 </body>
 </html>';
-    error_log("WatchPay Invalid Response - Order: $order_id, Response: " . substr($response, 0, 500));
+    error_log("SilkPay Invalid Response - Order: $order_id, HTTP Code: $httpCode, Response: " . substr($response, 0, 500));
     exit;
 }
 
-// Check for success - respCode should be "SUCCESS" and payInfo should exist
-if (!isset($data['respCode']) || $data['respCode'] !== "SUCCESS" || !isset($data['payInfo'])) {
-    // Handle Error - Update deposit status to failed
+// Check for success
+if (!isset($data['status']) || $data['status'] !== "200" || !isset($data['data']['paymentUrl'])) {
     $stmt = $pdo->prepare("UPDATE deposits SET status = 'failed' WHERE id = ?");
     $stmt->execute([$deposit_id]);
     
-    $errorMsg = $data['errorMsg'] ?? ($data['tradeMsg'] ?? 'Unknown error');
-    $errorCode = $data['respCode'] ?? 'Unknown';
+    $errorMsg = $data['message'] ?? 'Unknown error';
     
     echo '<!DOCTYPE html>
 <html>
@@ -196,31 +189,26 @@ if (!isset($data['respCode']) || $data['respCode'] !== "SUCCESS" || !isset($data
 <body>
     <div class="error-box">
         <h2>Payment Initiation Failed</h2>
-        <p>Error Code: ' . htmlspecialchars($errorCode) . '</p>
         <p>Error Message: ' . htmlspecialchars($errorMsg) . '</p>
         <a href="https://iquizz.in/deposit" class="btn">Try Again</a>
     </div>
 </body>
 </html>';
     
-    // Log error
-    error_log("WatchPay Payment Gateway Error - Order: $order_id, Code: $errorCode, Message: $errorMsg");
+    error_log("SilkPay Payment Gateway Error - Order: $order_id, Message: $errorMsg, Response: " . json_encode($data));
     exit;
 }
 
 // Success - Redirect to Payment Page
-$payLink = $data['payInfo'];
-$gatewayOrderNo = $data['orderNo'] ?? $order_id;
+$payLink = $data['data']['paymentUrl'];
 
-// Update deposit with gateway order number (store in order_id or just log it)
-// Note: We keep the original order_id, gateway order is in callback
+// Log success
+error_log("SilkPay Success - Order: $order_id, Payment URL: $payLink");
 
-// Redirect to Payment Page (in same tab - this file is already opened in new tab by frontend)
+// Redirect to Payment Page
 echo '<script type="text/javascript">
-    console.log("Redirecting to WatchPay gateway:", "' . htmlspecialchars($payLink, ENT_QUOTES) . '");
-    // Use window.location.href instead of replace to allow back button
+    console.log("Redirecting to SilkPay gateway:", "' . htmlspecialchars($payLink, ENT_QUOTES) . '");
     window.location.href = "' . htmlspecialchars($payLink, ENT_QUOTES) . '";
 </script>';
-// Fallback: Meta refresh in case JavaScript is disabled
 echo '<noscript><meta http-equiv="refresh" content="0;url=' . htmlspecialchars($payLink, ENT_QUOTES) . '"></noscript>';
 ?>
