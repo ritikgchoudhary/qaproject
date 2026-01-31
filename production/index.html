@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>frontend</title>
+    <script type="module" crossorigin src="/assets/index-vF_q0eCY.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BgH0ALst.css">
+  </head>
+  <body>
+    <div id="app">
+      <!-- Pre-loader (Will be replaced by Vue) -->
+      <div id="pre-loader" style="position: fixed; inset: 0; background: #050505; display: flex; align-items: center; justify-content: center; z-index: 99999; font-family: sans-serif;">
+         <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+            <div class="clock-loader"></div>
+            <p style="color: #fbbf24; font-size: 10px; font-weight: 800; letter-spacing: 0.4em; text-transform: uppercase; margin: 0; animation: pulse 2s infinite;">Pinnacle</p>
+         </div>
+         <style>
+            .clock-loader {
+              width: 44px; height: 44px;
+              border: 2.5px solid #fbbf24;
+              border-radius: 50%;
+              position: relative;
+              background: transparent;
+            }
+            .clock-loader::after, .clock-loader::before {
+              content: ""; position: absolute;
+              top: 50%; left: 50%;
+              background: #fbbf24; border-radius: 10px;
+              transform-origin: center top;
+            }
+            .clock-loader::after { width: 2.5px; height: 16px; animation: clock-spin 2s linear infinite; }
+            .clock-loader::before { width: 2.5px; height: 12px; animation: clock-spin 10s linear infinite; }
+            @keyframes clock-spin {
+              0% { transform: translate(-50%, 0%) rotate(0deg); }
+              100% { transform: translate(-50%, 0%) rotate(360deg); }
+            }
+            @keyframes pulse {
+               0%, 100% { opacity: 1; }
+               50% { opacity: 0.5; }
+            }
+         </style>
+      </div>
+    </div>
+  </body>
+</html>
