@@ -62,32 +62,14 @@ try {
     }
 
     // Verify structure for CURRENT level
-    // Level 1: Needs at least 1 Active Direct (simplified requirement)
-    // Level 2: Needs 3 Active Directs AND each of them must have 3 Active Directs (Total 9 at L2)
+    // NEW REQUIREMENT: ALL levels need exactly 3 active direct referrals who have deposited
     $directs_count = count(getActiveDirects($pdo, $user_id));
     
-    if ($user_level == 1) {
-        // Level 1: Just need at least 1 active direct referral
-        if ($directs_count < 1) {
-            $pdo->rollBack();
-            echo json_encode(["error" => "Withdrawal Locked! You need at least 1 active (deposited) direct referral for Level 1."]);
-            exit();
-        }
-    } else if ($user_level == 2) {
-        // Level 2: Just need 3 active directs (simplified - no full 3x3 matrix required)
-        if ($directs_count < 3) {
-            $pdo->rollBack();
-            echo json_encode(["error" => "Withdrawal Locked! You need 3 active (deposited) direct referrals for Level 2."]);
-            exit();
-        }
-    } else {
-        // Level 3+: Use recursive structure check for full matrix
-        if (!checkTeamStructure($pdo, $user_id, $user_level, 1)) {
-            $pdo->rollBack();
-            $req_msg = "Withdrawal Locked! Level $user_level requirements not met. Complete your team structure requirements.";
-            echo json_encode(["error" => $req_msg]);
-            exit();
-        }
+    // Check if user has exactly 3 active direct referrals (all must have deposited)
+    if ($directs_count < 3) {
+        $pdo->rollBack();
+        echo json_encode(["error" => "Withdrawal Locked! You need exactly 3 active (deposited) direct referrals to withdraw. Currently you have $directs_count."]);
+        exit();
     }
     // ------------------------------------
 

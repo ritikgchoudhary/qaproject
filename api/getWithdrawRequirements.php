@@ -45,17 +45,8 @@ if (!empty($l1_codes)) {
     $l2_count = $stmt->fetchColumn();
 }
 
-// Level 1: Only needs 1 active direct
-// Level 2: Needs 3 active directs (simplified - no need for full 3x3 matrix)
-// Level 3+: Needs full structure
-$structure_met = false;
-if ($user_level == 1) {
-    $structure_met = ($l1_count >= 1);
-} else if ($user_level == 2) {
-    $structure_met = ($l1_count >= 3);
-} else {
-    $structure_met = ($l1_count >= 3 && $l2_count >= 9);
-}
+// NEW REQUIREMENT: ALL levels need exactly 3 active direct referrals who have deposited
+$structure_met = ($l1_count >= 3);
 
 // Calculate maximum withdrawal amount based on PREVIOUS completed level
 // Level 1: ₹200 (Level 1), Level 2: ₹200 (Level 1 completed), Level 3: ₹400 (Level 2 completed), Level 4: ₹800 (Level 3 completed)
@@ -69,9 +60,9 @@ echo json_encode([
     "success" => true,
     "current_level" => $user_level,
     "l1_active" => $l1_count,
-    "l1_required" => $user_level == 1 ? 1 : ($user_level == 2 ? 3 : 3),
+    "l1_required" => 3, // All levels need 3 active directs
     "l2_active" => $l2_count,
-    "l2_required" => 9,
+    "l2_required" => 0, // Not required for withdrawal
     "structure_met" => $structure_met,
     "max_withdraw_amount" => $max_withdraw_amount
 ]);
