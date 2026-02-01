@@ -19,11 +19,22 @@ const showManualRedirect = ref(false)
 const channelErrors = ref({})
 const channelStatus = ref({}) // 'idle', 'loading', 'success', 'error'
 const channels = [
-    { id: 'WATCHPAY_1', name: 'WatchPay 1', icon: '💳', gateway: 'WATCHPAY' },
-    { id: 'WATCHPAY_2', name: 'WatchPay 2', icon: '💳', gateway: 'WATCHPAY' },
-    { id: 'SILKPAY_1', name: 'SilkPay 1', icon: '💎', gateway: 'SILKPAY' },
-    { id: 'SILKPAY_2', name: 'SilkPay 2', icon: '💎', gateway: 'SILKPAY' }
+    { id: 'SILKPAY_1', name: 'SilkPay 1', icon: 'sparkles', gateway: 'SILKPAY' },
+    { id: 'SILKPAY_2', name: 'SilkPay 2', icon: 'sparkles', gateway: 'SILKPAY' }
 ]
+
+// Icon component function
+function getIconSVG(iconName) {
+    const icons = {
+        'credit-card': `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>`,
+        'sparkles': `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+        </svg>`
+    }
+    return icons[iconName] || icons['credit-card']
+}
 const depositHistory = ref([])
 const loadingHistory = ref(false)
 const showDisputeModal = ref(false)
@@ -346,7 +357,7 @@ async function retryChannel(channelId) {
                   :disabled="loading || isAlreadyDeposited || mustWithdrawFirst || channelStatus[channel.id] === 'loading'"
                   @click="selectChannel(channel.id)"
               >
-                  <span class="channel-icon">{{ channel.icon }}</span>
+                  <span class="channel-icon" v-html="getIconSVG(channel.icon)"></span>
                   <span class="channel-name">{{ channel.name }}</span>
                   
                   <!-- Status indicators -->
@@ -626,10 +637,12 @@ async function retryChannel(channelId) {
 }
 
 .channel-options {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-direction: row;
     gap: 0.4rem;
     margin-top: 0.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .channel-item-wrapper {
@@ -652,6 +665,8 @@ async function retryChannel(channelId) {
     transition: all 0.3s;
     color: white;
     min-height: 50px;
+    min-width: 80px;
+    flex-shrink: 0;
 }
 
 .channel-btn:hover:not(:disabled) {
