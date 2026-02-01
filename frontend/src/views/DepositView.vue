@@ -18,10 +18,33 @@ const paymentUrl = ref('')
 const showManualRedirect = ref(false)
 const channelErrors = ref({})
 const channelStatus = ref({}) // 'idle', 'loading', 'success', 'error'
-const channels = [
-    { id: 'SILKPAY_1', name: 'SilkPay 1', icon: 'sparkles', gateway: 'SILKPAY' },
-    { id: 'SILKPAY_2', name: 'SilkPay 2', icon: 'sparkles', gateway: 'SILKPAY' }
-]
+const qrImage = ref('')
+const showQR = ref(false)
+const depositIdForUTR = ref(null)
+const utrValue = ref('')
+const showUTRForm = ref(false)
+const submittingUTR = ref(false)
+const channels = ref([
+    { id: 'SIMPLYPAY', name: 'SimplyPay', icon: 'payment', gateway: 'SIMPLYPAY' },
+    { id: 'WATCHPAY', name: 'WatchPay', icon: 'credit-card', gateway: 'WATCHPAY' },
+    { id: 'SILKPAY', name: 'SilkPay', icon: 'sparkles', gateway: 'SILKPAY' }
+])
+
+// Load enabled payment methods
+async function loadEnabledPaymentMethods() {
+    try {
+        const res = await axios.get('/api/getPaymentMethods.php')
+        if (res.data.success && res.data.methods) {
+            // Filter channels based on enabled methods
+            channels.value = channels.value.filter(ch => {
+                return res.data.methods[ch.gateway] === true
+            })
+        }
+    } catch (e) {
+        console.error('Error loading payment methods:', e)
+        // On error, show all methods (default behavior)
+    }
+}
 
 // Icon component function
 function getIconSVG(iconName) {
@@ -31,6 +54,12 @@ function getIconSVG(iconName) {
         </svg>`,
         'sparkles': `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+        </svg>`,
+        'qr-code': `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.5h4.5m-4.5 0v4.5m0-4.5h-4.5m4.5 0V3.75m0 0h4.5m-4.5 0h-4.5m9 0h4.5m-4.5 0v4.5m0-4.5h-4.5m4.5 0V3.75m0 0h-4.5m4.5 0h4.5m-9 9h4.5m-4.5 0v4.5m0-4.5h-4.5m4.5 0V12.75m0 0h-4.5m4.5 0h-4.5m9 0h4.5m-4.5 0v4.5m0-4.5h-4.5m4.5 0V12.75m0 0h-4.5m4.5 0h4.5m-9-9v4.5m0-4.5h-4.5m4.5 0h-4.5m9 9v4.5m0-4.5h-4.5m4.5 0h-4.5" />
+        </svg>`,
+        'payment': `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
         </svg>`
     }
     return icons[iconName] || icons['credit-card']
@@ -150,6 +179,7 @@ function formatDate(dateString) {
 }
 
 initialize()
+loadEnabledPaymentMethods()
 
 async function tryChannel(channel) {
     try {
@@ -162,21 +192,34 @@ async function tryChannel(channel) {
         
         console.log('API Response:', res.data)
         
-        if (res.data.success && res.data.payment_url) {
-            console.log('Payment URL received:', res.data.payment_url)
-            return {
-                success: true,
-                payment_url: res.data.payment_url,
-                channel: channel
+        if (res.data.success) {
+            // Handle CUSTOM_QR response (returns deposit_id, not payment_url)
+            if (res.data.requires_utr && res.data.deposit_id) {
+                return {
+                    success: true,
+                    deposit_id: res.data.deposit_id,
+                    requires_utr: true,
+                    channel: channel
+                }
             }
-        } else {
-            const errorMsg = res.data.error || 'Payment gateway error'
-            console.error('API Error:', errorMsg)
-            return {
-                success: false,
-                error: errorMsg,
-                channel: channel
+            
+            // Handle regular payment gateways (returns payment_url)
+            if (res.data.payment_url) {
+                console.log('Payment URL received:', res.data.payment_url)
+                return {
+                    success: true,
+                    payment_url: res.data.payment_url,
+                    channel: channel
+                }
             }
+        }
+        
+        const errorMsg = res.data.error || 'Payment gateway error'
+        console.error('API Error:', errorMsg)
+        return {
+            success: false,
+            error: errorMsg,
+            channel: channel
         }
     } catch(e) {
         const errorMsg = e.response?.data?.error || e.message || 'Network error'
@@ -195,7 +238,7 @@ async function tryChannelById(channelId) {
     channelErrors.value[channelId] = ''
     
     // Find the channel to get its gateway
-    const channel = channels.find(ch => ch.id === channelId)
+    const channel = channels.value.find(ch => ch.id === channelId)
     const gateway = channel?.gateway || 'WATCHPAY'
     
     // Use the correct gateway for this channel
@@ -219,7 +262,7 @@ function selectChannel(channelId) {
     selectedChannel.value = selectedChannel.value === channelId ? '' : channelId
     
     // Reset status for all channels
-    channels.forEach(ch => {
+    channels.value.forEach(ch => {
         if (ch.id !== channelId) {
             channelStatus.value[ch.id] = 'idle'
             channelErrors.value[ch.id] = ''
@@ -246,11 +289,90 @@ async function makeDeposit() {
     channelStatus.value[selectedChannel.value] = 'idle'
     channelErrors.value[selectedChannel.value] = ''
     
-    // Try only the selected channel
-    const result = await tryChannelById(selectedChannel.value)
+    // Find the selected channel to check its gateway
+    const selectedChannelObj = channels.value.find(ch => ch.id === selectedChannel.value)
+    const isSilkPay = selectedChannelObj?.gateway === 'SILKPAY'
+    const isCustomQR = selectedChannelObj?.gateway === 'CUSTOM_QR'
+    
+    // Handle Custom QR differently
+    if (isCustomQR) {
+        // Check if QR is enabled
+        try {
+            const qrRes = await axios.get('/api/getMasterQR.php')
+            if (!qrRes.data.success || !qrRes.data.enabled) {
+                error.value = 'Custom QR payment is currently disabled. Please try another payment method.'
+                loading.value = false
+                return
+            }
+            
+            if (!qrRes.data.qr_image) {
+                error.value = 'QR code not configured. Please contact support.'
+                loading.value = false
+                return
+            }
+            
+            // Create deposit record
+            const result = await tryChannelById(selectedChannel.value)
+            if (result && result.deposit_id) {
+                qrImage.value = qrRes.data.qr_image
+                depositIdForUTR.value = result.deposit_id
+                showQR.value = true
+                showUTRForm.value = true
+                message.value = 'Scan the QR code and complete payment, then submit your UTR number below.'
+            } else {
+                error.value = 'Failed to create deposit record. Please try again.'
+            }
+        } catch (e) {
+            error.value = 'Failed to load QR code. Please try again.'
+        }
+        loading.value = false
+        return
+    }
+    
+    // Try the selected channel first
+    let result = await tryChannelById(selectedChannel.value)
+    
+    // If SilkPay fails, automatically try WatchPay as fallback
+    if (!result || !result.success) {
+        const errorMsg = channelErrors.value[selectedChannel.value] || ''
+        const isPaymentInitiationFailed = errorMsg.toLowerCase().includes('payment initiation failed') || 
+                                         errorMsg.toLowerCase().includes('payment gateway error') ||
+                                         errorMsg.toLowerCase().includes('network error')
+        
+        if (isSilkPay && isPaymentInitiationFailed) {
+            console.log('SilkPay failed, automatically trying WatchPay as fallback...')
+            message.value = 'SilkPay failed, trying WatchPay...'
+            
+            // Find a WatchPay channel to use as fallback
+            const watchPayChannel = channels.value.find(ch => ch.gateway === 'WATCHPAY')
+            if (watchPayChannel) {
+                // Try WatchPay
+                result = await tryChannelById(watchPayChannel.id)
+                
+                if (result && result.success) {
+                    // Update selected channel to WatchPay
+                    selectedChannel.value = watchPayChannel.id
+                    message.value = 'WatchPay ready! Opening payment gateway...'
+                } else {
+                    error.value = 'Both SilkPay and WatchPay failed. Please try again later.'
+                    loading.value = false
+                    return
+                }
+            } else {
+                error.value = 'SilkPay failed and no fallback available.'
+                loading.value = false
+                return
+            }
+        } else {
+            // Selected channel failed (not SilkPay or different error)
+            error.value = channelErrors.value[selectedChannel.value] || 'Payment gateway error. Please try another channel.'
+            loading.value = false
+            return
+        }
+    }
     
     if (result && result.success) {
-        // Success with selected channel
+        // Success with selected channel or fallback
         console.log('Setting payment URL:', result.payment_url)
         paymentUrl.value = result.payment_url
         
@@ -258,7 +380,9 @@ async function makeDeposit() {
         showManualRedirect.value = true
         
         // Direct GET redirect with parameters - open in new tab
-        message.value = `Opening payment gateway...`
+        if (!message.value) {
+            message.value = `Opening payment gateway...`
+        }
         
         // Try to open in new tab immediately
         try {
@@ -274,16 +398,17 @@ async function makeDeposit() {
                 } else {
                     // Successfully opened
                     console.log('Payment gateway opened successfully')
-                    message.value = 'Payment gateway opened in new tab. Complete payment there.'
+                    if (message.value.includes('WatchPay')) {
+                        message.value = 'WatchPay opened in new tab. Complete payment there.'
+                    } else {
+                        message.value = 'Payment gateway opened in new tab. Complete payment there.'
+                    }
                 }
             }, 500)
         } catch (e) {
             console.error('Error opening window:', e)
             message.value = 'Please click the button below to open payment gateway.'
         }
-    } else {
-        // Selected channel failed
-        error.value = channelErrors.value[selectedChannel.value] || 'Payment gateway error. Please try another channel.'
     }
     
     loading.value = false
@@ -324,6 +449,37 @@ async function retryChannel(channelId) {
     }
     
     loading.value = false
+}
+
+async function submitUTR() {
+    if (!depositIdForUTR.value || !utrValue.value.trim()) {
+        error.value = 'Please enter UTR number'
+        return
+    }
+    
+    submittingUTR.value = true
+    error.value = ''
+    message.value = ''
+    
+    try {
+        const res = await axios.post('/api/submitUTR.php', {
+            deposit_id: depositIdForUTR.value,
+            utr: utrValue.value.trim()
+        })
+        
+        if (res.data.success) {
+            message.value = res.data.message || 'UTR submitted successfully! Admin will verify and approve your payment.'
+            showUTRForm.value = false
+            utrValue.value = ''
+            await fetchDepositHistory()
+        } else {
+            error.value = res.data.error || 'Failed to submit UTR'
+        }
+    } catch (e) {
+        error.value = e.response?.data?.error || 'Network error. Please try again.'
+    }
+    
+    submittingUTR.value = false
 }
 </script>
 
@@ -398,6 +554,34 @@ async function retryChannel(channelId) {
        <div v-if="message" class="glass-card message success">{{ message }}</div>
        <div v-if="error" class="glass-card message error">{{ error }}</div>
        
+       <!-- Custom QR Display and UTR Form -->
+       <div v-if="showQR && qrImage" class="glass-card mt-4 p-4 border-yellow-500/20 bg-yellow-500/10">
+           <p class="text-yellow-400 text-sm font-bold mb-3">📱 Scan QR Code and Complete Payment</p>
+           <div class="flex justify-center mb-4">
+               <img :src="qrImage" alt="Payment QR Code" class="max-w-xs w-full border-2 border-yellow-500/30 rounded-lg p-2 bg-white">
+           </div>
+           
+           <div v-if="showUTRForm" class="mt-4 pt-4 border-t border-white/10">
+               <p class="text-white text-sm font-bold mb-2">Enter UTR Number:</p>
+               <input 
+                   v-model="utrValue"
+                   type="text"
+                   placeholder="Enter UTR/Transaction ID"
+                   class="w-full px-4 py-3 bg-[#0a0a0a] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/50 mb-3"
+                   :disabled="submittingUTR"
+               />
+               <button 
+                   @click="submitUTR"
+                   :disabled="submittingUTR || !utrValue.trim()"
+                   class="btn-action w-full"
+               >
+                   <span v-if="submittingUTR">Submitting...</span>
+                   <span v-else>Submit UTR</span>
+               </button>
+               <p class="text-xs text-gray-400 mt-2">After payment, enter your UTR number above and submit. Admin will verify and approve your payment.</p>
+           </div>
+       </div>
+
        <!-- Manual Redirect Button (Always shown when payment URL is ready) -->
        <div v-if="showManualRedirect && paymentUrl" class="glass-card mt-4 p-4 border-blue-500/20 bg-blue-500/10">
            <p class="text-blue-400 text-sm font-bold mb-3">💳 Click below to open payment gateway:</p>

@@ -56,6 +56,16 @@ $name = $sidebar_settings['site_name'] ?? 'MasterAdmin';
             Settings
         </a>
 
+        <a href="custom_qr.php" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors <?= basename($_SERVER['PHP_SELF']) == 'custom_qr.php' ? 'bg-yellow-500/10 text-yellow-500' : 'text-gray-400 hover:text-white hover:bg-white/5' ?>">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2.01M8 8h.01M5 12h2.01M8 12h.01M5 16h2.01M8 16h.01M4 20h4m-4-4h4m-4-8h4m12 0h4m-4 4h4m-4 4h4m-4-8h4" /></svg>
+            Custom QR
+        </a>
+
+        <a href="test_payment.php" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors <?= basename($_SERVER['PHP_SELF']) == 'test_payment.php' ? 'bg-yellow-500/10 text-yellow-500' : 'text-gray-400 hover:text-white hover:bg-white/5' ?>">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            Test Payment
+        </a>
+
         <div class="pt-4 pb-2 px-3 text-[10px] font-bold text-gray-600 uppercase tracking-wider">System</div>
 
         <a href="video_settings.php" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors <?= basename($_SERVER['PHP_SELF']) == 'video_settings.php' ? 'bg-yellow-500/10 text-yellow-500' : 'text-gray-400 hover:text-white hover:bg-white/5' ?>">

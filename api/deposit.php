@@ -73,6 +73,25 @@ do {
 $data = json_decode(file_get_contents("php://input"), true);
 $channel = isset($data['channel']) ? strtoupper($data['channel']) : 'WATCHPAY';
 
+// Check if payment method is enabled
+if (in_array($channel, ['SIMPLYPAY', 'WATCHPAY', 'SILKPAY', 'CUSTOM_QR'])) {
+    $settingKey = strtolower($channel) . '_enabled';
+    $stmt = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = ?");
+    $stmt->execute([$settingKey]);
+    $enabled = $stmt->fetchColumn();
+    
+    // Default to enabled if not set, but if explicitly set to 0, disable
+    if ($enabled === '0') {
+        http_response_code(400);
+        $methodName = ($channel === 'CUSTOM_QR') ? 'Custom QR' : ucfirst($channel);
+        echo json_encode([
+            "error" => $methodName . " payment method is currently disabled. Please try another payment method.",
+            "method_disabled" => true
+        ]);
+        exit();
+    }
+}
+
 // Create pending deposit record
 $pdo->beginTransaction();
 try {
@@ -98,15 +117,17 @@ try {
     }
     
     // Validate channel
-    if (!in_array($channel, ['WATCHPAY', 'SILKPAY'])) {
+    if (!in_array($channel, ['WATCHPAY', 'SILKPAY', 'SIMPLYPAY'])) {
         $channel = 'WATCHPAY'; // Default to WatchPay if invalid
     }
     
     // Set payment gateway URL based on channel
     if ($channel === 'SILKPAY') {
         $base_url = "https://iquizz.in/pay/silkpay/deposit_payment.php";
+    } else if ($channel === 'SIMPLYPAY') {
+        $base_url = "https://iquizz.in/pay/simplypay/deposit_payment.php";
     } else {
-    $base_url = "https://iquizz.in/pay/watchpay/deposit_payment.php";
+        $base_url = "https://iquizz.in/pay/watchpay/deposit_payment.php";
     }
     
     // Add GET parameters

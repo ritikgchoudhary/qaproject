@@ -33,7 +33,7 @@ echo '<!DOCTYPE html>
   <style>
     body { font-family: "Inter", sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background: #050505; color: #e2e8f0; margin: 0; padding: 20px; box-sizing: border-box; text-align: center; }
     .loader-container { background: #1a1a1a; padding: 30px 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); }
-    .loader { border: 5px solid rgba(251, 191, 36, 0.2); border-top: 5px solid #fbbf24; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
+    .loader { border: 5px solid rgba(59, 130, 246, 0.2); border-top: 5px solid #3b82f6; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     p { font-size: 1.1rem; font-weight: 600; color: #94a3b8; }
     .error-box { background: rgba(239, 68, 68, 0.1); border: 2px solid rgba(239, 68, 68, 0.5); padding: 2rem; border-radius: 10px; max-width: 400px; margin-top: 20px; }
@@ -46,7 +46,7 @@ echo '<!DOCTYPE html>
 <body>
   <div class="loader-container">
       <div class="loader"></div>
-      <p>Initiating Payment via SilkPay...</p>
+      <p>Initiating Payment via SimplyPay...</p>
       <p style="font-size:0.8rem; margin-top:10px;">Please do not close this window.</p>
   </div>
 </body>
@@ -55,10 +55,10 @@ echo '<!DOCTYPE html>
 $amount = number_format((float)$_GET['amount'], 2, '.', '');
 $uid = (int)$_GET['uid'];
 $deposit_id = (int)$_GET['deposit_id'];
-$order_id = $_GET['order_id'];
+$order_id = trim($_GET['order_id']);
 
 // Verify User Exists
-$stmt = $pdo->prepare("SELECT id, email, name FROM users WHERE id = ?");
+$stmt = $pdo->prepare("SELECT id, email, name, mobile FROM users WHERE id = ?");
 $stmt->execute([$uid]);
 $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -66,42 +66,90 @@ if (!$userData) {
     die("User not found.");
 }
 
-// SilkPay Configuration
-$merchantId = "F7092";
-$secretKey = "89055L7zH3";
-$apiUrl = "https://api.silkpay.ai/transaction/payin/v2";
-$notifyUrl = "https://iquizz.in/pay/silkpay/deposit_callback.php";
-$returnUrl = "https://iquizz.in/deposit?status=success";
+// SimplyPay Configuration
+$appId = "5c85b1437ec187bceaddc751583f0268";
+$appSecret = "006c05166329204714c6d06544f9f43a";
+$apiUrl = "https://api.paysimply.net/api/v2/payment/order/create";
+$notifyUrl = "https://iquizz.in/pay/simplypay/deposit_callback.php";
+$returnUrl = "https://iquizz.in/deposit";
 
-// Generate timestamp (milliseconds)
-$timestamp = round(microtime(true) * 1000);
+// Prepare request parameters
+$merOrderNo = $order_id;
+$currency = "INR";
+$attach = "Quiz Deposit Payment";
 
-// Prepare request data
+// Get user mobile, email, name
+$userName = $userData['name'] ?? 'User';
+$userEmail = $userData['email'] ?? 'user@example.com';
+$userMobile = $userData['mobile'] ?? '9999999999';
+
+// Build request data
 $requestData = [
+    "appId" => $appId,
+    "merOrderNo" => $merOrderNo,
+    "currency" => $currency,
     "amount" => $amount,
-    "mId" => $merchantId,
-    "mOrderId" => $order_id,
-    "timestamp" => $timestamp,
     "notifyUrl" => $notifyUrl,
-    "returnUrl" => $returnUrl
+    "returnUrl" => $returnUrl,
+    "attach" => $attach,
+    "extra" => [
+        "name" => $userName,
+        "email" => $userEmail,
+        "mobile" => $userMobile
+    ]
 ];
 
-// Generate signature: md5(mId+mOrderId+amount+timestamp+secret)
-$signString = $merchantId . $order_id . $amount . $timestamp . $secretKey;
-$sign = strtolower(md5($signString));
-$requestData["sign"] = $sign;
+// Generate signature
+function generateSimplyPaySign($params, $appSecret) {
+    // Remove sign if exists
+    if (isset($params['sign'])) {
+        unset($params['sign']);
+    }
+    
+    // Sort by key (Unicode order)
+    ksort($params);
+    
+    $parts = [];
+    foreach ($params as $key => $value) {
+        if ($value === null || $value === '') {
+            continue;
+        }
+        
+        // Handle extra field specially
+        if ($key === 'extra' && is_array($value)) {
+            $extraParts = [];
+            ksort($value);
+            foreach ($value as $ek => $ev) {
+                if ($ev !== null && $ev !== '') {
+                    $extraParts[] = $ek . '=' . $ev;
+                }
+            }
+            $parts[] = $key . '=' . implode('&', $extraParts);
+        } else {
+            $parts[] = $key . '=' . $value;
+        }
+    }
+    
+    $signString = implode('&', $parts);
+    $signString .= '&key=' . $appSecret;
+    
+    return hash('sha256', $signString);
+}
 
-// Log request for debugging
-error_log("SilkPay Request - Order: $order_id, Amount: $amount, Sign String: $signString, Sign: $sign");
+$sign = generateSimplyPaySign($requestData, $appSecret);
+$requestData['sign'] = $sign;
 
-// Call SilkPay API
+// Log request
+error_log("SimplyPay Request - Order: $order_id, Amount: $amount, Sign: $sign");
+
+// Call SimplyPay API
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $apiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($requestData));
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    "Content-Type: application/json",
+    "Content-Type: application/json;charset=utf-8",
     "Accept: application/json"
 ]);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -113,31 +161,25 @@ $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
 if ($curlError) {
-    error_log("SilkPay cURL Error - Order: $order_id, Error: $curlError");
+    error_log("SimplyPay cURL Error - Order: $order_id, Error: $curlError");
     
-    // Update deposit status to failed
     $stmt = $pdo->prepare("UPDATE deposits SET status = 'failed' WHERE id = ?");
     $stmt->execute([$deposit_id]);
     
-    // Show error message
     echo '<!DOCTYPE html>
 <html>
 <head>
     <title>Payment Failed</title>
     <style>
-        body { font-family: "Inter", sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background: #050505; color: #e2e8f0; margin: 0; padding: 20px; box-sizing: border-box; text-align: center; }
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #050505; color: white; text-align: center; }
         .error-box { background: rgba(239, 68, 68, 0.1); border: 2px solid rgba(239, 68, 68, 0.5); padding: 2rem; border-radius: 10px; max-width: 400px; }
-        .error-box h2 { color: #ef4444; font-size: 1.5rem; margin-bottom: 1rem; }
-        .error-box p { color: #f87171; font-size: 0.9rem; margin-bottom: 0.5rem; }
-        .btn { display: inline-block; margin-top: 1rem; padding: 0.75rem 2rem; background: #ef4444; color: white; text-decoration: none; border-radius: 5px; font-weight: 600; transition: background-color 0.3s; }
-        .btn:hover { background-color: #dc2626; }
+        .btn { display: inline-block; margin-top: 1rem; padding: 0.75rem 2rem; background: #ef4444; color: white; text-decoration: none; border-radius: 5px; }
     </style>
 </head>
 <body>
     <div class="error-box">
         <h2>Payment Initiation Failed</h2>
-        <p>Network Error: ' . htmlspecialchars($curlError) . '</p>
-        <p>SilkPay payment gateway is currently unavailable.</p>
+        <p>cURL Error: ' . htmlspecialchars($curlError) . '</p>
         <a href="https://iquizz.in/deposit" class="btn">Try Again</a>
     </div>
 </body>
@@ -148,33 +190,28 @@ if ($curlError) {
 // Parse Response
 $data = json_decode($response, true);
 
+error_log("SimplyPay Response - Order: $order_id, HTTP Code: $httpCode, Response: " . substr($response, 0, 500));
+
 // Check if response is valid
 if (!$data) {
-    error_log("SilkPay Invalid Response - Order: $order_id, HTTP Code: $httpCode, Response: " . substr($response, 0, 500));
-    
-    // Update deposit status to failed
     $stmt = $pdo->prepare("UPDATE deposits SET status = 'failed' WHERE id = ?");
     $stmt->execute([$deposit_id]);
     
-    // Show error message
     echo '<!DOCTYPE html>
 <html>
 <head>
     <title>Payment Failed</title>
     <style>
-        body { font-family: "Inter", sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background: #050505; color: #e2e8f0; margin: 0; padding: 20px; box-sizing: border-box; text-align: center; }
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #050505; color: white; text-align: center; }
         .error-box { background: rgba(239, 68, 68, 0.1); border: 2px solid rgba(239, 68, 68, 0.5); padding: 2rem; border-radius: 10px; max-width: 400px; }
-        .error-box h2 { color: #ef4444; font-size: 1.5rem; margin-bottom: 1rem; }
-        .error-box p { color: #f87171; font-size: 0.9rem; margin-bottom: 0.5rem; }
-        .btn { display: inline-block; margin-top: 1rem; padding: 0.75rem 2rem; background: #ef4444; color: white; text-decoration: none; border-radius: 5px; font-weight: 600; transition: background-color 0.3s; }
-        .btn:hover { background-color: #dc2626; }
+        .btn { display: inline-block; margin-top: 1rem; padding: 0.75rem 2rem; background: #ef4444; color: white; text-decoration: none; border-radius: 5px; }
     </style>
 </head>
 <body>
     <div class="error-box">
         <h2>Payment Initiation Failed</h2>
-        <p>Invalid response from SilkPay gateway</p>
-        <p>HTTP Code: ' . htmlspecialchars($httpCode) . '</p>
+        <p>Invalid response from payment gateway</p>
+        <p style="font-size:0.8rem;">Response: ' . htmlspecialchars(substr($response, 0, 200)) . '</p>
         <a href="https://iquizz.in/deposit" class="btn">Try Again</a>
     </div>
 </body>
@@ -182,35 +219,30 @@ if (!$data) {
     exit;
 }
 
-// Check for success
-if (!isset($data['status']) || $data['status'] !== "200" || !isset($data['data']['paymentUrl'])) {
-    $errorMsg = $data['message'] ?? 'Unknown error';
-    
-    error_log("SilkPay Payment Gateway Error - Order: $order_id, Message: $errorMsg, Response: " . json_encode($data));
-    
-    // Update deposit status to failed
+// Check for success (code should be 0)
+if (!isset($data['code']) || $data['code'] !== 0 || !isset($data['data']['params']['paymentLink'])) {
     $stmt = $pdo->prepare("UPDATE deposits SET status = 'failed' WHERE id = ?");
     $stmt->execute([$deposit_id]);
     
-    // Show error message
+    $errorMsg = $data['msg'] ?? ($data['error'] ?? 'Unknown error');
+    
+    error_log("SimplyPay Payment Gateway Error - Order: $order_id, Code: " . ($data['code'] ?? 'N/A') . ", Message: $errorMsg");
+    
     echo '<!DOCTYPE html>
 <html>
 <head>
     <title>Payment Failed</title>
     <style>
-        body { font-family: "Inter", sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background: #050505; color: #e2e8f0; margin: 0; padding: 20px; box-sizing: border-box; text-align: center; }
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #050505; color: white; text-align: center; }
         .error-box { background: rgba(239, 68, 68, 0.1); border: 2px solid rgba(239, 68, 68, 0.5); padding: 2rem; border-radius: 10px; max-width: 400px; }
-        .error-box h2 { color: #ef4444; font-size: 1.5rem; margin-bottom: 1rem; }
-        .error-box p { color: #f87171; font-size: 0.9rem; margin-bottom: 0.5rem; }
-        .btn { display: inline-block; margin-top: 1rem; padding: 0.75rem 2rem; background: #ef4444; color: white; text-decoration: none; border-radius: 5px; font-weight: 600; transition: background-color 0.3s; }
-        .btn:hover { background-color: #dc2626; }
+        .btn { display: inline-block; margin-top: 1rem; padding: 0.75rem 2rem; background: #ef4444; color: white; text-decoration: none; border-radius: 5px; }
     </style>
 </head>
 <body>
     <div class="error-box">
         <h2>Payment Initiation Failed</h2>
-        <p>SilkPay Error: ' . htmlspecialchars($errorMsg) . '</p>
-        <p>Please try again or use another payment method.</p>
+        <p>Error Code: ' . htmlspecialchars($data['code'] ?? 'N/A') . '</p>
+        <p>Error Message: ' . htmlspecialchars($errorMsg) . '</p>
         <a href="https://iquizz.in/deposit" class="btn">Try Again</a>
     </div>
 </body>
@@ -219,14 +251,14 @@ if (!isset($data['status']) || $data['status'] !== "200" || !isset($data['data']
 }
 
 // Success - Redirect to Payment Page
-$payLink = $data['data']['paymentUrl'];
+$payLink = $data['data']['params']['paymentLink'];
+$gatewayOrderNo = $data['data']['orderNo'] ?? $order_id;
 
-// Log success
-error_log("SilkPay Success - Order: $order_id, Payment URL: $payLink");
+error_log("SimplyPay Success - Order: $order_id, Payment URL: $payLink");
 
 // Redirect to Payment Page
 echo '<script type="text/javascript">
-    console.log("Redirecting to SilkPay gateway:", "' . htmlspecialchars($payLink, ENT_QUOTES) . '");
+    console.log("Redirecting to SimplyPay gateway:", "' . htmlspecialchars($payLink, ENT_QUOTES) . '");
     window.location.href = "' . htmlspecialchars($payLink, ENT_QUOTES) . '";
 </script>';
 echo '<noscript><meta http-equiv="refresh" content="0;url=' . htmlspecialchars($payLink, ENT_QUOTES) . '"></noscript>';

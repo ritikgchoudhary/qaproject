@@ -40,6 +40,8 @@ require 'components/header.php';
                             <th class="p-4 font-bold">User</th>
                             <th class="p-4 font-bold">Order Number</th>
                             <th class="p-4 font-bold">Amount</th>
+                            <th class="p-4 font-bold">Payment Method</th>
+                            <th class="p-4 font-bold">UTR</th>
                             <th class="p-4 font-bold">Status</th>
                             <th class="p-4 font-bold">Actions</th>
                             <th class="p-4 font-bold text-right">Date</th>
@@ -140,6 +142,9 @@ require 'components/header.php';
                             actionButtons = '<span class="text-gray-500 text-xs">-</span>';
                         }
 
+                        const paymentMethod = d.payment_method === 'CUSTOM_QR' ? '<span class="px-2 py-1 rounded text-[10px] font-bold text-yellow-400 bg-yellow-500/10 border border-yellow-500/20">Custom QR</span>' : '<span class="text-gray-500 text-xs">Gateway</span>';
+                        const utrDisplay = d.utr ? `<span class="font-mono text-yellow-400 text-xs font-bold">${d.utr}</span>` : (d.payment_method === 'CUSTOM_QR' ? '<span class="text-orange-400 text-xs">Pending UTR</span>' : '<span class="text-gray-500 text-xs">-</span>');
+                        
                         tr.innerHTML = `
                             <td class="p-4 text-gray-500 font-mono">#${d.id}</td>
                             <td class="p-4">
@@ -150,6 +155,8 @@ require 'components/header.php';
                                 ${d.order_id ? `<span class="font-mono text-blue-400 text-sm font-bold">${d.order_id}</span>` : '<span class="text-gray-500 text-xs">-</span>'}
                             </td>
                             <td class="p-4 text-green-400 font-bold">₹${Number(d.amount).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                            <td class="p-4">${paymentMethod}</td>
+                            <td class="p-4">${utrDisplay}</td>
                             <td class="p-4">
                                 <span class="px-2 py-1 rounded text-[10px] uppercase font-bold ${statusColor} border">
                                     ${statusText}

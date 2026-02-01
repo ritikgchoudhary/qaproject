@@ -1,4 +1,11 @@
 <?php
+// Start output buffering to catch any warnings
+ob_start();
+
+// Suppress warnings for JSON output
+error_reporting(E_ALL & ~E_WARNING);
+ini_set('display_errors', 0);
+
 session_start();
 if (!isset($_SESSION['admin_id'])) {
     http_response_code(401);
@@ -271,7 +278,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_deposits') {
     exit();
 }
 
-if ($data['action'] === 'edit_user') {
+if (isset($data) && isset($data['action']) && $data['action'] === 'edit_user') {
     // Get current role to check if we need to set default commission
     $stmt = $pdo->prepare("SELECT role FROM users WHERE id = ?");
     $stmt->execute([$data['id']]);
@@ -289,7 +296,7 @@ if ($data['action'] === 'edit_user') {
     exit();
 }
 
-if ($data['action'] === 'update_direct_commission') {
+if (isset($data) && isset($data['action']) && $data['action'] === 'update_direct_commission') {
     $agent_id = (int)$data['agent_id'];
     $percentage = (float)$data['percentage'];
     
@@ -317,7 +324,7 @@ if ($data['action'] === 'update_direct_commission') {
     exit();
 }
 
-if ($data['action'] === 'approve_commission') {
+if (isset($data) && isset($data['action']) && $data['action'] === 'approve_commission') {
     $commission_id = (int)$data['commission_id'];
     
     try {
@@ -352,7 +359,7 @@ if ($data['action'] === 'approve_commission') {
     exit();
 }
 
-if ($data['action'] === 'reject_commission') {
+if (isset($data) && isset($data['action']) && $data['action'] === 'reject_commission') {
     $commission_id = (int)$data['commission_id'];
     $notes = isset($data['notes']) ? trim($data['notes']) : '';
     
@@ -372,7 +379,7 @@ if ($data['action'] === 'reject_commission') {
     exit();
 }
 
-if ($data['action'] === 'adjust_commission') {
+if (isset($data) && isset($data['action']) && $data['action'] === 'adjust_commission') {
     $commission_id = (int)$data['commission_id'];
     $new_amount = (float)$data['new_amount'];
     $notes = isset($data['notes']) ? trim($data['notes']) : '';
@@ -403,7 +410,7 @@ if ($data['action'] === 'adjust_commission') {
     exit();
 }
 
-if ($data['action'] === 'delete_user') {
+if (isset($data) && isset($data['action']) && $data['action'] === 'delete_user') {
     // Delete related data first or cascade if set. Assume manual cleanup slightly safer to error for now? 
     // Or just soft delete? Prompt implies full controls. 
     // Let's do simple delete.
@@ -417,7 +424,7 @@ if ($data['action'] === 'delete_user') {
     exit();
 }
 
-if ($data['action'] === 'adjust_wallet') {
+if (isset($data) && isset($data['action']) && $data['action'] === 'adjust_wallet') {
     $uid = $data['user_id'];
     $amount = (float)$data['amount'];
     $op = $data['operation'];
@@ -452,7 +459,7 @@ if ($data['action'] === 'adjust_wallet') {
     exit();
 }
 
-if ($data['action'] === 'add_admin') {
+if (isset($data) && isset($data['action']) && $data['action'] === 'add_admin') {
     $user = trim($data['username']);
     $pass = password_hash($data['password'], PASSWORD_BCRYPT);
     
@@ -470,7 +477,7 @@ if ($data['action'] === 'add_admin') {
     exit();
 }
 
-if ($data['action'] === 'delete_admin') {
+if (isset($data) && isset($data['action']) && $data['action'] === 'delete_admin') {
     // Prevent self-delete usually handled by UI but good to check. 
     // Assuming simple logic for now.
     $stmt = $pdo->prepare("DELETE FROM admins WHERE id = ?");
@@ -479,7 +486,7 @@ if ($data['action'] === 'delete_admin') {
     exit();
 }
 
-if ($data['action'] === 'update_dispute_status') {
+if (isset($data) && isset($data['action']) && $data['action'] === 'update_dispute_status') {
     $id = $data['id'];
     $status = $data['status']; // 'pending', 'reviewed', or 'resolved'
 
@@ -498,7 +505,7 @@ if ($data['action'] === 'update_dispute_status') {
     exit();
 }
 
-if ($data['action'] === 'update_withdraw') {
+if (isset($data) && isset($data['action']) && $data['action'] === 'update_withdraw') {
     $id = $data['id'];
     $status = $data['status']; // 'approved' or 'rejected'
 
@@ -538,7 +545,7 @@ if ($data['action'] === 'update_withdraw') {
 }
 
 // Handle Deposit Approve/Reject
-if ($data['action'] === 'update_deposit') {
+if (isset($data) && isset($data['action']) && $data['action'] === 'update_deposit') {
     $id = $data['id'];
     $status = $data['status']; // 'success' or 'failed'
 
@@ -602,5 +609,168 @@ if ($data['action'] === 'update_deposit') {
         $pdo->rollBack();
         echo json_encode(["error" => $e->getMessage()]);
     }
+}
+
+// Handle GET Custom QR Status
+if (isset($_GET['action']) && $_GET['action'] === 'get_custom_qr') {
+    try {
+        $stmt = $pdo->query("SELECT qr_image_path, is_enabled FROM master_qr_settings LIMIT 1");
+        $settings = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$settings) {
+            echo json_encode([
+                'success' => false,
+                'enabled' => false,
+                'qr_image' => null
+            ]);
+            exit();
+        }
+
+        echo json_encode([
+            'success' => true,
+            'enabled' => (bool)$settings['is_enabled'],
+            'qr_image' => $settings['qr_image_path'] ? 'https://iquizz.in/' . $settings['qr_image_path'] : null
+        ]);
+    } catch (Exception $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit();
+}
+
+// Handle Upload Custom QR
+if (isset($_GET['action']) && $_GET['action'] === 'upload_custom_qr') {
+    try {
+        if (!isset($_FILES['qr_image']) || $_FILES['qr_image']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['error' => 'No file uploaded or upload error']);
+            exit();
+        }
+
+        $file = $_FILES['qr_image'];
+        
+        // Validate file type
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+
+        if (!in_array($mimeType, $allowedTypes)) {
+            echo json_encode(['error' => 'Invalid file type. Only JPG, PNG, GIF, WEBP allowed']);
+            exit();
+        }
+
+        // Validate file size (5MB)
+        if ($file['size'] > 5 * 1024 * 1024) {
+            echo json_encode(['error' => 'File size must be less than 5MB']);
+            exit();
+        }
+
+        // Create uploads directory if not exists
+        $uploadDir = __DIR__ . '/../uploads/master_qr/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        // Generate unique filename
+        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $filename = 'master_qr_' . time() . '_' . uniqid() . '.' . $extension;
+        $filepath = $uploadDir . $filename;
+        $relativePath = 'uploads/master_qr/' . $filename;
+
+        // Move uploaded file
+        if (!move_uploaded_file($file['tmp_name'], $filepath)) {
+            echo json_encode(['error' => 'Failed to save file']);
+            exit();
+        }
+
+        // Update database
+        $stmt = $pdo->prepare("UPDATE master_qr_settings SET qr_image_path = ?, updated_by = ? WHERE id = (SELECT id FROM (SELECT id FROM master_qr_settings LIMIT 1) AS tmp)");
+        $stmt->execute([$relativePath, $_SESSION['admin_id']]);
+
+        // Delete old file if exists
+        $stmt = $pdo->query("SELECT qr_image_path FROM master_qr_settings LIMIT 1");
+        $oldPath = $stmt->fetchColumn();
+        if ($oldPath && $oldPath !== $relativePath && file_exists(__DIR__ . '/../' . $oldPath)) {
+            @unlink(__DIR__ . '/../' . $oldPath);
+        }
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'QR code uploaded successfully',
+            'qr_image' => 'https://iquizz.in/' . $relativePath
+        ]);
+    } catch (Exception $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit();
+}
+
+// Handle Toggle Custom QR
+if (isset($data['action']) && $data['action'] === 'toggle_custom_qr') {
+    try {
+        $enabled = isset($data['enabled']) ? (int)$data['enabled'] : 0;
+        
+        $stmt = $pdo->prepare("UPDATE master_qr_settings SET is_enabled = ?, updated_by = ? WHERE id = (SELECT id FROM (SELECT id FROM master_qr_settings LIMIT 1) AS tmp)");
+        $stmt->execute([$enabled, $_SESSION['admin_id']]);
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'QR status updated successfully',
+            'enabled' => (bool)$enabled
+        ]);
+    } catch (Exception $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit();
+}
+
+// Handle GET Payment Methods Status
+if (isset($_GET['action']) && $_GET['action'] === 'get_payment_methods') {
+    // Clean any output before JSON
+    ob_clean();
+    header('Content-Type: application/json');
+    
+    try {
+        $stmt = $pdo->query("SELECT setting_key, setting_value FROM global_settings WHERE setting_key IN ('simplypay_enabled', 'watchpay_enabled', 'silkpay_enabled', 'custom_qr_enabled')");
+        $settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+        
+        // Default all enabled if not set
+        $defaults = [
+            'simplypay_enabled' => '1',
+            'watchpay_enabled' => '1',
+            'silkpay_enabled' => '1',
+            'custom_qr_enabled' => '1'
+        ];
+        
+        $result = array_merge($defaults, $settings);
+        echo json_encode($result);
+    } catch (Exception $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit();
+}
+
+// Handle Toggle Payment Method
+if (isset($data['action']) && $data['action'] === 'toggle_payment_method') {
+    try {
+        $methodKey = $data['method_key'] ?? '';
+        $enabled = isset($data['enabled']) ? (int)$data['enabled'] : 0;
+        
+        if (!in_array($methodKey, ['simplypay_enabled', 'watchpay_enabled', 'silkpay_enabled', 'custom_qr_enabled'])) {
+            echo json_encode(['error' => 'Invalid payment method']);
+            exit();
+        }
+        
+        $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?");
+        $stmt->execute([$methodKey, $enabled, $enabled]);
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Payment method status updated successfully',
+            'enabled' => (bool)$enabled
+        ]);
+    } catch (Exception $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit();
 }
 ?>
