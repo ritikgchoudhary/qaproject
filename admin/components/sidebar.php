@@ -5,6 +5,23 @@ $stmt_side = $pdo->query("SELECT setting_key, setting_value FROM global_settings
 $sidebar_settings = $stmt_side->fetchAll(PDO::FETCH_KEY_PAIR);
 $logo = $sidebar_settings['site_logo'] ?? '';
 $name = $sidebar_settings['site_name'] ?? 'MasterAdmin';
+
+// Always rebuild logo URL with current domain
+if ($logo) {
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $currentHost = $_SERVER['HTTP_HOST'] ?? 'iquizz.online';
+    $currentBaseUrl = $protocol . '://' . $currentHost;
+    
+    // Extract path from logo URL (works with any domain)
+    $logoPath = parse_url($logo, PHP_URL_PATH);
+    if ($logoPath && strpos($logoPath, '/admin/uploads/') !== false) {
+        // Extract just the path part
+        $logo = $currentBaseUrl . $logoPath;
+    } elseif (preg_match('#/(admin/uploads/[^/]+)$#', $logo, $matches)) {
+        // Fallback: extract from full URL string
+        $logo = $currentBaseUrl . $matches[1];
+    }
+}
 ?>
 <aside class="w-64 bg-[#0a0a0a] border-r border-white/5 h-screen fixed left-0 top-0 flex flex-col z-50">
     <div class="h-16 flex items-center px-6 border-b border-white/5">
@@ -28,8 +45,6 @@ $name = $sidebar_settings['site_name'] ?? 'MasterAdmin';
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
             Users
         </a>
-
-
 
         <a href="deposits.php" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors <?= basename($_SERVER['PHP_SELF']) == 'deposits.php' ? 'bg-yellow-500/10 text-yellow-500' : 'text-gray-400 hover:text-white hover:bg-white/5' ?>">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>

@@ -7,7 +7,7 @@ header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     http_response_code(200);
     exit();
 }
@@ -27,5 +27,14 @@ try {
 } catch(PDOException $e) {
     echo json_encode(["error" => "Connection failed: " . $e->getMessage()]);
     exit();
+}
+
+// Helper function to get base URL dynamically
+if (!function_exists('getBaseUrl')) {
+    function getBaseUrl() {
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'iquizz.online';
+        return $protocol . '://' . $host;
+    }
 }
 ?>

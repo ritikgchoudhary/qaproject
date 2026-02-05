@@ -56,15 +56,12 @@ router.beforeEach(async (to, from, next) => {
             next({ name: 'dashboard' })
         }
     } else {
-        // Strict Agent Blocking
+        // Block agents from accessing wallet, question, deposit, withdraw, dashboard
         if (userStore.user && userStore.user.role === 'agent') {
-            // List of allowed routes for agents
-            const allowedForMethod = ['agent_dashboard', 'affiliate_team'];
-
-            if (!allowedForMethod.includes(to.name)) {
-                // If trying to access any other page (wallet, question, dashboard, etc.), redirect to agent panel
-                next({ name: 'agent_dashboard' })
-                return
+            const blockedRoutes = ['wallet', 'question', 'deposit', 'withdraw', 'dashboard'];
+            if (blockedRoutes.includes(to.name)) {
+                next({ name: 'agent_dashboard' });
+                return;
             }
         }
 

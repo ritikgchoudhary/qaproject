@@ -72,11 +72,11 @@ watch(isLoggedIn, (newVal) => {
       </button>
     </header>
 
-    <main :class="{ 'with-nav': isLoggedIn && !isAgentPage }">
+    <main :class="{ 'with-nav': isLoggedIn }">
       <RouterView />
     </main>
 
-    <BottomNav v-if="isLoggedIn && !isAgentPage" />
+    <BottomNav v-if="isLoggedIn" />
     
     <!-- Global Loading System -->
     <div class="loading-system">

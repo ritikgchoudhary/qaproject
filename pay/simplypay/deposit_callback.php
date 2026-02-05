@@ -1,6 +1,8 @@
 <?php
+// Production settings - disable error display
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 
 // Database connection
 $host = '72.60.96.75';
@@ -33,7 +35,7 @@ if (!$data) {
 }
 
 // Verify signature
-$appSecret = "006c05166329204714c6d06544f9f43a";
+$appSecret = "8777e7d8544e71b29839e469d87de876";
 $receivedSign = $data['sign'] ?? '';
 unset($data['sign']);
 
@@ -108,11 +110,11 @@ try {
         $stmt = $pdo->prepare("UPDATE deposits SET status = 'success' WHERE id = ?");
         $stmt->execute([$deposit['id']]);
         
-        // Add to wallet
+        // Add to locked_balance (deposits are locked until quiz completion)
         $stmt = $pdo->prepare("
-            INSERT INTO wallets (user_id, withdrawable_balance) 
+            INSERT INTO wallets (user_id, locked_balance) 
             VALUES (?, ?) 
-            ON DUPLICATE KEY UPDATE withdrawable_balance = withdrawable_balance + ?
+            ON DUPLICATE KEY UPDATE locked_balance = locked_balance + ?
         ");
         $stmt->execute([$deposit['user_id'], $deposit['amount'], $deposit['amount']]);
         

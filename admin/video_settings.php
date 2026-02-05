@@ -4,10 +4,6 @@ if (!isset($_SESSION['admin_id'])) {
     header("Location: index.php");
     exit();
 }
-require 'db_connect.php'; // Correct path for consistency inside admin folder scripts usually require db_connect.php which is right there, or ../api/config.php. 
-// settings.php used ../api/config.php. Let's stick to what works. 
-// Actually, admin/db_connect.php usually exists? Let's check. 
-// settings.php used ../api/config.php. I will use the same.
 require '../api/config.php';
 
 $message = '';
@@ -47,9 +43,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $dest_path = $uploadFileDir . $newFileName;
             
             if(move_uploaded_file($fileTmpPath, $dest_path)) {
-                // Use actual domain instead of localhost
+                // Use dynamic base URL instead of hardcoded localhost
                 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-                $host = $_SERVER['HTTP_HOST'] ?? 'iquizz.in';
+                $host = $_SERVER['HTTP_HOST'] ?? 'iquizz.online';
                 $video_url = $protocol . "://" . $host . "/admin/uploads/" . $newFileName;
             } else {
                 $error = "File upload failed. Check folder permissions.";
@@ -94,6 +90,14 @@ $current_url = $all_settings['tutorial_video_url'] ?? '';
 $current_title = $all_settings['tutorial_title'] ?? 'How It Works';
 $current_desc = $all_settings['tutorial_desc'] ?? 'Watch the full video to unlock your quiz.';
 $current_btn = $all_settings['tutorial_btn_text'] ?? 'WATCH TO CONTINUE';
+
+// Convert video URL to current domain if it contains old domain
+if ($current_url) {
+    $currentBaseUrl = getBaseUrl();
+    if (preg_match('#^https?://iquizz\.in/(.+)$#', $current_url, $matches)) {
+        $current_url = $currentBaseUrl . '/' . $matches[1];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -50,34 +50,144 @@
     <!-- Content -->
     <div v-else class="px-5 pt-6 space-y-8 max-w-md mx-auto relative z-10">
       
-      <!-- Total Earnings Hero Card -->
+      <!-- Total Earnings Display -->
+      <div class="relative group">
+        <div class="absolute -inset-0.5 bg-gradient-to-r from-yellow-600 to-yellow-400 rounded-[2rem] opacity-20 group-hover:opacity-30 blur transition duration-500"></div>
+        <div class="relative overflow-hidden rounded-[1.8rem] bg-[#121212] border border-white/10 shadow-2xl">
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">Total Earnings</p>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-xl text-yellow-500 font-bold">₹</span>
+                  <h2 class="text-4xl font-black text-white tracking-tight">
+                    {{ formatNumber(agentData.total_earnings || 0) }}
+                  </h2>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">Available Balance</p>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-xl text-green-500 font-bold">₹</span>
+                  <h2 class="text-4xl font-black text-green-500 tracking-tight">
+                    {{ formatNumber(agentData.available_balance || 0) }}
+                  </h2>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center justify-between pt-4 border-t border-white/5">
+              <div>
+                <p class="text-gray-500 text-[10px] uppercase font-bold mb-1">Total Withdrawn</p>
+                <p class="text-gray-400 text-sm font-bold">₹{{ formatNumber(agentData.total_withdrawn || 0) }}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-gray-500 text-[10px] uppercase font-bold mb-1">Pending</p>
+                <p class="text-yellow-400 text-sm font-bold">₹{{ formatNumber(agentData.pending_earnings || 0) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Time Period Filter Tabs -->
+      <div class="bg-[#111] border border-white/5 rounded-2xl p-1 flex gap-1">
+        <button 
+          v-for="period in timePeriods" 
+          :key="period.value"
+          @click="selectedPeriod = period.value; fetchAgentData()"
+          class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all"
+          :class="selectedPeriod === period.value 
+            ? 'bg-yellow-500 text-black shadow-lg' 
+            : 'text-gray-400 hover:text-white hover:bg-white/5'"
+        >
+          {{ period.label }}
+        </button>
+      </div>
+      
+      <!-- Today's Commission Section (Matching Image Design) -->
       <div class="relative group">
         <div class="absolute -inset-0.5 bg-gradient-to-r from-yellow-600 to-yellow-400 rounded-[2rem] opacity-30 group-hover:opacity-50 blur transition duration-500"></div>
         <div class="relative overflow-hidden rounded-[1.8rem] bg-[#121212] border border-white/10 shadow-2xl">
           <!-- Card Pattern -->
           <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#fbbf24 1px, transparent 1px); background-size: 20px 20px;"></div>
           
-          <div class="relative p-6">
-            <div class="flex flex-col">
-              <span class="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mb-1">Total Commission</span>
-              <div class="flex items-baseline gap-1 mt-1">
-                 <span class="text-2xl text-yellow-500 font-bold">₹</span>
-                 <h2 class="text-5xl font-black text-white tracking-tighter shadow-black drop-shadow-lg">
-                   {{ formatNumber(agentData.total_earnings) }}
-                 </h2>
+          <div class="relative">
+            <!-- Top Section: Period Commission -->
+            <div class="text-center pt-8 pb-4">
+              <div class="text-5xl font-black text-yellow-500 mb-3">{{ formatNumber(agentData.period_commission || 0) }}</div>
+              <button class="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-3 px-8 rounded-full text-sm transition-all shadow-lg shadow-yellow-500/20">
+                {{ getPeriodLabel() }} Commission
+              </button>
+              <p class="text-gray-400 text-xs mt-3">Your {{ getPeriodLabel() }} Total Data</p>
+            </div>
+            
+            <!-- Main Card: Direct & Team Subordinates -->
+            <div class="bg-[#0f0f0f] mx-4 mb-4 rounded-2xl p-5 border border-white/5">
+              <div class="grid grid-cols-2 gap-4">
+                <!-- Direct Subordinates (Left) -->
+                <div class="space-y-3">
+                  <div class="flex items-center gap-2 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <h3 class="text-white text-sm font-bold">Direct subordinates</h3>
+                  </div>
+                  
+                  <div class="space-y-2.5">
+                    <div>
+                      <p class="text-gray-400 text-[10px] mb-1">number of register</p>
+                      <p class="text-white text-sm font-bold">{{ agentData.direct_subordinates?.number_of_register || 0 }}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-400 text-[10px] mb-1">Deposit number</p>
+                      <p class="text-green-400 text-sm font-bold">{{ agentData.direct_subordinates?.deposit_number || 0 }}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-400 text-[10px] mb-1">Deposit amount</p>
+                      <p class="text-orange-400 text-sm font-bold">₹{{ formatNumber(agentData.direct_subordinates?.deposit_amount || 0) }}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-400 text-[10px] mb-1">Number of people making first deposit</p>
+                      <p class="text-white text-sm font-bold">{{ agentData.direct_subordinates?.first_deposit_count || 0 }}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Team Subordinates (Right) -->
+                <div class="space-y-3">
+                  <div class="flex items-center gap-2 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <h3 class="text-white text-sm font-bold">Team subordinates</h3>
+                  </div>
+                  
+                  <div class="space-y-2.5">
+                    <div>
+                      <p class="text-gray-400 text-[10px] mb-1">number of register</p>
+                      <p class="text-white text-sm font-bold">{{ agentData.team_subordinates?.number_of_register || 0 }}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-400 text-[10px] mb-1">Deposit number</p>
+                      <p class="text-green-400 text-sm font-bold">{{ agentData.team_subordinates?.deposit_number || 0 }}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-400 text-[10px] mb-1">Deposit amount</p>
+                      <p class="text-orange-400 text-sm font-bold">₹{{ formatNumber(agentData.team_subordinates?.deposit_amount || 0) }}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-400 text-[10px] mb-1">Number of people making first deposit</p>
+                      <p class="text-white text-sm font-bold">{{ agentData.team_subordinates?.first_deposit_count || 0 }}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             
-            <div class="mt-8 flex items-center justify-between pt-6 border-t border-white/5">
-              <div class="flex flex-col">
-                <span class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Status</span>
-                <span class="text-emerald-400 text-xs font-bold flex items-center gap-1.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  Active Agent
-                </span>
-              </div>
-              <button @click="showWithdrawModal = true" class="px-5 py-2 bg-yellow-500 hover:bg-yellow-400 text-black font-extrabold text-xs uppercase tracking-wider rounded-lg shadow-lg active:scale-95 transition-all">
-                  Withdraw
+            <!-- Withdraw Button -->
+            <div class="px-4 pb-6">
+              <button @click="showWithdrawModal = true" class="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-extrabold text-xs uppercase tracking-wider py-3 rounded-xl shadow-lg active:scale-95 transition-all">
+                Withdraw
               </button>
             </div>
           </div>
@@ -323,12 +433,86 @@
         </div>
       </div>
 
-      <!-- Transactions -->
+      <!-- Commission History with Filters -->
       <div>
-        <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-          Latest Activity
-          <span class="h-px flex-1 bg-white/10"></span>
-        </h3>
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+            Commission History
+            <span class="h-px flex-1 bg-white/10"></span>
+          </h3>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-[#111] border border-white/5 rounded-2xl p-4 mb-4 space-y-3">
+          <!-- Search -->
+          <div class="relative">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-3 top-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input 
+              type="text" 
+              v-model="commissionSearch" 
+              @input="debounceSearch"
+              placeholder="Search by user name or email..." 
+              class="w-full bg-[#0f0f0f] border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500 transition-colors"
+            />
+          </div>
+
+          <!-- Filter Row -->
+          <div class="grid grid-cols-2 gap-2">
+            <!-- Level Filter -->
+            <div>
+              <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Level</label>
+              <select 
+                v-model="levelFilter" 
+                @change="fetchAgentData()"
+                class="w-full bg-[#0f0f0f] border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-yellow-500"
+              >
+                <option value="all">All Levels</option>
+                <option value="1">Level 1</option>
+                <option value="2">Level 2</option>
+                <option value="3">Level 3</option>
+              </select>
+            </div>
+
+            <!-- Status Filter -->
+            <div>
+              <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Status</label>
+              <select 
+                v-model="statusFilter" 
+                @change="fetchAgentData()"
+                class="w-full bg-[#0f0f0f] border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-yellow-500"
+              >
+                <option value="all">All Status</option>
+                <option value="approved">Approved</option>
+                <option value="pending">Pending</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Date Range Filter -->
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">From Date</label>
+              <input 
+                type="date" 
+                v-model="dateFrom" 
+                @change="fetchAgentData()"
+                class="w-full bg-[#0f0f0f] border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-yellow-500"
+              />
+            </div>
+            <div>
+              <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">To Date</label>
+              <input 
+                type="date" 
+                v-model="dateTo" 
+                @change="fetchAgentData()"
+                class="w-full bg-[#0f0f0f] border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-yellow-500"
+              />
+            </div>
+          </div>
+        </div>
 
         <div class="space-y-3">
            <div v-for="comm in agentData.commissions" :key="comm.id" class="flex items-center justify-between p-4 rounded-xl bg-[#0f0f0f] border border-white/5 hover:bg-[#151515] transition-colors">
@@ -351,8 +535,21 @@
                  </div>
               </div>
               <div class="text-right">
-                 <p class="text-white font-bold text-sm">+₹{{ formatNumber(comm.amount) }}</p>
-                 <span class="text-[9px] bg-yellow-500/10 text-yellow-500 px-1.5 py-0.5 rounded border border-yellow-500/20 font-medium">Commission</span>
+                 <p class="text-white font-bold text-sm">+₹{{ formatNumber(comm.adjusted_amount || comm.amount || 0) }}</p>
+                 <div class="flex items-center gap-1.5 mt-1 justify-end">
+                   <span class="text-[9px] bg-yellow-500/10 text-yellow-500 px-1.5 py-0.5 rounded border border-yellow-500/20 font-medium">Commission</span>
+                   <span 
+                     v-if="comm.status"
+                     class="text-[9px] px-1.5 py-0.5 rounded border font-medium"
+                     :class="{
+                       'bg-green-500/10 text-green-500 border-green-500/20': comm.status === 'approved',
+                       'bg-yellow-500/10 text-yellow-500 border-yellow-500/20': comm.status === 'pending',
+                       'bg-red-500/10 text-red-500 border-red-500/20': comm.status === 'rejected'
+                     }"
+                   >
+                     {{ comm.status }}
+                   </span>
+                 </div>
               </div>
            </div>
 
@@ -385,14 +582,48 @@ const agentData = ref({
   email: '',
   referral_code: '',
   total_earnings: 0,
+  pending_earnings: 0,
+  total_withdrawn: 0,
+  available_balance: 0,
+  today_commission: 0,
+  period_commission: 0,
+  period: 'today',
   commissions: [],
   stats: {
     level1: { count: 0, deposit: 0, commission: 0 },
     level2: { count: 0, deposit: 0, commission: 0 },
     level3: { count: 0, deposit: 0, commission: 0 }
   },
+  direct_subordinates: {
+    number_of_register: 0,
+    deposit_number: 0,
+    deposit_amount: 0,
+    first_deposit_count: 0
+  },
+  team_subordinates: {
+    number_of_register: 0,
+    deposit_number: 0,
+    deposit_amount: 0,
+    first_deposit_count: 0
+  },
   team_list: []
 });
+
+// Time Period Filter
+const selectedPeriod = ref('today');
+const timePeriods = [
+  { label: 'Today', value: 'today' },
+  { label: 'This Week', value: 'week' },
+  { label: 'This Month', value: 'month' },
+  { label: 'All Time', value: 'all' }
+];
+
+// Commission Filters
+const commissionSearch = ref('');
+const levelFilter = ref('all');
+const statusFilter = ref('all');
+const dateFrom = ref('');
+const dateTo = ref('');
 const showTeamModal = ref(false);
 const teamSearch = ref('');
 
@@ -441,11 +672,35 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
 }
 
+const getPeriodLabel = () => {
+  const period = timePeriods.find(p => p.value === selectedPeriod.value);
+  return period ? period.label : 'Today';
+}
+
 const fetchAgentData = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await axios.get('/api/get_agent_stats.php', { withCredentials: true });
+    // Build query parameters
+    const params = new URLSearchParams();
+    params.append('period', selectedPeriod.value);
+    if (levelFilter.value !== 'all') {
+      params.append('level', levelFilter.value);
+    }
+    if (statusFilter.value !== 'all') {
+      params.append('status', statusFilter.value);
+    }
+    if (commissionSearch.value) {
+      params.append('search', commissionSearch.value);
+    }
+    if (dateFrom.value) {
+      params.append('date_from', dateFrom.value);
+    }
+    if (dateTo.value) {
+      params.append('date_to', dateTo.value);
+    }
+    
+    const response = await axios.get(`/api/get_agent_stats.php?${params.toString()}`, { withCredentials: true });
     
     if (response.data.success) {
       agentData.value = response.data.agent_data;
@@ -472,8 +727,13 @@ const fetchAgentData = async () => {
       error.value = "Access restricted to Agents only.";
     } else if (err.response?.status === 401) {
       agentData.value = { 
-         name: '', email: '', referral_code: '', telegram_link: '', total_earnings: 0, commissions: [], 
-         stats: { level1:{}, level2:{}, level3:{} }, team_list: [] 
+         name: '', email: '', referral_code: '', telegram_link: '', 
+         total_earnings: 0, pending_earnings: 0, total_withdrawn: 0, available_balance: 0,
+         today_commission: 0, period_commission: 0, period: 'today', commissions: [], 
+         stats: { level1:{}, level2:{}, level3:{} }, 
+         direct_subordinates: { number_of_register: 0, deposit_number: 0, deposit_amount: 0, first_deposit_count: 0 },
+         team_subordinates: { number_of_register: 0, deposit_number: 0, deposit_amount: 0, first_deposit_count: 0 },
+         team_list: [] 
       };
       router.push('/login');
     } else {
@@ -524,6 +784,15 @@ const copyCode = async () => {
   try {
     await navigator.clipboard.writeText(agentData.value.referral_code);
   } catch (err) { console.error(err); }
+}
+
+// Debounce search
+let searchTimeout = null;
+const debounceSearch = () => {
+  if (searchTimeout) clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    fetchAgentData();
+  }, 500);
 }
 
 import { useUserStore } from '../stores/user';

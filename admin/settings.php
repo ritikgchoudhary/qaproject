@@ -34,9 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $dest_path = $uploadFileDir . $newFileName;
             
             if(move_uploaded_file($fileTmpPath, $dest_path)) {
-                // Use actual domain instead of localhost
+                // Use dynamic base URL instead of hardcoded localhost
                 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-                $host = $_SERVER['HTTP_HOST'] ?? 'iquizz.in';
+                $host = $_SERVER['HTTP_HOST'] ?? 'iquizz.online';
                 $site_logo = $protocol . "://" . $host . "/admin/uploads/" . $newFileName;
             } else {
                 $error = "Logo upload failed. Check permissions.";
@@ -126,8 +126,22 @@ $all_settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Website Logo</label>
                             <div class="flex items-start gap-6">
                                 <div class="w-24 h-24 bg-[#050505] border border-white/10 rounded-lg flex items-center justify-center overflow-hidden relative group">
-                                    <?php if (!empty($all_settings['site_logo'])): ?>
-                                        <img src="<?= htmlspecialchars($all_settings['site_logo']) ?>" class="w-full h-full object-contain p-2">
+                                    <?php 
+                                    $logoUrl = '';
+                                    if (!empty($all_settings['site_logo'])) {
+                                        // Convert logo URL to current domain if it contains old domain
+                                        $currentBaseUrl = getBaseUrl();
+                                        $storedLogo = $all_settings['site_logo'];
+                                        // Extract path from logo URL and rebuild with current base URL
+                                        if (preg_match('#/(admin/uploads/[^/]+)$#', parse_url($storedLogo, PHP_URL_PATH), $matches)) {
+                                            $logoUrl = $currentBaseUrl . $matches[1];
+                                        } else {
+                                            $logoUrl = $storedLogo;
+                                        }
+                                    }
+                                    ?>
+                                    <?php if ($logoUrl): ?>
+                                        <img src="<?= htmlspecialchars($logoUrl) ?>" class="w-full h-full object-contain p-2">
                                     <?php else: ?>
                                         <span class="text-xs text-gray-600">No Logo</span>
                                     <?php endif; ?>

@@ -1,11 +1,4 @@
 <?php
-// Start output buffering to catch any warnings
-ob_start();
-
-// Suppress warnings for JSON output
-error_reporting(E_ALL & ~E_WARNING);
-ini_set('display_errors', 0);
-
 session_start();
 if (!isset($_SESSION['admin_id'])) {
     http_response_code(401);
@@ -24,170 +17,6 @@ if (isset($_GET['get_user'])) {
     exit();
 }
 
-// Handle GET for fetching agent statistics
-if (isset($_GET['action']) && $_GET['action'] === 'get_agent_stats') {
-    try {
-        $agent_id = isset($_GET['agent_id']) ? (int)$_GET['agent_id'] : 0;
-        
-        if (!$agent_id) {
-            echo json_encode(['error' => 'Agent ID is required']);
-            exit();
-        }
-        
-        // Verify agent role
-        $stmt = $pdo->prepare("SELECT id, name, referral_code, role FROM users WHERE id = ?");
-        $stmt->execute([$agent_id]);
-        $agent = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if (!$agent || $agent['role'] !== 'agent') {
-            echo json_encode(['error' => 'User is not an agent']);
-            exit();
-        }
-        
-        // Time ranges
-        $today_start = date('Y-m-d 00:00:00');
-        $today_end = date('Y-m-d 23:59:59');
-        $yesterday_start = date('Y-m-d 00:00:00', strtotime('-1 day'));
-        $yesterday_end = date('Y-m-d 23:59:59', strtotime('-1 day'));
-        $month_start = date('Y-m-01 00:00:00');
-        $month_end = date('Y-m-t 23:59:59');
-        
-        $stats = [
-            'agent_info' => [
-                'id' => $agent['id'],
-                'name' => $agent['name'],
-                'referral_code' => $agent['referral_code']
-            ],
-            'users_joined' => [
-                'today' => 0,
-                'yesterday' => 0,
-                'this_month' => 0,
-                'all' => 0
-            ],
-            'deposits' => [
-                'today' => 0,
-                'yesterday' => 0,
-                'this_month' => 0,
-                'all' => 0
-            ],
-            'commissions' => [
-                'today' => 0,
-                'yesterday' => 0,
-                'this_month' => 0,
-                'all' => 0
-            ],
-            'wallet' => [
-                'withdrawable' => 0,
-                'total_earned' => 0,
-                'total_withdrawn' => 0
-            ]
-        ];
-        
-        // Get users joined (users referred by this agent)
-        // Today
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE referred_by = ? AND created_at >= ? AND created_at <= ?");
-        $stmt->execute([$agent['referral_code'], $today_start, $today_end]);
-        $stats['users_joined']['today'] = (int)$stmt->fetchColumn();
-        
-        // Yesterday
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE referred_by = ? AND created_at >= ? AND created_at <= ?");
-        $stmt->execute([$agent['referral_code'], $yesterday_start, $yesterday_end]);
-        $stats['users_joined']['yesterday'] = (int)$stmt->fetchColumn();
-        
-        // This month
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE referred_by = ? AND created_at >= ? AND created_at <= ?");
-        $stmt->execute([$agent['referral_code'], $month_start, $month_end]);
-        $stats['users_joined']['this_month'] = (int)$stmt->fetchColumn();
-        
-        // All
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE referred_by = ?");
-        $stmt->execute([$agent['referral_code']]);
-        $stats['users_joined']['all'] = (int)$stmt->fetchColumn();
-        
-        // Get deposits from users referred by this agent
-        // Today
-        $stmt = $pdo->prepare("
-            SELECT SUM(d.amount) 
-            FROM deposits d
-            JOIN users u ON d.user_id = u.id
-            WHERE u.referred_by = ? AND d.status IN ('success', 'approved', 'completed') 
-            AND d.created_at >= ? AND d.created_at <= ?
-        ");
-        $stmt->execute([$agent['referral_code'], $today_start, $today_end]);
-        $stats['deposits']['today'] = (float)($stmt->fetchColumn() ?: 0);
-        
-        // Yesterday
-        $stmt = $pdo->prepare("
-            SELECT SUM(d.amount) 
-            FROM deposits d
-            JOIN users u ON d.user_id = u.id
-            WHERE u.referred_by = ? AND d.status IN ('success', 'approved', 'completed') 
-            AND d.created_at >= ? AND d.created_at <= ?
-        ");
-        $stmt->execute([$agent['referral_code'], $yesterday_start, $yesterday_end]);
-        $stats['deposits']['yesterday'] = (float)($stmt->fetchColumn() ?: 0);
-        
-        // This month
-        $stmt = $pdo->prepare("
-            SELECT SUM(d.amount) 
-            FROM deposits d
-            JOIN users u ON d.user_id = u.id
-            WHERE u.referred_by = ? AND d.status IN ('success', 'approved', 'completed') 
-            AND d.created_at >= ? AND d.created_at <= ?
-        ");
-        $stmt->execute([$agent['referral_code'], $month_start, $month_end]);
-        $stats['deposits']['this_month'] = (float)($stmt->fetchColumn() ?: 0);
-        
-        // All
-        $stmt = $pdo->prepare("
-            SELECT SUM(d.amount) 
-            FROM deposits d
-            JOIN users u ON d.user_id = u.id
-            WHERE u.referred_by = ? AND d.status IN ('success', 'approved', 'completed')
-        ");
-        $stmt->execute([$agent['referral_code']]);
-        $stats['deposits']['all'] = (float)($stmt->fetchColumn() ?: 0);
-        
-        // Get commissions (tree bonus)
-        // Today
-        $stmt = $pdo->prepare("SELECT SUM(amount) FROM agent_commissions WHERE agent_id = ? AND created_at >= ? AND created_at <= ?");
-        $stmt->execute([$agent_id, $today_start, $today_end]);
-        $stats['commissions']['today'] = (float)($stmt->fetchColumn() ?: 0);
-        
-        // Yesterday
-        $stmt = $pdo->prepare("SELECT SUM(amount) FROM agent_commissions WHERE agent_id = ? AND created_at >= ? AND created_at <= ?");
-        $stmt->execute([$agent_id, $yesterday_start, $yesterday_end]);
-        $stats['commissions']['yesterday'] = (float)($stmt->fetchColumn() ?: 0);
-        
-        // This month
-        $stmt = $pdo->prepare("SELECT SUM(amount) FROM agent_commissions WHERE agent_id = ? AND created_at >= ? AND created_at <= ?");
-        $stmt->execute([$agent_id, $month_start, $month_end]);
-        $stats['commissions']['this_month'] = (float)($stmt->fetchColumn() ?: 0);
-        
-        // All
-        $stmt = $pdo->prepare("SELECT SUM(amount) FROM agent_commissions WHERE agent_id = ?");
-        $stmt->execute([$agent_id]);
-        $stats['commissions']['all'] = (float)($stmt->fetchColumn() ?: 0);
-        
-        // Get wallet info
-        $stmt = $pdo->prepare("SELECT withdrawable_balance, total_withdrawn FROM wallets WHERE user_id = ?");
-        $stmt->execute([$agent_id]);
-        $wallet = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($wallet) {
-            $stats['wallet']['withdrawable'] = (float)($wallet['withdrawable_balance'] ?: 0);
-            $stats['wallet']['total_withdrawn'] = (float)($wallet['total_withdrawn'] ?: 0);
-        }
-        $stats['wallet']['total_earned'] = $stats['commissions']['all'];
-        
-        echo json_encode(['success' => true, 'stats' => $stats]);
-    } catch (Exception $e) {
-        http_response_code(500);
-        echo json_encode(['error' => $e->getMessage()]);
-    }
-    exit();
-}
-
 // Handle GET for fetching users list (Infinite Scroll)
 if (isset($_GET['action']) && $_GET['action'] === 'get_users') {
     try {
@@ -195,25 +24,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_users') {
         $limit = 20;
         $offset = ($page - 1) * $limit;
         $search = $_GET['search'] ?? '';
-        $role = $_GET['role'] ?? '';
 
         $where_clause = "";
         $params = [];
-        $conditions = [];
-        
         if ($search) {
-            $conditions[] = "(users.name LIKE ? OR users.email LIKE ?)";
-            $params[] = "%$search%";
-            $params[] = "%$search%";
-        }
-        
-        if ($role) {
-            $conditions[] = "users.role = ?";
-            $params[] = $role;
-        }
-        
-        if (!empty($conditions)) {
-            $where_clause = "WHERE " . implode(" AND ", $conditions);
+            $where_clause = "WHERE users.name LIKE ? OR users.email LIKE ?";
+            $params = ["%$search%", "%$search%"];
         }
 
         // Fix ambition column names by adding table prefixes
@@ -239,11 +55,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_users') {
 // Handle GET for fetching deposits list (Infinite Scroll)
 if (isset($_GET['action']) && $_GET['action'] === 'get_deposits') {
     try {
-        // Auto-fail deposits older than 2 days (48 hours)
-        $two_days_ago = date('Y-m-d H:i:s', strtotime('-2 days'));
-        $stmt = $pdo->prepare("UPDATE deposits SET status = 'failed' WHERE status = 'pending' AND created_at < ?");
-        $stmt->execute([$two_days_ago]);
-        
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $limit = 20;
         $offset = ($page - 1) * $limit;
@@ -257,18 +68,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_deposits') {
         $stmt = $pdo->prepare($sql);
         $stmt->execute();
         $deposits = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // Calculate time elapsed for each deposit
-        foreach ($deposits as &$deposit) {
-            $created_time = strtotime($deposit['created_at']);
-            $current_time = time();
-            $minutes_old = ($current_time - $created_time) / 60;
-            $hours_old = $minutes_old / 60;
-            
-            $deposit['minutes_old'] = round($minutes_old, 1);
-            $deposit['hours_old'] = round($hours_old, 1);
-            $deposit['can_approve'] = ($deposit['status'] === 'pending' && $minutes_old >= 10);
-        }
 
         echo json_encode(['deposits' => $deposits]);
     } catch (Exception $e) {
@@ -293,120 +92,6 @@ if (isset($data) && isset($data['action']) && $data['action'] === 'edit_user') {
         $stmt->execute([$data['name'], $data['email'], $data['role'], $data['id']]);
     }
     echo json_encode(["success" => true]);
-    exit();
-}
-
-if (isset($data) && isset($data['action']) && $data['action'] === 'update_direct_commission') {
-    $agent_id = (int)$data['agent_id'];
-    $percentage = (float)$data['percentage'];
-    
-    // Validate percentage (0-100)
-    if ($percentage < 0 || $percentage > 100) {
-        echo json_encode(["error" => "Percentage must be between 0 and 100"]);
-        exit();
-    }
-    
-    // Verify user is an agent
-    $stmt = $pdo->prepare("SELECT role FROM users WHERE id = ?");
-    $stmt->execute([$agent_id]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    if (!$user || $user['role'] !== 'agent') {
-        echo json_encode(["error" => "User is not an agent"]);
-        exit();
-    }
-    
-    // Update commission percentage
-    $stmt = $pdo->prepare("UPDATE users SET direct_commission_percentage = ? WHERE id = ?");
-    $stmt->execute([$percentage, $agent_id]);
-    
-    echo json_encode(["success" => true, "message" => "Direct commission percentage updated successfully"]);
-    exit();
-}
-
-if (isset($data) && isset($data['action']) && $data['action'] === 'approve_commission') {
-    $commission_id = (int)$data['commission_id'];
-    
-    try {
-        $pdo->beginTransaction();
-        
-        // Get commission details
-        $stmt = $pdo->prepare("SELECT agent_id, COALESCE(adjusted_amount, amount) as final_amount FROM agent_commissions WHERE id = ? AND status = 'pending'");
-        $stmt->execute([$commission_id]);
-        $commission = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if (!$commission) {
-            throw new Exception("Commission not found or already processed");
-        }
-        
-        $agent_id = $commission['agent_id'];
-        $final_amount = $commission['final_amount'];
-        
-        // Update commission status to approved
-        $stmt = $pdo->prepare("UPDATE agent_commissions SET status = 'approved' WHERE id = ?");
-        $stmt->execute([$commission_id]);
-        
-        // Add to agent's withdrawable balance
-        $stmt = $pdo->prepare("INSERT INTO wallets (user_id, withdrawable_balance) VALUES (?, ?) ON DUPLICATE KEY UPDATE withdrawable_balance = withdrawable_balance + ?");
-        $stmt->execute([$agent_id, $final_amount, $final_amount]);
-        
-        $pdo->commit();
-        echo json_encode(["success" => true, "message" => "Commission approved and released to agent wallet"]);
-    } catch (Exception $e) {
-        $pdo->rollBack();
-        echo json_encode(["error" => $e->getMessage()]);
-    }
-    exit();
-}
-
-if (isset($data) && isset($data['action']) && $data['action'] === 'reject_commission') {
-    $commission_id = (int)$data['commission_id'];
-    $notes = isset($data['notes']) ? trim($data['notes']) : '';
-    
-    try {
-        // Update commission status to rejected
-        $stmt = $pdo->prepare("UPDATE agent_commissions SET status = 'rejected', admin_notes = ? WHERE id = ? AND status = 'pending'");
-        $stmt->execute([$notes, $commission_id]);
-        
-        if ($stmt->rowCount() === 0) {
-            throw new Exception("Commission not found or already processed");
-        }
-        
-        echo json_encode(["success" => true, "message" => "Commission rejected successfully"]);
-    } catch (Exception $e) {
-        echo json_encode(["error" => $e->getMessage()]);
-    }
-    exit();
-}
-
-if (isset($data) && isset($data['action']) && $data['action'] === 'adjust_commission') {
-    $commission_id = (int)$data['commission_id'];
-    $new_amount = (float)$data['new_amount'];
-    $notes = isset($data['notes']) ? trim($data['notes']) : '';
-    
-    // Validate amount
-    if ($new_amount < 0) {
-        echo json_encode(["error" => "Amount cannot be negative"]);
-        exit();
-    }
-    
-    try {
-        // Check if commission exists and is pending
-        $stmt = $pdo->prepare("SELECT id FROM agent_commissions WHERE id = ? AND status = 'pending'");
-        $stmt->execute([$commission_id]);
-        
-        if ($stmt->rowCount() === 0) {
-            throw new Exception("Commission not found or already processed");
-        }
-        
-        // Update adjusted amount and notes
-        $stmt = $pdo->prepare("UPDATE agent_commissions SET adjusted_amount = ?, admin_notes = ? WHERE id = ?");
-        $stmt->execute([$new_amount, $notes, $commission_id]);
-        
-        echo json_encode(["success" => true, "message" => "Commission amount adjusted successfully"]);
-    } catch (Exception $e) {
-        echo json_encode(["error" => $e->getMessage()]);
-    }
     exit();
 }
 
@@ -486,25 +171,6 @@ if (isset($data) && isset($data['action']) && $data['action'] === 'delete_admin'
     exit();
 }
 
-if (isset($data) && isset($data['action']) && $data['action'] === 'update_dispute_status') {
-    $id = $data['id'];
-    $status = $data['status']; // 'pending', 'reviewed', or 'resolved'
-
-    if (!in_array($status, ['pending', 'reviewed', 'resolved'])) {
-         echo json_encode(["error" => "Invalid status"]);
-         exit();
-    }
-
-    try {
-        $stmt = $pdo->prepare("UPDATE deposit_disputes SET status = ? WHERE id = ?");
-        $stmt->execute([$status, $id]);
-        echo json_encode(["success" => true]);
-    } catch (Exception $e) {
-        echo json_encode(["error" => $e->getMessage()]);
-    }
-    exit();
-}
-
 if (isset($data) && isset($data['action']) && $data['action'] === 'update_withdraw') {
     $id = $data['id'];
     $status = $data['status']; // 'approved' or 'rejected'
@@ -542,6 +208,159 @@ if (isset($data) && isset($data['action']) && $data['action'] === 'update_withdr
         $pdo->rollBack();
         echo json_encode(["error" => $e->getMessage()]);
     }
+    exit();
+}
+
+// Handle GET for fetching agent statistics
+if (isset($_GET['action']) && $_GET['action'] === 'get_agent_stats') {
+    try {
+        $agent_id = isset($_GET['agent_id']) ? (int)$_GET['agent_id'] : 0;
+        
+        if (!$agent_id) {
+            echo json_encode(['error' => 'Agent ID is required']);
+            exit();
+        }
+        
+        // Verify agent role
+        $stmt = $pdo->prepare("SELECT id, name, referral_code, role FROM users WHERE id = ?");
+        $stmt->execute([$agent_id]);
+        $agent = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$agent || $agent['role'] !== 'agent') {
+            echo json_encode(['error' => 'User is not an agent']);
+            exit();
+        }
+        
+        // Time ranges
+        $today_start = date('Y-m-d 00:00:00');
+        $today_end = date('Y-m-d 23:59:59');
+        $yesterday_start = date('Y-m-d 00:00:00', strtotime('-1 day'));
+        $yesterday_end = date('Y-m-d 23:59:59', strtotime('-1 day'));
+        $month_start = date('Y-m-01 00:00:00');
+        $month_end = date('Y-m-t 23:59:59');
+        
+        $stats = [
+            'agent_info' => [
+                'id' => $agent['id'],
+                'name' => $agent['name'],
+                'referral_code' => $agent['referral_code']
+            ],
+            'users_joined' => [
+                'today' => 0,
+                'yesterday' => 0,
+                'this_month' => 0,
+                'all' => 0
+            ],
+            'deposits' => [
+                'today' => 0,
+                'yesterday' => 0,
+                'this_month' => 0,
+                'all' => 0
+            ],
+            'commissions' => [
+                'today' => 0,
+                'yesterday' => 0,
+                'this_month' => 0,
+                'all' => 0
+            ],
+            'wallet' => [
+                'withdrawable' => 0,
+                'total_earned' => 0,
+                'total_withdrawn' => 0
+            ]
+        ];
+        
+        // Get users joined (users referred by this agent)
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE referred_by = ? AND created_at >= ? AND created_at <= ?");
+        $stmt->execute([$agent['referral_code'], $today_start, $today_end]);
+        $stats['users_joined']['today'] = (int)$stmt->fetchColumn();
+        
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE referred_by = ? AND created_at >= ? AND created_at <= ?");
+        $stmt->execute([$agent['referral_code'], $yesterday_start, $yesterday_end]);
+        $stats['users_joined']['yesterday'] = (int)$stmt->fetchColumn();
+        
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE referred_by = ? AND created_at >= ? AND created_at <= ?");
+        $stmt->execute([$agent['referral_code'], $month_start, $month_end]);
+        $stats['users_joined']['this_month'] = (int)$stmt->fetchColumn();
+        
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE referred_by = ?");
+        $stmt->execute([$agent['referral_code']]);
+        $stats['users_joined']['all'] = (int)$stmt->fetchColumn();
+        
+        // Get deposits from users referred by this agent
+        $stmt = $pdo->prepare("
+            SELECT SUM(d.amount) 
+            FROM deposits d
+            JOIN users u ON d.user_id = u.id
+            WHERE u.referred_by = ? AND d.status IN ('success', 'approved', 'completed') 
+            AND d.created_at >= ? AND d.created_at <= ?
+        ");
+        $stmt->execute([$agent['referral_code'], $today_start, $today_end]);
+        $stats['deposits']['today'] = (float)($stmt->fetchColumn() ?: 0);
+        
+        $stmt = $pdo->prepare("
+            SELECT SUM(d.amount) 
+            FROM deposits d
+            JOIN users u ON d.user_id = u.id
+            WHERE u.referred_by = ? AND d.status IN ('success', 'approved', 'completed') 
+            AND d.created_at >= ? AND d.created_at <= ?
+        ");
+        $stmt->execute([$agent['referral_code'], $yesterday_start, $yesterday_end]);
+        $stats['deposits']['yesterday'] = (float)($stmt->fetchColumn() ?: 0);
+        
+        $stmt = $pdo->prepare("
+            SELECT SUM(d.amount) 
+            FROM deposits d
+            JOIN users u ON d.user_id = u.id
+            WHERE u.referred_by = ? AND d.status IN ('success', 'approved', 'completed') 
+            AND d.created_at >= ? AND d.created_at <= ?
+        ");
+        $stmt->execute([$agent['referral_code'], $month_start, $month_end]);
+        $stats['deposits']['this_month'] = (float)($stmt->fetchColumn() ?: 0);
+        
+        $stmt = $pdo->prepare("
+            SELECT SUM(d.amount) 
+            FROM deposits d
+            JOIN users u ON d.user_id = u.id
+            WHERE u.referred_by = ? AND d.status IN ('success', 'approved', 'completed')
+        ");
+        $stmt->execute([$agent['referral_code']]);
+        $stats['deposits']['all'] = (float)($stmt->fetchColumn() ?: 0);
+        
+        // Get commissions (tree bonus)
+        $stmt = $pdo->prepare("SELECT SUM(amount) FROM agent_commissions WHERE agent_id = ? AND created_at >= ? AND created_at <= ?");
+        $stmt->execute([$agent_id, $today_start, $today_end]);
+        $stats['commissions']['today'] = (float)($stmt->fetchColumn() ?: 0);
+        
+        $stmt = $pdo->prepare("SELECT SUM(amount) FROM agent_commissions WHERE agent_id = ? AND created_at >= ? AND created_at <= ?");
+        $stmt->execute([$agent_id, $yesterday_start, $yesterday_end]);
+        $stats['commissions']['yesterday'] = (float)($stmt->fetchColumn() ?: 0);
+        
+        $stmt = $pdo->prepare("SELECT SUM(amount) FROM agent_commissions WHERE agent_id = ? AND created_at >= ? AND created_at <= ?");
+        $stmt->execute([$agent_id, $month_start, $month_end]);
+        $stats['commissions']['this_month'] = (float)($stmt->fetchColumn() ?: 0);
+        
+        $stmt = $pdo->prepare("SELECT SUM(amount) FROM agent_commissions WHERE agent_id = ?");
+        $stmt->execute([$agent_id]);
+        $stats['commissions']['all'] = (float)($stmt->fetchColumn() ?: 0);
+        
+        // Get wallet info
+        $stmt = $pdo->prepare("SELECT withdrawable_balance, total_withdrawn FROM wallets WHERE user_id = ?");
+        $stmt->execute([$agent_id]);
+        $wallet = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($wallet) {
+            $stats['wallet']['withdrawable'] = (float)($wallet['withdrawable_balance'] ?: 0);
+            $stats['wallet']['total_withdrawn'] = (float)($wallet['total_withdrawn'] ?: 0);
+        }
+        $stats['wallet']['total_earned'] = $stats['commissions']['all'];
+        
+        echo json_encode(['success' => true, 'stats' => $stats]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit();
 }
 
 // Handle Deposit Approve/Reject
@@ -609,6 +428,7 @@ if (isset($data) && isset($data['action']) && $data['action'] === 'update_deposi
         $pdo->rollBack();
         echo json_encode(["error" => $e->getMessage()]);
     }
+    exit();
 }
 
 // Handle GET Custom QR Status
@@ -626,10 +446,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_custom_qr') {
             exit();
         }
 
+        $baseUrl = getBaseUrl();
         echo json_encode([
             'success' => true,
             'enabled' => (bool)$settings['is_enabled'],
-            'qr_image' => $settings['qr_image_path'] ? 'https://iquizz.in/' . $settings['qr_image_path'] : null
+            'qr_image' => $settings['qr_image_path'] ? $baseUrl . '/' . $settings['qr_image_path'] : null
         ]);
     } catch (Exception $e) {
         echo json_encode(['error' => $e->getMessage()]);
@@ -693,10 +514,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'upload_custom_qr') {
             @unlink(__DIR__ . '/../' . $oldPath);
         }
 
+        $baseUrl = getBaseUrl();
         echo json_encode([
             'success' => true,
             'message' => 'QR code uploaded successfully',
-            'qr_image' => 'https://iquizz.in/' . $relativePath
+            'qr_image' => $baseUrl . '/' . $relativePath
         ]);
     } catch (Exception $e) {
         echo json_encode(['error' => $e->getMessage()]);
@@ -725,7 +547,6 @@ if (isset($data['action']) && $data['action'] === 'toggle_custom_qr') {
 
 // Handle GET Payment Methods Status
 if (isset($_GET['action']) && $_GET['action'] === 'get_payment_methods') {
-    // Clean any output before JSON
     ob_clean();
     header('Content-Type: application/json');
     
@@ -770,6 +591,144 @@ if (isset($data['action']) && $data['action'] === 'toggle_payment_method') {
         ]);
     } catch (Exception $e) {
         echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit();
+}
+
+// Handle Update Dispute Status
+if (isset($data) && isset($data['action']) && $data['action'] === 'update_dispute_status') {
+    $id = $data['id'];
+    $status = $data['status']; // 'pending', 'reviewed', or 'resolved'
+
+    if (!in_array($status, ['pending', 'reviewed', 'resolved'])) {
+         echo json_encode(["error" => "Invalid status"]);
+         exit();
+    }
+
+    try {
+        $stmt = $pdo->prepare("UPDATE deposit_disputes SET status = ? WHERE id = ?");
+        $stmt->execute([$status, $id]);
+        echo json_encode(["success" => true]);
+    } catch (Exception $e) {
+        echo json_encode(["error" => $e->getMessage()]);
+    }
+    exit();
+}
+
+// Handle Update Direct Commission
+if (isset($data) && isset($data['action']) && $data['action'] === 'update_direct_commission') {
+    $agent_id = (int)$data['agent_id'];
+    $percentage = (float)$data['percentage'];
+    
+    // Validate percentage (0-100)
+    if ($percentage < 0 || $percentage > 100) {
+        echo json_encode(["error" => "Percentage must be between 0 and 100"]);
+        exit();
+    }
+    
+    // Verify user is an agent
+    $stmt = $pdo->prepare("SELECT role FROM users WHERE id = ?");
+    $stmt->execute([$agent_id]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$user || $user['role'] !== 'agent') {
+        echo json_encode(["error" => "User is not an agent"]);
+        exit();
+    }
+    
+    // Update commission percentage
+    $stmt = $pdo->prepare("UPDATE users SET direct_commission_percentage = ? WHERE id = ?");
+    $stmt->execute([$percentage, $agent_id]);
+    
+    echo json_encode(["success" => true, "message" => "Direct commission percentage updated successfully"]);
+    exit();
+}
+
+// Handle Approve Commission
+if (isset($data) && isset($data['action']) && $data['action'] === 'approve_commission') {
+    $commission_id = (int)$data['commission_id'];
+    
+    try {
+        $pdo->beginTransaction();
+        
+        // Get commission details
+        $stmt = $pdo->prepare("SELECT agent_id, COALESCE(adjusted_amount, amount) as final_amount FROM agent_commissions WHERE id = ? AND status = 'pending'");
+        $stmt->execute([$commission_id]);
+        $commission = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$commission) {
+            throw new Exception("Commission not found or already processed");
+        }
+        
+        $agent_id = $commission['agent_id'];
+        $final_amount = $commission['final_amount'];
+        
+        // Update commission status to approved
+        $stmt = $pdo->prepare("UPDATE agent_commissions SET status = 'approved' WHERE id = ?");
+        $stmt->execute([$commission_id]);
+        
+        // Add to agent's withdrawable balance
+        $stmt = $pdo->prepare("INSERT INTO wallets (user_id, withdrawable_balance) VALUES (?, ?) ON DUPLICATE KEY UPDATE withdrawable_balance = withdrawable_balance + ?");
+        $stmt->execute([$agent_id, $final_amount, $final_amount]);
+        
+        $pdo->commit();
+        echo json_encode(["success" => true, "message" => "Commission approved and released to agent wallet"]);
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        echo json_encode(["error" => $e->getMessage()]);
+    }
+    exit();
+}
+
+// Handle Reject Commission
+if (isset($data) && isset($data['action']) && $data['action'] === 'reject_commission') {
+    $commission_id = (int)$data['commission_id'];
+    $notes = isset($data['notes']) ? trim($data['notes']) : '';
+    
+    try {
+        // Update commission status to rejected
+        $stmt = $pdo->prepare("UPDATE agent_commissions SET status = 'rejected', admin_notes = ? WHERE id = ? AND status = 'pending'");
+        $stmt->execute([$notes, $commission_id]);
+        
+        if ($stmt->rowCount() === 0) {
+            throw new Exception("Commission not found or already processed");
+        }
+        
+        echo json_encode(["success" => true, "message" => "Commission rejected successfully"]);
+    } catch (Exception $e) {
+        echo json_encode(["error" => $e->getMessage()]);
+    }
+    exit();
+}
+
+// Handle Adjust Commission
+if (isset($data) && isset($data['action']) && $data['action'] === 'adjust_commission') {
+    $commission_id = (int)$data['commission_id'];
+    $new_amount = (float)$data['new_amount'];
+    $notes = isset($data['notes']) ? trim($data['notes']) : '';
+    
+    // Validate amount
+    if ($new_amount < 0) {
+        echo json_encode(["error" => "Amount cannot be negative"]);
+        exit();
+    }
+    
+    try {
+        // Check if commission exists and is pending
+        $stmt = $pdo->prepare("SELECT id FROM agent_commissions WHERE id = ? AND status = 'pending'");
+        $stmt->execute([$commission_id]);
+        
+        if ($stmt->rowCount() === 0) {
+            throw new Exception("Commission not found or already processed");
+        }
+        
+        // Update adjusted amount and notes
+        $stmt = $pdo->prepare("UPDATE agent_commissions SET adjusted_amount = ?, admin_notes = ? WHERE id = ?");
+        $stmt->execute([$new_amount, $notes, $commission_id]);
+        
+        echo json_encode(["success" => true, "message" => "Commission amount adjusted successfully"]);
+    } catch (Exception $e) {
+        echo json_encode(["error" => $e->getMessage()]);
     }
     exit();
 }
